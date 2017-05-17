@@ -1,0 +1,242 @@
+% aastex6.1 will be released as part of TeXLive 2017 around June 1. 
+\documentclass{aastex6}
+
+% Import images
+\usepackage{graphicx}
+% Used for consistent handling of Figures/Sections/Tables
+\usepackage{cleveref}
+% Format URLs correctly
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{aecompl}
+\usepackage{color}
+
+% Want to have a separate storage folder for my figures.
+\graphicspath{{./fig/}}
+
+% Settings for cleveref to make Figures and Tables more appropriately
+% defined.
+\crefname{figure}{Fig.}{Figs.}
+\Crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Table}{Tables}
+\Crefname{table}{Table}{Tables}
+\crefname{section}{Section}{Sections}
+\Crefname{section}{Section}{Sections}
+
+\newcommand{\vsini}{\ensuremath{v \sin i}}
+\newcommand{\Kepler}{\mbox{\textit{Kepler}}}
+\newcommand{\McQuillan}{\citep{McQuillan14}}
+
+\shorttitle{Rotation Contamination in \Kepler{}}
+\shortauthors{Simonian et al.}
+\begin{document}
+
+\title{Evaluating Rotation Contamination in \Kepler{} using APOGEE}
+\author{Gregory V. Simonian}
+\affil{Department of Astronomy, The Ohio State University}
+\affil{140 West 18th Avenue, Columbus, OH 43210}
+\email{simonian@astronomy.ohio-state.edu}
+
+\begin{abstract}
+TBD
+\end{abstract}
+\keywords{stars: rotation}
+
+\section{Introduction}
+
+\section{Sample Selection}
+
+This sample is drawn from the overlap between the \emph{something} and
+the Data Release 14 from APOGEE.\@ 
+
+\section{Background contamination}
+
+There are many cases a rotation modulation may be detected, but not
+originate in the target star. A listing of the common ones are:
+
+\begin{itemize}
+  \item Due to the wide \Kepler{} PSF, light from an unassociated,
+    nearby rapidly-rotating late K or M dwarf could be captured in the
+    aperture. These objects should show Variability-Induced Motion
+    (VIM) \authorcomment1{What is the background level of VIM?}, and the companion
+    should generally be evident in high-resolution imaging. Due to the
+    low density of objects in the \Kepler{} field, these should be
+    relatively rare \authorcomment1{How uncommon?}. 
+  \item The target may be part of a wide binary with a rapidly-rotating
+    K or M dwarf as a companion. Based on a quick sampling from the
+    binary mass-function, pairings where the secondary is a K or M dwarf
+    are not uncommon. And based on angular momentum evolution models, a
+    small fraction of these companions should have initial conditions
+    enabling them to maintain their rapid rotation for several Gyr.
+  \item The target may be part of a close binary with a rapidly-rotating
+    K or M dwarf as a companion. \authorcomment1{These systems may or may not be
+      more common because of two competing effects---since the companion
+      will become tidally-synchronized, that means ALL companions in
+      orbits with periods less than the tidal-synchronization period
+      should be rapid rotators, not just a tail of the initial
+      conditions, but on the other hand, the fraction of short-period
+      systems is small. I'm not sure how comparable those fractions
+    are.} However, due to tidal synchronization, these two should yield
+    concordant \vsini{} and photometric modulations.
+\end{itemize}
+
+\subsection{\vsini{} comparison}
+
+One way we investigated whether the photometric variability was
+associated with rapid rotation was by comparing the photometric period
+to the spectroscopic \vsini. Objects with large \vsini{} values should
+have correspondingly short periods.
+
+One of the major uncertainties in relating rotational periods to
+expected \vsini{}s is the radius, which acts as a scale factor. We chose
+radii from the Kepler Stellar Properties
+Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
+which reports radii derived based on the methodology of \citep{Huber14}.
+
+\subsubsection{Asteroseismic Dwarfs}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Asteroseismic_radii_vsini_check}
+  \caption{\emph{Left:} ASPCAP \vsini{} compared to the inferred
+equitorial velocity for APOKASC dwarfs with vsini detections. 5/27
+objects have \vsini{} values larger than the inferred equatorial
+velocities. \emph{Right:} Asteroseismic radii compared to radii inferred from
+\vsini{} and the rotation period. The points above the line are the same
+as the points above the line on the left.\label{fig:astero_radii}}
+\end{figure}
+
+As a starting point, we used a sample of dwarfs with accurate radii
+measured from asteroseismology in the APOKASC sample. There are 426
+dwarfs with asteroseismic radii in the APOKASC catalog v3.6.5. 93 of
+these dwarfs have periods in \citet{McQuillan14}. To obtain a
+high-quality sample for further study, we removed all objects with any
+of the STAR\_WARN, STAR\_BAD, or VSINI\_WARN flags in the latest DR14 catalog, 
+leaving a sample of 77 objects. All 77 APOGEE spectra were inspected by eye 
+for double-lined spectra, which excluded two
+(2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
+None of the final sample of 75 objects are known \Kepler{} pulsators. 
+
+Of the remaining APOKASC sample with \citet{McQuillan14} periods, 27 have 
+\vsini{} detections (\(\vsini > 7\) km/s) using DR14 values. The 
+correspondence between the expected and observed velocities for the objects 
+with \vsini{} detections are shown in \cref{fig:astero_radii}. As expected, 
+most of the stars lie below the equality line, corresponding to \(\sin i \le 
+1\).  There are five objects which have unphysical solutions, which are shown
+in \cref{table:bad_astero}.
+
+\input{tables/bad_astero.tex}
+
+Of these five objects, three (KIC 8677016, 8952800, 10518551) have
+\vsini{} values close to the detection threshold. The probability
+distribution function of marginal \vsini{} detections are complex, so
+it may be possible that these are outliers. KIC 3223000 has a
+\vsini{} which is slightly above the predicted equatorial velocity. It
+is a 1.7-\(\sigma\) difference based on the \vsini{} uncertainty, which
+is consistent with being a statistical fluctuation. Additionally, it can
+be explained by 4.9 day measured rotation period actually being a 
+half-period detection alias, implying that the real equatorial velocity to be twice 
+as large. 
+
+The final outlier, KIC 9908400, is so significantly off of the relation
+that it canot be explained by either uncertainties or aliasing. However,
+it may be adequately explained by contamination. With a high
+temperature, it could be a rapidly rotating star located above the Kraft 
+break. If the photometric variation originated in a cooler contaminant within 
+the Kepler PSF, then the mismatch between the period and \vsini{} would
+be explained.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Velocity_vsini_APOKASC_apogeeteffs}
+  \caption{Comparison of inferred equatorial velocities and
+    \vsini{} across effective temperature for asteroseismic dwarfs. Blue
+  points are predicted equatorial velocities while red diamonds are
+  measured \vsini{} values from DR14. If the equatorial velocity is
+  greater than \vsini{}, then the two points are joined by a black line.
+If the points imply \(\sin i > 1\), then they are joined by a red line.
+The detection threshold of 7 km/s is shown as the red dashed line.
+For 28 objects, both the predicted equatorial velocities and the measured
+\vsini{}s are beneath the detection threshold, hence they are omitted from 
+this plot.\label{fig:velmatch_teff}}
+\end{figure}
+
+To see if this mismatch is prevalent among the hot stars, we looked to
+see if the velocity mismatch trends with effective temperature.
+\Cref{fig:velmatch_teff} compares the predicted equatorial velocities to
+\vsini{} for objects with varying effective temperatures. There's no
+apparent trend where hotter stars tend to have more mismatches. However,
+this does not preclude KIC 9908400 from being a contaminant if this sort
+of contamination is rare.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{apokasc_vsini_comparison}
+  \caption{\emph{Top:} Observed distribution of \vsini{} (red) compared
+  to the theoretical distribution of \vsini{} (black). The theoretical
+distribution was obtained by taking the inferred equatorial velocity
+distribution (blue) and convolving it with \(\sin i\) and a 10\%
+uncertainty. \vsini{} non-detections are treated separately; out of 75 
+objects, 43 non-detections were predicted and 42 were observed.
+\emph{Bottom:} Cumulative distribution of \vsini{} including the impact
+of non-detections. Small statistical blips are seen around 15 and 20
+km/s, but according to a KS test, these two distributions are consistent
+with being identical (\(p=0.5\))\label{fig:apokasc_vdists}}
+\end{figure}
+
+The overall distribution of \vsini{} is consistent with the inferred
+velocity distribution. This was tested by taking the inferred velocity
+distribution, convolving it with a Gaussian with a width of 10\%, and
+then convolving that distribution with a distribution of
+randomly-oriented \(\sin i\). The results are shown in
+\cref{fig:apokasc_vdists}. As expected, the number of targets in each
+\vsini{} bin tracks the theoretical prediction, including non-detections. To 
+quantify this agreement, a KS-test indicated that the \vsini{}s were 
+consistent with being drawn from the theoretical distribution at the
+\(p=0.5\) confidence level. I will note that the  convolutions were performed 
+on the binned dataset as opposed to the full dataset, which introduced 
+integration errors on the order of 2\%. However, decreasing the bin sizes 
+didn't affect the conclusion.
+
+While the overall distribution of \vsini{} matches the distribution of
+velocities, the previous test didn't address whether \vsini{} were
+individually consistent with velocities. That would require checking the 
+distribution of \(\sin i\), which hasn't been adequately done yet.
+However, it's on the list.
+
+\subsubsection{Cool Dwarfs}
+
+% Are Asteroseismic sample in DR13?
+% Compare to hot star sample NOT in DR13.
+
+\section{Results}
+
+% From the sample that overlaps with APOGEE, we find that the sample of
+% rapidly-rotating objects with high \vsini{} follows a distribution
+% consistent with the rotation periods found by Rafa. One of the ways you
+% can see this is by noting that the distribution of periods follows the
+% distribution predicted by \vsini{} assuming stellar radii as predicted
+% by the DSEP models.
+
+% We also find that the period distribution derived from photometric
+% variability seems to follow that predicted by the \Kepler{} eclipsing
+% binaries.
+
+% The correspondance between \vsini{} and rotation period indicates that
+% we are finding the rapidly rotating populations in the \Kepler{} field
+% out to a contamination level of \emph{something}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+
+\bibliographystyle{aasjournal}
+\bibliography{references}
+
+\end{document}
+
+
+
+
