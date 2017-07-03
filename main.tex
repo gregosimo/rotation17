@@ -100,7 +100,7 @@ which reports radii derived based on the methodology of \citep{Huber14}.
   \centering
   \includegraphics[width=0.8\textwidth]{Asteroseismic_radii_vsini_check}
   \caption{\emph{Left:} ASPCAP \vsini{} compared to the inferred
-equitorial velocity for APOKASC dwarfs with vsini detections. 5/27
+equatorial velocity for APOKASC dwarfs with vsini detections. 5/27
 objects have \vsini{} values larger than the inferred equatorial
 velocities. \emph{Right:} Asteroseismic radii compared to radii inferred from
 \vsini{} and the rotation period. The points above the line are the same
@@ -220,9 +220,33 @@ branch (red circles).}
 
 Since the asteroseismic stars were promising, we decided to look into
 another regime where radii should be relatively well-constrained, which
-is the cool-star limit. In the cool star regime, the subgiant branch for
-stars past the field turnoff are well-separated from the main-sequence.
-This can be seen in \cref{fig:cool_subgiants}.
+is the cool-star limit. We define the cool star regime as the region in
+the HR-diagram of \citet{Huber14} parameters, where the subgiant branch for
+stars older than the field turnoff are well-separated from the
+main-sequence. The separation is prominent for \(T < 5450\) K with a
+dividing line at \(\log g = 4.3\), as illustrated in 
+\cref{fig:cool_subgiants}. As before, double-lined spectroscopic
+binaries and pulsators were removed, in addition to objects with either
+the STAR_WARN or STAR_BAD flags. This leaves 234 targets in this range, of 
+which only 6 are rapid rotators (1 day < P < 5 day). 
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{cool_stars_velocity_radius}
+  \caption{\emph{Left:} ASPCAP \vsini{} compared to the inferred
+equatorial velocity for cool APOKASC dwarfs with vsini detections. 5/27
+objects have \vsini{} values larger than the inferred equatorial
+velocities. \emph{Right:} Asteroseismic radii compared to radii inferred from
+\vsini{} and the rotation period. The points above the line are the same
+as the points above the line on the left.\label{fig:cool_stars_velocity_radius}}
+\end{figure}
+
+Taking an initial look at the conformance between \vsini{}, period, and
+radius indicates disagreement, as seen in
+\cref{fig:cool_stars_velocity_radius}. For a large number of objects
+(particularly dwarfs), the \vsini{} is too large given the observed
+period and radius. 
+
 
 % Are Asteroseismic sample in DR13?
 % Compare to hot star sample NOT in DR13.
