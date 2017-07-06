@@ -27,6 +27,7 @@
 \newcommand{\vsini}{\ensuremath{v \sin i}}
 \newcommand{\Kepler}{\mbox{\textit{Kepler}}}
 \newcommand{\McQuillan}{\citep{McQuillan14}}
+\newcommand{\logg}{\ensuremath{\log(g)}}
 
 \shorttitle{Rotation Contamination in \Kepler{}}
 \shortauthors{Simonian et al.}
@@ -244,9 +245,70 @@ as the points above the line on the left.\label{fig:cool_stars_velocity_radius}}
 Taking an initial look at the conformance between \vsini{}, period, and
 radius indicates disagreement, as seen in
 \cref{fig:cool_stars_velocity_radius}. For a large number of objects
-(particularly dwarfs), the \vsini{} is too large given the observed
-period and radius. 
+the \vsini{} is too large given the observed period and radius. The
+disagreement is significantly more severe for the dwarfs than the
+subgiants. Therefore, at least one of the three quantities needed to
+make \cref{fig:cool_stars_velocity_radius}: radius, \vsini{}, or
+rotation period, should be wrong.
 
+One of the obvious places where things can go wrong is with the stellar
+radii. Subgiants misclassified as dwarfs would have equatorial
+velocities that are severely underestimated by the \citet{Huber14}
+pipeline. While misclassified subgiants wouldn't be able to explain the
+objects with very large discrepancies in
+\cref{fig:cool_stars_velocity_radius}, it could plausibly be behind the 
+objects with \(R\sin i \sim 2 R_\sun\).
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{cool_apogee_logg_comparison}
+  \caption{Dwarfs and subgiants classified by \citet{Huber14} placed in
+  an HR diagram with APOGEE spectroscopic parameters. Most of the 
+  \citet{Huber14} dwarfs (blue crosses) are on the APOGEE dwarf locus.
+  The \citet{Huber14} subgiants (red diamonds) are found both in the
+  subgiant branch as well as the dwarf locus. \vsini{} detections are
+  denoted as squares, with a magenta fill indicating a \citet{Huber14}
+  subgiant and a white fill indicating a \citet{Huber14} 
+  dwarf.\label{fig:cool_apogee_logg_comparison}}
+\end{figure}
+
+In order to determine whether this misclassification could be an issue,
+we compare the dwarf/subgiant classification from \citet{Huber14} to
+that which would be obtained from APOGEE spectroscopic \logg{}
+measurements. While the spectroscopic \logg{} measurements for dwarfs
+are uncalibrated, and should not be taken at face value, we assume that
+they should be able to distinguish between subgiants and dwarfs, at the
+very least. The APOGEE spectroscopic measurements are shown in
+\cref{fig:cool_apogee_logg_comparison}. Due to the uncalibrated nature
+of the APOGEE \logg{}s, the main sequence does not behave as expected,
+particularly at the cool end. However, a clear main-sequence and
+subgiant branch can be distinguished. The APOGEE measurements indicate
+the surprising result that it is not the subgiants that are
+misclassified as dwarfs by \citet{Huber14}; rather APOGEE indicates that
+dwarfs are being misclassified as subgiants. This exacerbates the
+problem of the radii being underestimated.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{APOGEE_Stauffer_Hartmann_Comparison_Good}
+  \caption{Comparison between the overlap between APOGEE observations
+    and those made in \citet{Stauffer87}. The red dashed lines indicate
+  the detection limits for the two measurements. Objects which are
+nondetections in both surveys are omitted. Above the detection limits,
+the two \vsini{} measurements are in good agreement.}
+  \label{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}
+\end{figure}
+
+Since subgiant contamination is ruled out as highly unlikely, then we
+next consider the situation that \vsini{} values are incorrect.
+\vsini{} measurement was only added in the previous data release DR13,
+and has not been vetted and calibrated to the extent of the other stellar
+parameters. In particular, degeneracy between \vsini{} and
+\logg{} may make \vsini{} values for cool dwarfs particularly
+unreliable. We check this by comparing the APOGEE \vsini{} values to
+measured \vsini{} values for cool dwarfs in the Pleiades
+\citep{Stauffer87} in
+\cref{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}.
 
 % Are Asteroseismic sample in DR13?
 % Compare to hot star sample NOT in DR13.
