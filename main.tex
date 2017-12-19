@@ -29,6 +29,8 @@
 \newcommand{\McQuillan}{\citep{McQuillan14}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
 
+\newcommand{\gvs}{\authorcomment}
+
 \shorttitle{Rotation Contamination in \Kepler{}}
 \shortauthors{Simonian et al.}
 \begin{document}
@@ -48,8 +50,34 @@ To be determined.
 
 \section{Sample Selection}
 
-This sample is drawn from the overlap between the \emph{something} and
-the Data Release 14 from APOGEE.\@ 
+The sample used to compare to \citet{McQuillan14} was drawn from the
+APOGEE Data Release 14\footnote{\url{http://www.sdss.org/dr14/irspec/}}.
+The dwarfs were chosen from three specific targeting programs:
+\texttt{APOGEE_KEPLER_COOLDWARF}, \texttt{APOGEE2_APOKASC_DWARF}, and
+\texttt{APOGEE_KEPLER_SEISMO} (with APOGEE \(\logg > 3.5\)). The former
+two classes were chosen strictly on stellar parameters, and should not
+be biased toward rotation. The latter was specifically chosen for
+asteroseismic measurements, and thus is biased against rapid rotators.
+We will treat that separately.
+
+\subsection{Cool Dwarf Sample}
+
+This sample was chosen to obtain spectra for around 1200 cool dwarfs
+with long- and short-cadence data from
+\Kepler\footnote{\url{http://www.sdss.org/dr13/algorithms/ancillary/apogee/kepler_dwarfs/}}.
+The stellar parameter criteria for this sample are that objects should
+have original KIC cuts of \(\Teff < 5500\) K, \(\logg > 4.0\) and 2MASS
+\(7 < H < 11\) mag. These targets are shown in red in
+\cref{fig:targetingsamples}. Due to the limited quality of the original
+KIC stellar parameter determinations \gvs{Number of giants} turned out
+to be giants.
+
+\subsection{APOKASC Dwarfs}
+
+This sample was chosen based on the revised parameters from
+\citet{Huber14}. The selection criteria were to have \citet{Huber14} \(6500 \ge
+\Teff \ge 5000\) K, \(\logg > 3.5\), and \(7 < H < 11\) mag. These
+targets are shown in blue in \cref{fig:targetingsamples}.
 
 \section{Background contamination}
 
