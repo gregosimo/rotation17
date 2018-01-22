@@ -1,6 +1,8 @@
 % aastex6.1 will be released as part of TeXLive 2017 around June 1. 
 \documentclass{aastex6}
 
+% Make the underscore behave correctly.
+\usepackage[T1]{fontenc}
 % Import images
 \usepackage{graphicx}
 % Used for consistent handling of Figures/Sections/Tables
@@ -27,9 +29,10 @@
 \newcommand{\vsini}{\ensuremath{v \sin i}}
 \newcommand{\Kepler}{\mbox{\textit{Kepler}}}
 \newcommand{\McQuillan}{\citep{McQuillan14}}
+\newcommand{\Teff}{\ensuremath{T_{eff}}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
 
-\newcommand{\gvs}{\authorcomment}
+\newcommand{\gvs}{\authorcomment1}
 
 \shorttitle{Rotation Contamination in \Kepler{}}
 \shortauthors{Simonian et al.}
@@ -53,8 +56,8 @@ To be determined.
 The sample used to compare to \citet{McQuillan14} was drawn from the
 APOGEE Data Release 14\footnote{\url{http://www.sdss.org/dr14/irspec/}}.
 The dwarfs were chosen from three specific targeting programs:
-\texttt{APOGEE_KEPLER_COOLDWARF}, \texttt{APOGEE2_APOKASC_DWARF}, and
-\texttt{APOGEE_KEPLER_SEISMO} (with APOGEE \(\logg > 3.5\)). The former
+\texttt{APOGEE\_KEPLER\_COOLDWARF}, \texttt{APOGEE2\_APOKASC\_DWARF}, and
+\texttt{APOGEE\_KEPLER\_SEISMO} (with APOGEE \(\logg > 3.5\)). The former
 two classes were chosen strictly on stellar parameters, and should not
 be biased toward rotation. The latter was specifically chosen for
 asteroseismic measurements, and thus is biased against rapid rotators.
@@ -110,7 +113,7 @@ originate in the target star. A listing of the common ones are:
     concordant \vsini{} and photometric modulations.
 \end{itemize}
 
-\subsection{\vsini{} comparison}
+\section{\vsini{} comparison}
 
 One way we investigated whether the photometric variability was
 associated with rapid rotation was by comparing the photometric period
@@ -121,9 +124,10 @@ One of the major uncertainties in relating rotational periods to
 expected \vsini{}s is the radius, which acts as a scale factor. We chose
 radii from the Kepler Stellar Properties
 Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
-which reports radii derived based on the methodology of \citep{Huber14}.
+which reports radii consistent with DSEP isochrones \citep{Dotter11} derived 
+based on the methodology of \citep{Huber14}.
 
-\subsubsection{Asteroseismic Dwarfs}
+\subsection{Asteroseismic Dwarfs}
 
 \begin{figure}[htb]
   \centering
@@ -145,7 +149,8 @@ of the STAR\_WARN, STAR\_BAD, or VSINI\_WARN flags in the latest DR14 catalog,
 leaving a sample of 77 objects. All 77 APOGEE spectra were inspected by eye 
 for double-lined spectra, which excluded two
 (2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
-None of the final sample of 75 objects are known \Kepler{} pulsators. 
+None of the final sample of 75 objects exhibit stable variability in
+their light curves indicative of pulsations.
 
 Of the remaining APOKASC sample with \citet{McQuillan14} periods, 27 have 
 \vsini{} detections (\(\vsini > 7\) km/s) using DR14 values. The 
@@ -256,7 +261,7 @@ main-sequence. The separation is prominent for \(T < 5450\) K with a
 dividing line at \(\log g = 4.3\), as illustrated in 
 \cref{fig:cool_subgiants}. As before, double-lined spectroscopic
 binaries and pulsators were removed, in addition to objects with either
-the STAR_WARN or STAR_BAD flags. This leaves 234 targets in this range, of 
+the \texttt{STAR\_WARN} or \texttt{STAR\_BAD} flags. This leaves 234 targets in this range, of 
 which only 6 are rapid rotators (1 day < P < 5 day). 
 
 \begin{figure}[htb]
@@ -337,6 +342,17 @@ unreliable. We check this by comparing the APOGEE \vsini{} values to
 measured \vsini{} values for cool dwarfs in the Pleiades
 \citep{Stauffer87} in
 \cref{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}.
+
+While Pleiades targets in general do not have the rotational
+distribution seen in the field, their young age enables a broad
+distribution of \vsini{}s to be checked against for a wide range
+of spectral types \gvs{Actually check the \Teff{} range in the overlap
+sample}. For the sample of objects with \vsini{} measured both
+by APOGEE and \citep{Stauffer87}, the agreement in \vsini{} is generally
+good down to the uncertainty limit in \vsini. As a result, it's unlikely
+that the discrepancy between the rotation period and vsini for the cool
+dwarfs comes from a limitation of APOGEE to measure \vsini{} in the cool
+regime.
 
 % Are Asteroseismic sample in DR13?
 % Compare to hot star sample NOT in DR13.
