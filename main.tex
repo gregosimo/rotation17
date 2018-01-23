@@ -31,6 +31,7 @@
 \newcommand{\McQuillan}{\citep{McQuillan14}}
 \newcommand{\Teff}{\ensuremath{T_{eff}}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
+\newcommand{\kms}{\textrm{km s}\ensuremath{^{-1}}}
 
 \newcommand{\gvs}{\authorcomment1}
 
@@ -52,6 +53,55 @@ To be determined.
 \section{Introduction}
 
 \section{Sample Selection}
+
+A key quantity related in relating rotational period to
+expected \vsini{} for a given star is the stellar radius, which acts as a 
+scale factor. In general, large uncertainties in inferring distances make 
+radius determinations difficult, especially in the hot star regime, where a 
+star of a given \Teff{} and \logg{} can have multiple different radii
+because higher-mass stars evolving to the giant branch.
+
+In order to sidestep having to make a detailed model of the complex
+radius uncertainties for all \Kepler targets, we choose instead to work
+in two regimes where radius uncertainties are greatly reduced: the
+APOKASC asteroseismic dwarf and subgiant sample, and the cool \(\Teff < 5500\) K dwarf
+regime \gvs{Should this actually be 5000 K? See Fig 9a in
+  \citet{Huber14}}. 
+
+The APOKASC asteroseismic dwarf and subgiant sample
+consists of 415 targets \gvs{Check this number} which showed
+solar-type oscillations in \Kepler{} short-cadence data
+\citep{Chaplin11}, and were observed in APOGEE DR13
+\citep{Majewski15}. With asteroseismic scaling relations, the radius
+for these objects can be determined to an accuracy of around 3\%
+\citep{Serenelli17}. It should be noted that the asteroseismic sample
+is highly biased compared to the field population. Because the
+amplitude of solar-type oscillations increases as stars evolve, the
+sample is overrepresented by subgiants. Additionally, the nondetection
+of oscillations in rapidly-rotating giants that ought to be detectable
+indicates that the asteroseismic sample may be biased against rapid
+rotators \citep{Gaulme14,Tayar15}. 
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{McQuillan_APOGEE_hr}
+  \caption{APOGEE sample with McQuillan periods. Targets with
+  temperatures \(\Teff<5450\) K have a clear separation between the
+subgiant and dwarf branches at \(\logg = 4.2\).}
+  \label{fig:coolsep}
+\end{figure}
+
+We choose the cool dwarf sample where the subgiant and dwarf tracks
+become well-separated in \logg-\Teff{} space. The width of the
+separation is shown in \cref{fig:coolsep}. In this regime, uncertainties
+in the radius must be due to uncertainties in the \logg{}, not
+ambiguities in the mass.
+
+  
+  We chose radii from the Kepler Stellar Properties
+Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
+which reports radii consistent with DSEP isochrones \citep{Dotter08} derived 
+based on the methodology of \citep{Huber14}.
 
 The sample used to compare to \citet{McQuillan14} was drawn from the
 APOGEE Data Release 14\footnote{\url{http://www.sdss.org/dr14/irspec/}}.
@@ -113,19 +163,76 @@ originate in the target star. A listing of the common ones are:
     concordant \vsini{} and photometric modulations.
 \end{itemize}
 
-\section{\vsini{} comparison}
+\section{\vsini{} Comparisons}
+
+The analysis performed in this manuscript hinges on the reliability of
+\vsini measurements in APOGEE. \vsini{} was only added in Data Release
+13 (DR13), and has not been vetted and calibrated to the extent of the other 
+stellar parameters. We check the validity of the APOGEE \vsini{}s by comparing 
+them to previously measured \vsini{} values in the two regimes we are
+interested in.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{bruntt_apogee_vsini_comparison}
+  \caption{Comparison between APOGEE \vsini{} and the \vsini{} from
+  higher-resolution spectra analyzed in \citet{Bruntt12} for
+  \Kepler{} asteroseismic targets. At high \vsini{}, the scatter in
+  \vsini{} appear consistent with 10\%. There is an abrupt change in
+  scatter at 7 \kms, which we interpret as being the \vsini{} detection
+  limit for APOGEE. }
+  \label{fig:bruntt_vsini}
+\end{figure}
+
+To measure the accuracy of \vsini{} for asteroseismic targets, we
+compare APOGEE \vsini{}s to those measured for a sample of asteroseismic
+dwarfs in \citet{Bruntt12}. \citet{Bruntt12} analyzed spectra of 93
+solar-type asteroseismic targets using two R=80,000 spectrographs on the
+3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
+Telescope. While uncertainties are not quoted in \citet{Bruntt12},
+previous analyses have determined \vsini{} uncertainties of about 0.6
+\kms \citep{Bruntt10a,Bruntt10b}.
+
+A comparison between the APOGEE and \citet{Bruntt12} targets is shown in
+\cref{fig:bruntt_vsini}. In this figure, there seem to be two regimes
+based on the \citet{Bruntt12} \vsini{}: at low \vsini{}, the scatter is
+significantly higher than at high \vsini{}. The dividing line between
+the two regimes appears to be around \(\vsini=7\kms\). We interpret the
+low-\vsini{} regime to be beyond the detection limit of APOGEE, while
+the high-\vsini{} regime is where stellar rotation is actually detected.
+The scatter in the fractional error is consistent with 10\% throughout the 
+full regime, so we adopt that as the uncertainty in the APOGEE
+\vsini{} values.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{APOGEE_Stauffer_Hartmann_Comparison_Good}
+  \caption{Comparison between the overlap between APOGEE observations
+    and those made in \citet{Stauffer87}. The red dashed lines indicate
+  the detection limits for the two measurements. Objects which are
+nondetections in both surveys are omitted. Above the detection limits,
+the two \vsini{} measurements are in good agreement.}
+  \label{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}
+\end{figure}
+
+In order to test the \vsini{} accuracy for cool dwarfs, we compare
+APOGEE \vsini{} for targets observed by \citet{Stauffer87} in the
+Pleiades. While Pleiades targets in general do not have the rotational
+distribution seen in the field, their young age enables a broad
+distribution of \vsini{}s to be checked against for a wide range
+of spectral types \gvs{Actually check the \Teff{} range in the overlap
+sample}. For the sample of objects with \vsini{} measured both
+by APOGEE and \citep{Stauffer87}, the agreement in \vsini{} is generally
+good down to the uncertainty limit quoted in \citep{Stauffer87} of 10
+\kms. 
 
 One way we investigated whether the photometric variability was
 associated with rapid rotation was by comparing the photometric period
 to the spectroscopic \vsini. Objects with large \vsini{} values should
 have correspondingly short periods.
 
-One of the major uncertainties in relating rotational periods to
-expected \vsini{}s is the radius, which acts as a scale factor. We chose
-radii from the Kepler Stellar Properties
-Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
-which reports radii consistent with DSEP isochrones \citep{Dotter11} derived 
-based on the methodology of \citep{Huber14}.
+
+\section{Rotation Comparison}
 
 \subsection{Asteroseismic Dwarfs}
 
@@ -239,7 +346,7 @@ individually consistent with velocities. That would require checking the
 distribution of \(\sin i\), which hasn't been adequately done yet.
 However, it's on the list.
 
-\subsubsection{Cool Dwarfs}
+\subsection{Cool Dwarfs}
 
 \begin{figure}[htb]
   \centering
@@ -321,38 +428,6 @@ misclassified as dwarfs by \citet{Huber14}; rather APOGEE indicates that
 dwarfs are being misclassified as subgiants. This exacerbates the
 problem of the radii being underestimated.
 
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=0.8\textwidth]{APOGEE_Stauffer_Hartmann_Comparison_Good}
-  \caption{Comparison between the overlap between APOGEE observations
-    and those made in \citet{Stauffer87}. The red dashed lines indicate
-  the detection limits for the two measurements. Objects which are
-nondetections in both surveys are omitted. Above the detection limits,
-the two \vsini{} measurements are in good agreement.}
-  \label{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}
-\end{figure}
-
-Since subgiant contamination is ruled out as highly unlikely, then we
-next consider the situation that \vsini{} values are incorrect.
-\vsini{} measurement was only added in the previous data release DR13,
-and has not been vetted and calibrated to the extent of the other stellar
-parameters. In particular, degeneracy between \vsini{} and
-\logg{} may make \vsini{} values for cool dwarfs particularly
-unreliable. We check this by comparing the APOGEE \vsini{} values to
-measured \vsini{} values for cool dwarfs in the Pleiades
-\citep{Stauffer87} in
-\cref{fig:APOGEE_Stauffer_Hartmann_Comparison_Good}.
-
-While Pleiades targets in general do not have the rotational
-distribution seen in the field, their young age enables a broad
-distribution of \vsini{}s to be checked against for a wide range
-of spectral types \gvs{Actually check the \Teff{} range in the overlap
-sample}. For the sample of objects with \vsini{} measured both
-by APOGEE and \citep{Stauffer87}, the agreement in \vsini{} is generally
-good down to the uncertainty limit in \vsini. As a result, it's unlikely
-that the discrepancy between the rotation period and vsini for the cool
-dwarfs comes from a limitation of APOGEE to measure \vsini{} in the cool
-regime.
 
 % Are Asteroseismic sample in DR13?
 % Compare to hot star sample NOT in DR13.
