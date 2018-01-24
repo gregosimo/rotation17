@@ -53,6 +53,7 @@ To be determined.
 \section{Introduction}
 
 \section{Sample Selection}
+\label{sec:sample}
 
 A key quantity related in relating rotational period to
 expected \vsini{} for a given star is the stellar radius, which acts as a 
@@ -82,6 +83,20 @@ of oscillations in rapidly-rotating giants that ought to be detectable
 indicates that the asteroseismic sample may be biased against rapid
 rotators \citep{Gaulme14,Tayar15}. 
 
+\gvs{Update these numbers!}
+We select 465 asteroseismic dwarfs from the APOKASC catalog v3.6.5. 93 of
+these dwarfs have periods in \citet{McQuillan14}. To obtain a
+high-quality sample for further study, we removed all objects with the
+STAR\_BAD flag because they tended to be cases with bad subtraction or
+normalization in the ASPCAP pipeline. We set aside objects with either
+of the STAR\_WARN or VSINI\_WARN flags to ensure that their ASPCAP
+stellar parameters are reliable. The combined 77 APOGEE spectra were
+also inspected by eye for double-lined spectra, which excluded two
+(2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
+None of the final sample of 75 objects exhibit stable variability in
+their light curves indicative of pulsations. The remaining asteroseismic 
+dwarfs are shown in blue in \cref{fig:targeting}
+
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.8\textwidth]{McQuillan_APOGEE_hr}
@@ -105,72 +120,36 @@ to have original KIC \citep{Brown11} \(\Teff < 5500\) K and \(\logg > 4.0\).
 Most of these objects were observed in APOGEE1, and were flagged under the
 targeting program \texttt{APOGEE\_KEPLER\_COOLDWARF}. A few which were on the
 original targeting list, but were observed in APOGEE2 have the targeting 
-flag \texttt{APOGEE2\_APOKASC\_DWARF}.
-  
-  We chose radii from the Kepler Stellar Properties
+flag \texttt{APOGEE2\_APOKASC\_DWARF}. The cool dwarfs are shown in
+\cref{fig:targeting} as red.
+
+\section{\vsini{} Comparison}
+
+The analysis performed in this manuscript rests largely on the reliability of
+measurements of rotation period, stellar radius, and \vsini. Because the
+rotation periods were adopted from \citet{McQuillan13}, we refer the
+reader to that work, as well as to \citet{Aigrain14} for a detailed 
+discussion of the quality of their and other period-finding algorithms.
+
+As mentioned in \cref{sec:sample}, the asteroseismic stars form a
+benchmark on how precisely stellar radii can be measured. For a detailed
+discussion of the uncertainties of using grid-based asteroseismic
+scaling relations for the APOKASC dwarfs, we refer the reader to
+\citet{Serenelli17}. 
+
+For the cool dwarf sample, we use radii from the Kepler Stellar Properties
 Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
 which reports radii consistent with DSEP isochrones \citep{Dotter08} derived 
-based on the methodology of \citep{Huber14}.
+based on the methodology of \citep{Huber14}. However, objects with
+\(5500 \textrm{ K } > \Teff > 5000 \textrm{ K }\)
 
-
-\subsection{Cool Dwarf Sample}
-
-This sample was chosen to obtain spectra for around 1200 cool dwarfs
-with long- and short-cadence data from
-\Kepler\footnote{\url{http://www.sdss.org/dr13/algorithms/ancillary/apogee/kepler_dwarfs/}}.
-The stellar parameter criteria for this sample are that objects should
-have original KIC cuts of \(\Teff < 5500\) K, \(\logg > 4.0\) and 2MASS
-\(7 < H < 11\) mag. These targets are shown in red in
-\cref{fig:targetingsamples}. Due to the limited quality of the original
-KIC stellar parameter determinations \gvs{Number of giants} turned out
-to be giants.
-
-\subsection{APOKASC Dwarfs}
-
-This sample was chosen based on the revised parameters from
-\citet{Huber14}. The selection criteria were to have \citet{Huber14} \(6500 \ge
-\Teff \ge 5000\) K, \(\logg > 3.5\), and \(7 < H < 11\) mag. These
-targets are shown in blue in \cref{fig:targetingsamples}.
-
-\section{Background contamination}
-
-There are many cases a rotation modulation may be detected, but not
-originate in the target star. A listing of the common ones are:
-
-\begin{itemize}
-  \item Due to the wide \Kepler{} Point Spread Function, light from an unassociated,
-    nearby rapidly-rotating late K or M dwarf could be captured in the
-    aperture. These objects should show Variability-Induced Motion
-    (VIM) \authorcomment1{What is the background level of VIM?}, and the companion
-    should generally be evident in high-resolution imaging. Due to the
-    low density of objects in the \Kepler{} field, these should be
-    relatively rare \authorcomment1{How uncommon?}. 
-  \item The target may be part of a wide binary with a rapidly-rotating
-    K or M dwarf as a companion. Based on a quick sampling from the
-    binary mass-function, pairings where the secondary is a K or M dwarf
-    are not uncommon. And based on angular momentum evolution models, a
-    small fraction of these companions should have initial conditions
-    enabling them to maintain their rapid rotation for several Gyr.
-  \item The target may be part of a close binary with a rapidly-rotating
-    K or M dwarf as a companion. \authorcomment1{These systems may or may not be
-      more common because of two competing effects---since the companion
-      will become tidally-synchronized, that means ALL companions in
-      orbits with periods less than the tidal-synchronization period
-      should be rapid rotators, not just a tail of the initial
-      conditions, but on the other hand, the fraction of short-period
-      systems is small. I'm not sure how comparable those fractions
-    are.} However, due to tidal synchronization, these two should yield
-    concordant \vsini{} and photometric modulations.
-\end{itemize}
-
-\section{\vsini{} Comparisons}
-
-The analysis performed in this manuscript hinges on the reliability of
-\vsini measurements in APOGEE. \vsini{} was only added in Data Release
-13 (DR13), and has not been vetted and calibrated to the extent of the other 
+Measurements of \vsini{} was were only
+incorporated into the ASPCAP pipeline in Data Release 13 (DR13), and
+have not been vetted and calibrated to the same extent as the other 
 stellar parameters. We check the validity of the APOGEE \vsini{}s by comparing 
 them to previously measured \vsini{} values in the two regimes we are
 interested in.
+
 
 \begin{figure}[htb]
   \centering
@@ -232,6 +211,37 @@ to the spectroscopic \vsini. Objects with large \vsini{} values should
 have correspondingly short periods.
 
 
+\section{Background contamination}
+
+There are many cases a rotation modulation may be detected, but not
+originate in the target star. A listing of the common ones are:
+
+\begin{itemize}
+  \item Due to the wide \Kepler{} Point Spread Function, light from an unassociated,
+    nearby rapidly-rotating late K or M dwarf could be captured in the
+    aperture. These objects should show Variability-Induced Motion
+    (VIM) \authorcomment1{What is the background level of VIM?}, and the companion
+    should generally be evident in high-resolution imaging. Due to the
+    low density of objects in the \Kepler{} field, these should be
+    relatively rare \authorcomment1{How uncommon?}. 
+  \item The target may be part of a wide binary with a rapidly-rotating
+    K or M dwarf as a companion. Based on a quick sampling from the
+    binary mass-function, pairings where the secondary is a K or M dwarf
+    are not uncommon. And based on angular momentum evolution models, a
+    small fraction of these companions should have initial conditions
+    enabling them to maintain their rapid rotation for several Gyr.
+  \item The target may be part of a close binary with a rapidly-rotating
+    K or M dwarf as a companion. \authorcomment1{These systems may or may not be
+      more common because of two competing effects---since the companion
+      will become tidally-synchronized, that means ALL companions in
+      orbits with periods less than the tidal-synchronization period
+      should be rapid rotators, not just a tail of the initial
+      conditions, but on the other hand, the fraction of short-period
+      systems is small. I'm not sure how comparable those fractions
+    are.} However, due to tidal synchronization, these two should yield
+    concordant \vsini{} and photometric modulations.
+\end{itemize}
+
 \section{Rotation Comparison}
 
 \subsection{Asteroseismic Dwarfs}
@@ -247,17 +257,6 @@ velocities. \emph{Right:} Asteroseismic radii compared to radii inferred from
 as the points above the line on the left.\label{fig:astero_radii}}
 \end{figure}
 
-As a starting point, we used a sample of dwarfs with accurate radii
-measured from asteroseismology in the APOKASC sample. There are 426
-dwarfs with asteroseismic radii in the APOKASC catalog v3.6.5. 93 of
-these dwarfs have periods in \citet{McQuillan14}. To obtain a
-high-quality sample for further study, we removed all objects with any
-of the STAR\_WARN, STAR\_BAD, or VSINI\_WARN flags in the latest DR14 catalog, 
-leaving a sample of 77 objects. All 77 APOGEE spectra were inspected by eye 
-for double-lined spectra, which excluded two
-(2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
-None of the final sample of 75 objects exhibit stable variability in
-their light curves indicative of pulsations.
 
 Of the remaining APOKASC sample with \citet{McQuillan14} periods, 27 have 
 \vsini{} detections (\(\vsini > 7\) km/s) using DR14 values. The 
