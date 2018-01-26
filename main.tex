@@ -28,10 +28,11 @@
 
 \newcommand{\vsini}{\ensuremath{v \sin i}}
 \newcommand{\Kepler}{\mbox{\textit{Kepler}}}
+\newcommand{\Gaia}{\mbox{\textit{Gaia}}}
 \newcommand{\McQuillan}{\citep{McQuillan14}}
 \newcommand{\Teff}{\ensuremath{T_{eff}}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
-\newcommand{\kms}{\textrm{km s}\ensuremath{^{-1}}}
+\newcommand{\kms}{\textrm{km~s}\ensuremath{^{-1}}}
 
 \newcommand{\gvs}{\authorcomment1}
 
@@ -55,99 +56,122 @@ To be determined.
 \section{Sample Selection}
 \label{sec:sample}
 
-A key quantity related in relating rotational period to
-expected \vsini{} for a given star is the stellar radius, which acts as a 
-scale factor. In general, large uncertainties in inferring distances make 
-radius determinations difficult, especially in the hot star regime, where a 
-star of a given \Teff{} and \logg{} can have multiple different radii
-because higher-mass stars evolving to the giant branch.
+We select our sample to minimize ambiguity in the stellar radius when
+comparing rotation periods to \vsini. In general, large uncertainties in
+determining spectral types propogate to the radius estimates, especially in 
+the hot star regime, where a star of a given \Teff{} and \logg{} can have 
+multiple different radii due to overlap with higher-mass subgiants.
 
-In order to sidestep having to make a detailed model of the complex
-radius uncertainties for all \Kepler targets, we choose instead to work
+In order to sidestep detailed modeling of the complex radius uncertainties 
+for all \Kepler{} targets, we choose instead to study measures of
+stellar rotation
 in two regimes where radius uncertainties are greatly reduced: the
-APOKASC asteroseismic dwarf and subgiant sample, and the cool \(\Teff < 5500\) K dwarf
-regime \gvs{Should this actually be 5000 K? See Fig 9a in
-  \citet{Huber14}}. 
+APOKASC asteroseismic dwarf/subgiant sample, and the cool \(\Teff < 5500\) K 
+dwarf regime. 
 
 The APOKASC asteroseismic dwarf and subgiant sample
-consists of 415 targets \gvs{Check this number} which showed
+consists of 415 targets \gvs{Check this number} which presented
 solar-type oscillations in \Kepler{} short-cadence data
 \citep{Chaplin11}, and were observed in APOGEE DR13
-\citep{Majewski15}. With asteroseismic scaling relations, the radius
+\citep{Majewski17}. Using asteroseismic scaling relations, the radii
 for these objects can be determined to an accuracy of around 3\%
 \citep{Serenelli17}. It should be noted that the asteroseismic sample
-is highly biased compared to the field population. Because the
-amplitude of solar-type oscillations increases as stars evolve, the
-sample is overrepresented by subgiants. Additionally, the nondetection
+is highly biased compared to the field population. Subgiants are
+overrepresented because the
+amplitude of solar-type oscillations increases as stars evolve. 
+Additionally, the nondetection
 of oscillations in rapidly-rotating giants that ought to be detectable
 indicates that the asteroseismic sample may be biased against rapid
 rotators \citep{Gaulme14,Tayar15}. 
 
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.8\textwidth]{APOGEE_flags_APOGEE}
+  \caption{APOGEE Properties of the two samples studied in
+  this paper. The asteroseismic and cool dwarf samples are indicated by
+red and black dots, respectively. \gvs{Remove blue dots from this figure. And
+demarcate the STAR\_WARN groups somehow}. }
+  \label{fig:targeting}
+\end{figure}
+
 \gvs{Update these numbers!}
-We select 465 asteroseismic dwarfs from the APOKASC catalog v3.6.5. 93 of
-these dwarfs have periods in \citet{McQuillan14}. To obtain a
+We selected 465 asteroseismic dwarfs from the APOKASC catalog v4.2.4. 93 of
+these stars have periods in \citet{McQuillan14}. To obtain a
 high-quality sample for further study, we removed all objects with the
 STAR\_BAD flag because they tended to be cases with bad subtraction or
-normalization in the ASPCAP pipeline. We set aside objects with either
-of the STAR\_WARN or VSINI\_WARN flags to ensure that their ASPCAP
-stellar parameters are reliable. The combined 77 APOGEE spectra were
+normalization in the ASPCAP pipeline. We also set aside objects with either
+of the STAR\_WARN or VSINI\_WARN flags for further inspection to ensure that 
+their ASPCAP
+stellar parameters are reliable. The combined 77 APOGEE spectra without
+quality flags were
 also inspected by eye for double-lined spectra, which excluded two
 (2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
 None of the final sample of 75 objects exhibit stable variability in
 their light curves indicative of pulsations. The remaining asteroseismic 
 dwarfs are shown in blue in \cref{fig:targeting}
 
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=0.8\textwidth]{McQuillan_APOGEE_hr}
-  \caption{APOGEE sample with McQuillan periods. Targets with
-  temperatures \(\Teff<5450\) K have a clear separation between the
-subgiant and dwarf branches at \(\logg = 4.2\).}
-  \label{fig:coolsep}
-\end{figure}
-
-We choose the cool dwarf sample where the subgiant and dwarf tracks
-become well-separated in \logg-\Teff{} space. The width of the
-separation is shown in \cref{fig:coolsep}. In this regime, uncertainties
+We define the cool star regime as the region in
+the HR-diagram of \citet{Huber14} parameters, where the subgiant branch for
+stars older than the field turnoff are well-separated from the
+main-sequence. The separation is prominent for \(T < 5450\) K with a
+dividing line at \(\log g = 4.3\), as illustrated in 
+\cref{fig:targeting}. In this regime, uncertainties
 in the radius must be due to uncertainties in the \logg{}, not
 ambiguities in the mass. Additionally, stellar evolution occurs slowly enough
-in this mass ragne that the change in radius over typical ages of these stars 
+in this mass range that the change in radius over typical ages of these stars 
 is expected to be small.
 
-In order to have a known, well-defined sample, we select objects specifically
-targeted in APOGEE Data Release 14\footnote{\url{http://www.sdss.org/dr14/irspec/}}.
-to have original KIC \citep{Brown11} \(\Teff < 5500\) K and \(\logg > 4.0\). 
-Most of these objects were observed in APOGEE1, and were flagged under the
-targeting program \texttt{APOGEE\_KEPLER\_COOLDWARF}. A few which were on the
-original targeting list, but were observed in APOGEE2 have the targeting 
-flag \texttt{APOGEE2\_APOKASC\_DWARF}. The cool dwarfs are shown in
-\cref{fig:targeting} as red.
+We restrict ourselves to a known, well-defined sample, by selecting
+objects with the \texttt{APOGEE\_KEPLER\_COOLDWARF} flag. They were
+originally targeted as a magnitude-limited same with having original KIC 
+\citep{Brown11} \(\Teff < 5500\) K and 
+\(\logg > 4.0\)\footnote{\url{http://www.sdss.org/dr12/algorithms/ancillary/apogee/kepler_dwarfs/}}. 
+We include a few targets on the original list which were observed later
+in APOGEE2 under the targeting flag \texttt{APOGEE2\_APOKASC\_DWARF}. We also 
+perform the same quality checks as with the
+asteroseismic sample: remove STAR\_BAD targets and check for
+double-lined spectra. The cool dwarfs are shown in red in
+\cref{fig:targeting}.
 
 \section{\vsini{} Comparison}
 
-The analysis performed in this manuscript rests largely on the reliability of
-measurements of rotation period, stellar radius, and \vsini. Because the
-rotation periods were adopted from \citet{McQuillan13}, we refer the
-reader to that work, as well as to \citet{Aigrain14} for a detailed 
+The analysis performed in this manuscript relies heavily on
+measurements of rotation period, stellar radius, and \vsini. Because we
+adopt rotation periods from \citet{McQuillan14}, we refer the
+reader to that work, as well as to \citet{Aigrain15} for a detailed 
 discussion of the quality of their and other period-finding algorithms.
 
-As mentioned in \cref{sec:sample}, the asteroseismic stars form a
+As mentioned in Section~\ref{sec:sample}, the asteroseismic stars are a
 benchmark on how precisely stellar radii can be measured. For a detailed
 discussion of the uncertainties of using grid-based asteroseismic
 scaling relations for the APOKASC dwarfs, we refer the reader to
 \citet{Serenelli17}. 
 
-For the cool dwarf sample, we use radii from the Kepler Stellar Properties
-Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}},
-which reports radii consistent with DSEP isochrones \citep{Dotter08} derived 
-based on the methodology of \citep{Huber14}. However, objects with
-\(5500 \textrm{ K } > \Teff > 5000 \textrm{ K }\)
+For the cool dwarf sample, we use radii reported in the Kepler Stellar 
+Properties
+Catalog\footnote{\url{https://exoplanetarchive.ipac.caltech.edu/docs/Kepler_stellar_docs.html}}
+\citep[a.k.a.\ revised KIC]{Mathur17}, derived from DSEP isochrones 
+\citep{Dotter08} based on the methodology of \citet{Huber14}. 
+However, objects with \(5500 \textrm{ K } > \Teff > 5000 \textrm{ K }\) are 
+specially denoted as having uncertain radii due to confusion with subgiants. 
+\gvs{We need to show that APOGEE spectroscopy significantly reduces that 
+uncertainty}. The DR25 version of the Kepler Stellar Properties Catalog only
+incorporates APOGEE spectroscopic parameters for targets in
+SDSS DR12. In order to bring the radii of more recently observed objects onto
+the same calibration, we use DSEP isochrones to calculate a radius
+offset between the stellar parameters given in the revised KIC and
+between the APOGEE stellar parameters to adjust the revised KIC radius. 
+\gvs{Since the Revised KIC uses DSEP, would this be
+equivalent to just pluggin in the APOGEE parameters into DSEP\@? We also
+need to quantify the uncertainty in radiusfor these objects.
+\citet{Huber14} reports something like 10-15\%.}
 
-Measurements of \vsini{} was were only
-incorporated into the ASPCAP pipeline in Data Release 13 (DR13), and
-have not been vetted and calibrated to the same extent as the other 
-stellar parameters. We check the validity of the APOGEE \vsini{}s by comparing 
-them to previously measured \vsini{} values in the two regimes we are
+\vsini measurements was were only incorporated into the ASPCAP pipeline in 
+SDSS DR13, and have not been vetted and calibrated to the same extent as the 
+other 
+stellar parameters. We check the validity of the APOGEE \vsini{}s in
+this work by comparing 
+them to previous samples with measured \vsini{}s in the two regimes we are
 interested in.
 
 
@@ -165,7 +189,8 @@ interested in.
 
 To measure the accuracy of \vsini{} for asteroseismic targets, we
 compare APOGEE \vsini{}s to those measured for a sample of asteroseismic
-dwarfs in \citet{Bruntt12}. \citet{Bruntt12} analyzed spectra of 93
+dwarfs in \citet{Bruntt12} \gvs{See if there's overlap with
+  \citet{Bruntt10a}}. \citet{Bruntt12} analyzed spectra of 93
 solar-type asteroseismic targets using two R=80,000 spectrographs on the
 3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
 Telescope. While uncertainties are not quoted in \citet{Bruntt12},
@@ -173,15 +198,12 @@ previous analyses have determined \vsini{} uncertainties of about 0.6
 \kms \citep{Bruntt10a,Bruntt10b}.
 
 A comparison between the APOGEE and \citet{Bruntt12} targets is shown in
-\cref{fig:bruntt_vsini}. In this figure, there seem to be two regimes
-based on the \citet{Bruntt12} \vsini{}: at low \vsini{}, the scatter is
-significantly higher than at high \vsini{}. The dividing line between
-the two regimes appears to be around \(\vsini=7\kms\). We interpret the
-low-\vsini{} regime to be beyond the detection limit of APOGEE, while
-the high-\vsini{} regime is where stellar rotation is actually detected.
-The scatter in the fractional error is consistent with 10\% throughout the 
-full regime, so we adopt that as the uncertainty in the APOGEE
-\vsini{} values.
+\cref{fig:bruntt_vsini}. This figure indicates that the scatter is
+discontinuous at \citep{Bruntt12} \(\vsini=7\kms\). We interpret this
+discontinuity as setting the detection limit of APOGEE, 
+where stellar rotation is actually detected in the high-\vsini{} regime.
+The scatter in the fractional error is consistent with 10\% for the
+detections, so we adopt that as the uncertainty in the APOGEE \vsini{} values.
 
 \begin{figure}[htb]
   \centering
@@ -203,44 +225,8 @@ of spectral types \gvs{Actually check the \Teff{} range in the overlap
 sample}. For the sample of objects with \vsini{} measured both
 by APOGEE and \citep{Stauffer87}, the agreement in \vsini{} is generally
 good down to the uncertainty limit quoted in \citep{Stauffer87} of 10
-\kms. 
-
-One way we investigated whether the photometric variability was
-associated with rapid rotation was by comparing the photometric period
-to the spectroscopic \vsini. Objects with large \vsini{} values should
-have correspondingly short periods.
-
-
-\section{Background contamination}
-
-There are many cases a rotation modulation may be detected, but not
-originate in the target star. A listing of the common ones are:
-
-\begin{itemize}
-  \item Due to the wide \Kepler{} Point Spread Function, light from an unassociated,
-    nearby rapidly-rotating late K or M dwarf could be captured in the
-    aperture. These objects should show Variability-Induced Motion
-    (VIM) \authorcomment1{What is the background level of VIM?}, and the companion
-    should generally be evident in high-resolution imaging. Due to the
-    low density of objects in the \Kepler{} field, these should be
-    relatively rare \authorcomment1{How uncommon?}. 
-  \item The target may be part of a wide binary with a rapidly-rotating
-    K or M dwarf as a companion. Based on a quick sampling from the
-    binary mass-function, pairings where the secondary is a K or M dwarf
-    are not uncommon. And based on angular momentum evolution models, a
-    small fraction of these companions should have initial conditions
-    enabling them to maintain their rapid rotation for several Gyr.
-  \item The target may be part of a close binary with a rapidly-rotating
-    K or M dwarf as a companion. \authorcomment1{These systems may or may not be
-      more common because of two competing effects---since the companion
-      will become tidally-synchronized, that means ALL companions in
-      orbits with periods less than the tidal-synchronization period
-      should be rapid rotators, not just a tail of the initial
-      conditions, but on the other hand, the fraction of short-period
-      systems is small. I'm not sure how comparable those fractions
-    are.} However, due to tidal synchronization, these two should yield
-    concordant \vsini{} and photometric modulations.
-\end{itemize}
+\kms. \gvs{This statement sounds like it's begging for a statistical
+test.}
 
 \section{Rotation Comparison}
 
@@ -258,19 +244,21 @@ as the points above the line on the left.\label{fig:astero_radii}}
 \end{figure}
 
 
-Of the remaining APOKASC sample with \citet{McQuillan14} periods, 27 have 
+\gvs{Double-check numbers here} In the APOKASC sample with 
+\citet{McQuillan14} periods, 27 have 
 \vsini{} detections (\(\vsini > 7\) km/s) using DR14 values. The 
 correspondence between the expected and observed velocities for the objects 
 with \vsini{} detections are shown in \cref{fig:astero_radii}. As expected, 
-most of the stars lie below the equality line, corresponding to \(\sin i \le 
+most of the stars lie below the equality line, corresponding to having 
+\(\sin i \le 
 1\).  There are five objects which have unphysical solutions, which are shown
 in \cref{table:bad_astero}.
 
 \input{tables/bad_astero.tex}
 
 Of these five objects, three (KIC 8677016, 8952800, 10518551) have
-\vsini{} values close to the detection threshold. The probability
-distribution function of marginal \vsini{} detections are complex, so
+\vsini{} values close to the detection threshold. Because the errors of 
+marginal \vsini{} detections are complex, 
 it may be possible that these are outliers. KIC 3223000 has a
 \vsini{} which is slightly above the predicted equatorial velocity. It
 is a 1.7-\(\sigma\) difference based on the \vsini{} uncertainty, which
@@ -281,10 +269,10 @@ as large.
 
 The final outlier, KIC 9908400, is so significantly off of the relation
 that it can not be explained by either uncertainties or aliasing. However,
-it may be adequately explained by contamination. With a high
-temperature, it could be a rapidly rotating star located above the Kraft 
-break. If the photometric variation originated in a cooler contaminant within 
-the Kepler PSF, then the mismatch between the period and \vsini{} would
+it may be adequately explained by contamination of the \Kepler{} PSF\@.
+KIC 9908400 has a \Teff{} which places it above the Kraft break. If the 
+photometric variation originated in a cooler star within 
+the Kepler PSF, the mismatch between the period and \vsini{} would
 be explained.
 
 \begin{figure}[htb]
@@ -302,11 +290,12 @@ For 28 objects, both the predicted equatorial velocities and the measured
 this plot.\label{fig:velmatch_teff}}
 \end{figure}
 
-To see if this mismatch is prevalent among the hot stars, we looked to
-see if the velocity mismatch trends with effective temperature.
+To see if this mismatch is prevalent among the hot stars because they
+have much weaker magnetic fields (van Saders, in prep), we checked 
+if the velocity mismatch trends with effective temperature.
 \Cref{fig:velmatch_teff} compares the predicted equatorial velocities to
 \vsini{} for objects with varying effective temperatures. There's no
-apparent trend where hotter stars tend to have more mismatches. However,
+apparent trend where hotter stars tend to be more mismatched. However,
 this does not preclude KIC 9908400 from being a contaminant if this sort
 of contamination is rare.
 
@@ -326,49 +315,23 @@ with being identical (\(p=0.5\))\label{fig:apokasc_vdists}}
 \end{figure}
 
 The overall distribution of \vsini{} is consistent with the inferred
-velocity distribution. This was tested by taking the inferred velocity
-distribution, convolving it with a Gaussian with a width of 10\%, and
-then convolving that distribution with a distribution of
-randomly-oriented \(\sin i\). The results are shown in
+velocity distribution. We tested this by taking the velocity
+distribution inferred from the periods, convolving it with a Gaussian of 
+width 10\%, and then convolving that distribution with a distribution of
+randomly-oriented \(\sin i\) \gvs{I should cutoff the \(\sin i\)
+distribution at \(1/2\) instead of 0, since \(\sin i < 1/2\) won't be
+seen if there are spots.} The results are shown in
 \cref{fig:apokasc_vdists}. As expected, the number of targets in each
 \vsini{} bin tracks the theoretical prediction, including non-detections. To 
 quantify this agreement, a KS-test indicated that the \vsini{}s were 
 consistent with being drawn from the theoretical distribution at the
-\(p=0.5\) confidence level. I will note that the  convolutions were performed 
-on the binned dataset as opposed to the full dataset, which introduced 
+\(p=0.5\) confidence level. We note that the  convolutions were performed 
+on the binned dataset as opposed to the full distribution function, which 
+introduced 
 integration errors on the order of 2\%. However, decreasing the bin sizes 
 didn't affect the conclusion.
 
-While the overall distribution of \vsini{} matches the distribution of
-velocities, the previous test didn't address whether \vsini{} were
-individually consistent with velocities. That would require checking the 
-distribution of \(\sin i\), which hasn't been adequately done yet.
-However, it's on the list.
-
 \subsection{Cool Dwarfs}
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=0.8\textwidth]{McQuillan_APOGEE_hr}
-  \caption{HR diagram using \citet{Huber14} parameters for the sample
-  overlapping \citet{McQuillan14} period detections and APOGEE DR14
-targets with good fits. For temperatures cooler than 5450 K, the
-subgiant branch (blue stars) is clearly separated from the main sequence
-branch (red circles).}
-  \label{fig:cool_subgiants}
-\end{figure}
-
-Since the asteroseismic stars were promising, we decided to look into
-another regime where radii should be relatively well-constrained, which
-is the cool-star limit. We define the cool star regime as the region in
-the HR-diagram of \citet{Huber14} parameters, where the subgiant branch for
-stars older than the field turnoff are well-separated from the
-main-sequence. The separation is prominent for \(T < 5450\) K with a
-dividing line at \(\log g = 4.3\), as illustrated in 
-\cref{fig:cool_subgiants}. As before, double-lined spectroscopic
-binaries and pulsators were removed, in addition to objects with either
-the \texttt{STAR\_WARN} or \texttt{STAR\_BAD} flags. This leaves 234 targets in this range, of 
-which only 6 are rapid rotators (1 day < P < 5 day). 
 
 \begin{figure}[htb]
   \centering
@@ -381,14 +344,13 @@ velocities. \emph{Right:} Asteroseismic radii compared to radii inferred from
 as the points above the line on the left.\label{fig:cool_stars_velocity_radius}}
 \end{figure}
 
-Taking an initial look at the conformance between \vsini{}, period, and
-radius indicates disagreement, as seen in
+In this sample, the \vsini{}, period, and radius indicates heavy 
+disagreement, as seen in
 \cref{fig:cool_stars_velocity_radius}. For a large number of objects
 the \vsini{} is too large given the observed period and radius. The
 disagreement is significantly more severe for the dwarfs than the
-subgiants. Therefore, at least one of the three quantities needed to
-make \cref{fig:cool_stars_velocity_radius}: radius, \vsini{}, or
-rotation period, should be wrong.
+subgiants. Therefore, we explore what could go wrong in radius, \vsini{}, or
+rotation period.
 
 One of the obvious places where things can go wrong is with the stellar
 radii. Subgiants misclassified as dwarfs would have equatorial
@@ -450,8 +412,6 @@ problem of the radii being underestimated.
 
 \section{Discussion}
 
-Whether or not the rapid rotators are actually binaries in disguise will be
-solved by \Gaia, since they'll be anomalously bright for their colors.
 \section{Conclusion}
 
 
