@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 import numpy.core.defchararray as npstr
 import matplotlib.pyplot as plt
-from astropy.table import Table
+from astropy.table import Table, vstack
 from astropy.io import ascii
 
 sys.path.append(os.path.join(os.environ["THESIS"], "scripts"))
@@ -16,7 +16,7 @@ import hrplots as hr
 import astropy_util as au
 import catalog
 import sed
-import APOGEE_spectroscopy as spec
+import data_splitting as split
 
 PAPER_PATH = paths.HOME_DIR / "papers" / "rotation17"
 TABLE_PATH = PAPER_PATH / "tables"
@@ -28,27 +28,57 @@ def build_filepath(toplevel, filename, suffix="png"):
     fullpath = toplevel / ".".join((filename, suffix))
     return str(fullpath)
 
+@au.memoized
+def asteroseismic_data_splitter():
+    '''Create a persistent datasplitter for the asteroseismic sample.'''
+    astero = split.APOKASCSplitter()
+    split.initialize_asteroseismic_sample(astero)
+    return astero
+
+@au.memoized
+def dwarf_data_splitter():
+    '''Create a persistent DataSplitter for the cool dwarf sample.'''
+    apogee = split.APOGEESplitter()
+    split.initialize_apogee_dwarf_rotation_sample(apogee)
+    return apogee
+
 def get_asteroseismic_dwarfs():
     '''Get the final sample of the observing targets.
     
     Note that these include those without McQuillan detections.'''
-    astero = spec.APOKASCSplitter()
-    spec.initialize_asteroseismic_sample(astero)
-    return astero
+    astero = asteroseismic_data_splitter()
+    asteroseismic_dwarfs = astero.subsample(
+        ["Asteroseismic Dwarfs", "~Bad"])
+
+    # Fix the bad one.
+    bad_dwarfs = astero.subsample(["Asteroseismic Dwarfs", "Bad"])
+    # Make exception for 2M19580559+4422509.
+    save_table = au.extract_subtable_from_column(
+        bad_dwarfs, "2MASS_ID", ["2M19580559+4422509"])
+    # Teff corrections
+    save_table["TEFF_COR"] = (
+        save_table["TEFF_FIT"] + aspcor.aspcap_dwarf_teff_correction( 
+            save_table["FE_H"], save_table["LOGG_FIT"],
+            save_table["LOGG_COR"]))
+
+    data = vstack([asteroseismic_dwarfs, save_table])
+    return data
 
 def get_cool_sample():
     '''Get the final sample of cool dwarfs.
     
     Note that these include those without McQuillan detections.'''
-    apogee = spec.APOGEESplitter()
-    spec.initialize_Jen_Sample_Splitter(aposplit)
+    apogeesplitter = dwarf_data_splitter()
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
 
     Asteroseismic targets should be blue while cool dwarfs ought to be red.'''
     asteroseismic = get_asteroseismic_dwarfs()
-    cooldwarfs = catin.read
+    cooldwarfs = get_cool_sample()
+
+
+
 
 if __name__ == "__main__":
 
