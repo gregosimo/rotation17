@@ -70,6 +70,11 @@ def get_cool_sample():
     Note that these include those without McQuillan detections.'''
     apogeesplitter = dwarf_data_splitter()
 
+    # I want the targeting dwarfs to be just those that have APOGEE targeting
+    # flags. I also just want the targets with 5450 K > Teff > 4250 K.
+    apotargs = apogeesplitter.subsample(["Good Teff", "Cold", "~Bad"])
+    return apogeesplitter
+
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
 
