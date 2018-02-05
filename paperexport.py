@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import numpy.core.defchararray as npstr
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from astropy.table import Table, vstack
 from astropy.io import ascii
 
@@ -17,6 +18,7 @@ import astropy_util as au
 import catalog
 import sed
 import data_splitting as split
+import biovis_colors as bc
 
 PAPER_PATH = paths.HOME_DIR / "papers" / "rotation17"
 TABLE_PATH = PAPER_PATH / "tables"
@@ -38,9 +40,8 @@ def asteroseismic_data_splitter():
 @au.memoized
 def dwarf_data_splitter():
     '''Create a persistent DataSplitter for the cool dwarf sample.'''
-    apogee = split.APOGEESplitter()
-    split.initialize_apogee_dwarf_rotation_sample(apogee)
-    return apogee
+    cools = split.jen_cool_splitter()
+    return cools
 
 def get_asteroseismic_dwarfs():
     '''Get the final sample of the observing targets.
@@ -82,8 +83,97 @@ def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     asteroseismic = get_asteroseismic_dwarfs()
     cooldwarfs = get_cool_sample()
 
+def DLSB_HR_Diagram(
+        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf")):
+    '''Compare DLSB locations in HR diagram to non-DLSBs.'''
+    non_dlsbs = cool_dwarfs.subsample(["~Bad", "No DLSB"])
+    dlsbs = cool_dwarfs.subsample(["~Bad", "DLSB"])
+    assert cool_dwarfs.subsample_len(["~Bad", "Unknown DLSB", "Vsini det"]) == 0
+    
+    hr.logg_teff_plot(non_dlsbs["TEFF"], non_dlsbs["LOGG_FIT"], 'k.',
+                      label="Non-DLSB")
+    hr.logg_teff_plot(dlsbs["TEFF"], dlsbs["LOGG_FIT"], 'ro', label="DLSB")
 
+    plt.xlabel("APOGEE Teff")
+    plt.ylabel("APOGEE Log(g)")
+    plt.title("DLSBs on HR Diagram")
 
+    plt.legend(loc="upper left")
+
+def HR_Diagram_vsini_detections(
+        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "vsini_det", "pdf")):
+    '''Plot targets with vsini detections on HR diagram.'''
+    nondets = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini nondet"])
+    marginal = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini marginal"])
+    dets = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini det"])
+
+    hr.logg_teff_plot(
+        nondets["TEFF"], nondets["LOGG_FIT"], color=bc.black, 
+        linestyle="", marker=".", label="Vsini nondetection", style="")
+    hr.logg_teff_plot(
+        marginal["TEFF"], marginal["LOGG_FIT"], color=bc.green, 
+        linestyle="", marker="v", label="Vsini marginal", style="")
+    hr.logg_teff_plot(
+        dets["TEFF"], dets["LOGG_FIT"], color="blue", linestyle="", 
+        marker="o", label="Vsini detection", style="")
+
+    plt.xlabel("APOGEE Teff")
+    plt.ylabel("APOGEE Log(g)")
+    plt.title("Detections on HR Diagram")
+
+    plt.legend(loc="upper right")
+
+def sample_with_McQuillan_detections(
+        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "mcq", "pdf")):
+    '''Plot the cool darfs with McQuillan detections.'''
+    perioddet = cool_dwarfs.subsample(["~Bad", "Mcq"])
+    periodnondet = cool_dwarfs.subsample(["~Bad", "No Mcq"])
+    nomcq = cool_dwarfs.subsample(["~Bad", "Unknown Mcq"])
+
+    hr.logg_teff_plot(
+        periodnondet["TEFF"], periodnondet["LOGG_FIT"], color=bc.black, 
+        linestyle="", marker=".", label="No period", style="")
+    hr.logg_teff_plot(
+        nomcq["TEFF"], nomcq["LOGG_FIT"], color=bc.red, 
+        linestyle="", marker="x", label="Out of McQuillan", style="")
+    hr.logg_teff_plot(
+        perioddet["TEFF"], perioddet["LOGG_FIT"], color="blue", linestyle="", 
+        marker="o", label="McQuillan detection", style="")
+
+    plt.xlabel("APOGEE Teff")
+    plt.ylabel("APOGEE Log(g)")
+    plt.title("McQuillan Detections on HR Diagram")
+
+#    plt.xlim(6500, 3500)
+#    plt.ylim(4.8, 3.5)
+
+    plt.legend(loc="upper right")
+
+def metallicity_on_hr_diagram(
+        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "hr_metallicity", "pdf")):
+    '''Plot the metallicities of targets on the hr diagram.'''
+
+    alltargets = cool_dwarfs.subsample(["~Bad"])
+
+    fig, ax = plt.subplots()
+    cmap = plt.cm.get_cmap("cool")
+    metrange = np.max(np.abs(alltargets["FE_H"]))
+    norm = mpl.colors.Normalize(vmin=-metrange, vmax=metrange)
+
+    cax = ax.scatter(
+        alltargets["TEFF"], alltargets["LOGG_FIT"],
+        c=alltargets["FE_H"], cmap=cmap, marker="o")
+
+    cbar = fig.colorbar(cax)
+    cbar.ax.set_xlabel("[Fe/H]")
+    plt.xlabel("APOGEE Teff")
+    plt.ylabel("APOGEE Log(g)")
+    plt.title("Metallicity of Cool Dwarf sample")
+
+#    plt.xlim(6500, 3500)
+#    plt.ylim(4.8, 3.5)
+    hr.invert_x_axis()
+    hr.invert_y_axis()
 
 if __name__ == "__main__":
 
