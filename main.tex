@@ -60,7 +60,6 @@ These rotation rates are expected to be extremely useful to deriving a field
 gyrochronology, which can lead to a better characterization of the ages of
 \Kepler{} stars, and hence a better understanding of the discovered planets.
 
-
 The \Kepler{} field was designed to point outside of the plane of the galactic
 disk, making the field biased toward old stars. Despite the old age of the
 field, there is still a population of rapid rotators at the level of 1\% of the
@@ -74,6 +73,33 @@ While there have been many attempts to evaluate the determination of rotation
 periods in stars throughout the \Kepler{} field, they have all been through
 comparisons between different periodogram analysis, but not with independent 
 measures of rotation, such as \vsini.
+
+One of the valuable tools in performing this analysis is a uniform derivation
+of the radii of these targets. The initial attempt at characterizing stars and
+providing radii was the original KIC \citep{Brown11}, which fit broad-band
+\textit{griz} and an intermediate-band \textit{D51} photometry to
+\citet{Castelli04} stellar atmospheres and \citet{Girardi00} isochrones.
+High-resolution spectroscopy found that radii from the original KIC were found 
+to be systematically underestimated \citep{Everett13}. Additionally, around 5\%
+of \Kepler{} targets had KIC parameters which were considered unphysical for an 
+old field population \citep{Batalha13}. 
+
+\citet{Huber14}, and the updated methodology in \citep{Mathur17} attempt to
+address the shortcomings in the original stellar parameter classification by
+re-adjusting the KIC parameters to conform to more current DSEP isochrones 
+\citep{Dotter08}, and also used more precise input stellar parameters such as
+asteroseismology and spectroscopy. In addition to refitting the original KIC 
+stellar parameters, \citet{Huber14} derives stellar parameters for the 7\% of 
+observed \Kepler{}  
+targets without KIC stellar parameters due to missing photometric measurements. 
+\citet{Huber14} classified these stars using 
+asteroseismology, 2MASS colors, and \Kepler-INT Sloan photometry
+\citep{Greiss12}. Because
+the APOGEE-2 targeting program \citep{Zasowski17} was based on \citep{Huber14}
+stellar parameters without regard to their presence in the original KIC, and
+serendipitously observed many of these missing targets, providing a check on
+how successful the \citet{Huber14} methodology worked in the absence of full
+photometry, 
 
 In this paper, we look at the rotation distribution of \Kepler{} targets as
 seen from APOGEE \vsini{}s. APOGEE's limited resolution will only make it
@@ -97,7 +123,7 @@ APOKASC asteroseismic dwarf/subgiant sample, and the cool \(\Teff < 5500\) K
 dwarf regime. 
 
 The APOKASC asteroseismic dwarf and subgiant sample
-consists of 415 targets \gvs{Check this number} which presented
+consists of 426 targets \gvs{Check this number} which presented
 solar-type oscillations in \Kepler{} short-cadence data
 \citep{Chaplin11}, and were observed in APOGEE DR13
 \citep{Majewski17}. Using asteroseismic scaling relations, the radii
@@ -149,7 +175,7 @@ ambiguities in the mass. Additionally, stellar evolution occurs slowly enough
 in this mass range that the change in radius over typical ages of these stars 
 is expected to be small.
 
-We restrict ourselves to a known, well-defined sample, by selecting
+We restrict ourselves to a known, well-defined sample by selecting
 objects with the \texttt{APOGEE\_KEPLER\_COOLDWARF} flag. They were
 originally targeted as a magnitude-limited same with having original KIC 
 \citep{Brown11} \(\Teff < 5500\) K and 
@@ -160,6 +186,11 @@ perform the same quality checks as with the
 asteroseismic sample: remove STAR\_BAD targets and check for
 double-lined spectra. The cool dwarfs are shown in red in
 \cref{fig:targeting}.
+
+
+Since APOGEE observed a large sample of targets withou original KIC parameters,
+it is capable of validating the methodology of the \citet{Huber14} parameters.
+
 
 \section{\vsini{} Comparison}
 
