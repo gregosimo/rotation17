@@ -122,9 +122,10 @@ def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
 def DLSB_HR_Diagram(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf")):
     '''Compare DLSB locations in HR diagram to non-DLSBs.'''
-    non_dlsbs = cool_dwarfs.subsample(["~Bad", "No DLSB"])
+    non_dlsbs = cool_dwarfs.subsample(["~Bad", "~DLSB"])
     dlsbs = cool_dwarfs.subsample(["~Bad", "DLSB"])
     assert cool_dwarfs.subsample_len(["~Bad", "Unknown DLSB", "Vsini det"]) == 0
+
     
     hr.logg_teff_plot(non_dlsbs["TEFF"], non_dlsbs["LOGG_FIT"], 'k.',
                       label="Non-DLSB")
