@@ -120,15 +120,16 @@ def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     plt.savefig(str(dest))
 
 def DLSB_HR_Diagram(
-        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf")):
+        cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf"),
+    teff_col="TEFF", logg_col="LOGG_FIT"):
     '''Compare DLSB locations in HR diagram to non-DLSBs.'''
-    non_dlsbs = cool_dwarfs.subsample(["~Bad", "No DLSB"])
+    fullsample = cool_dwarfs.subsample(["~Bad", "~DLSB"])
     dlsbs = cool_dwarfs.subsample(["~Bad", "DLSB"])
     assert cool_dwarfs.subsample_len(["~Bad", "Unknown DLSB", "Vsini det"]) == 0
     
-    hr.logg_teff_plot(non_dlsbs["TEFF"], non_dlsbs["LOGG_FIT"], 'k.',
-                      label="Non-DLSB")
-    hr.logg_teff_plot(dlsbs["TEFF"], dlsbs["LOGG_FIT"], 'ro', label="DLSB")
+    hr.logg_teff_plot(fullsample[teff_col], fullsample[logg_col], 'k.',
+                      label="Full sample")
+    hr.logg_teff_plot(dlsbs[teff_col], dlsbs[logg_col], 'ro', label="DLSB")
 
     plt.xlabel("APOGEE Teff")
     plt.ylabel("APOGEE Log(g)")
@@ -139,7 +140,7 @@ def DLSB_HR_Diagram(
 def HR_Diagram_vsini_detections(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "vsini_det", "pdf")):
     '''Plot targets with vsini detections on HR diagram.'''
-    nondets = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini nondet"])
+    nondets = cool_dwarfs.subsample(["~Bad", "Vsini nondet"])
     marginal = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini marginal"])
     dets = cool_dwarfs.subsample(["~Bad", "No DLSB", "Vsini det"])
 
@@ -152,10 +153,12 @@ def HR_Diagram_vsini_detections(
     hr.logg_teff_plot(
         dets["TEFF"], dets["LOGG_FIT"], color="blue", linestyle="", 
         marker="o", label="Vsini detection", style="")
+    plt.plot([6500, 3500], [4.2, 4.2], 'k--')
 
     plt.xlabel("APOGEE Teff")
     plt.ylabel("APOGEE Log(g)")
     plt.title("Detections on HR Diagram")
+    plt.xlim(6500, 3500)
 
     plt.legend(loc="upper right")
 
@@ -191,25 +194,43 @@ def metallicity_on_hr_diagram(
 
     alltargets = cool_dwarfs.subsample(["~Bad"])
 
-    fig, ax = plt.subplots()
-    cmap = plt.cm.get_cmap("cool")
-    metrange = np.max(np.abs(alltargets["FE_H"]))
-    norm = mpl.colors.Normalize(vmin=-metrange, vmax=metrange)
+    # I want to do this with slices. 
+    nrows, ncols = 2, 4
+    bins = np.linspace(-1.1, 0.5, nrows*ncols+1)
+    binindices = np.digitize(alltargets["FE_H"], bins)
+    fig, axarr = plt.subplots(nrows, ncols, sharex="all", sharey="all")
+    for r in np.arange(2):
+        for c in np.arange(4):
+            arrindex = r * ncols + c
+            if arrindex != 8:
+                curax = axarr[r, c]
+                subtable = alltargets[binindices == arrindex+1]
+                hr.logg_teff_plot(
+                    subtable["TEFF"], subtable["LOGG_FIT"], marker="o",
+                    axis=curax)
+                curax.set_title("{0:.1f} <= [Fe/H] <= {1:.1f}".format(
+                    bins[arrindex], bins[arrindex+1]))
+                curax.set_xlim(6500, 3500)
+                curax.set_ylim(4.8, 3.6)
 
-    cax = ax.scatter(
-        alltargets["TEFF"], alltargets["LOGG_FIT"],
-        c=alltargets["FE_H"], cmap=cmap, marker="o")
+    fig.suptitle("Metallicity Trend")
 
-    cbar = fig.colorbar(cax)
-    cbar.ax.set_xlabel("[Fe/H]")
-    plt.xlabel("APOGEE Teff")
-    plt.ylabel("APOGEE Log(g)")
-    plt.title("Metallicity of Cool Dwarf sample")
+def display_asteroseismic_census():
+    '''Display relevant numbers in the asteroseismic sample.'''
+    astero = asteroseismic_data_splitter()
+    astero_dwarfs = astero.split_subsample(["Asteroseismic Dwarfs"])
 
-#    plt.xlim(6500, 3500)
-#    plt.ylim(4.8, 3.5)
-    hr.invert_x_axis()
-    hr.invert_y_axis()
+    print("Initial number of asteroseismic targets: {0:d}".format(
+        len(astero_dwarfs.data)))
+    print("Bad targets: {0:d}/{1:d}".format(
+        astero_dwarfs.subsample_len(["Bad"]), astero_dwarfs.subsample_len([])))
+    print("Vsini detections that are DLSBs: {0:d}/{1:d}".format(
+        astero_dwarfs.subsample_len(["~Bad", "DLSB"]),
+        astero_dwarfs.subsample_len(["~Bad"])))
+    print("Non-DLSB stars with McQuillan periods: {0:d}/{1:d}".format(
+        astero_dwarfs.subsample_len(["~Bad", "~DLSB", "Mcq"]),
+        astero_dwarfs.subsample_len(["~Bad", "~DLSB"])))
+
 
 if __name__ == "__main__":
 
