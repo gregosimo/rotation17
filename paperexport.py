@@ -123,9 +123,10 @@ def DLSB_HR_Diagram(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf"),
     teff_col="TEFF", logg_col="LOGG_FIT"):
     '''Compare DLSB locations in HR diagram to non-DLSBs.'''
-    fullsample = cool_dwarfs.subsample(["~Bad", "~DLSB"])
+    non_dlsbs = cool_dwarfs.subsample(["~Bad", "~DLSB"])
     dlsbs = cool_dwarfs.subsample(["~Bad", "DLSB"])
     assert cool_dwarfs.subsample_len(["~Bad", "Unknown DLSB", "Vsini det"]) == 0
+
     
     hr.logg_teff_plot(fullsample[teff_col], fullsample[logg_col], 'k.',
                       label="Full sample")
