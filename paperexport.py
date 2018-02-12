@@ -33,89 +33,122 @@ def build_filepath(toplevel, filename, suffix="png"):
 
 @au.memoized
 def asteroseismic_data_splitter():
-    '''Create a persistent datasplitter for the asteroseismic sample.'''
+    '''A persistent datasplitter for the asteroseismic sample.'''
     astero = split.APOKASCSplitter()
     split.initialize_asteroseismic_sample(astero)
     return astero
 
 @au.memoized
 def dwarf_data_splitter():
-    '''Create a persistent DataSplitter for the cool dwarf sample.'''
-    cools = split.jen_cool_splitter()
-    return cools
+    '''A persistent DataSplitter for the cool dwarf sample.'''
+    apogee = split.APOGEESplitter()
+    split.initialize_general_APOGEE(apogee)
+    return apogee
 
-def get_asteroseismic_dwarfs():
-    '''Get the final sample of the observing targets.
-    
-    Note that these include those without McQuillan detections.'''
-    astero = asteroseismic_data_splitter()
-    asteroseismic_dwarfs = astero.subsample(
-        ["Asteroseismic Dwarfs", "~Bad"])
+@au.memoized
+def hot_kic_data_splitter():
+    '''A persistent DataSplitter for hot stars with original KIC values.'''
+    dwarfs = dwarf_data_splitter()
+    hot_kic = split.general_to_hot_kic_sample(dwarfs)
+    return hot_kic
 
-    # Fix the bad one.
-    bad_dwarfs = astero.subsample(["Asteroseismic Dwarfs", "Bad"])
-    # Make exception for 2M19580559+4422509.
-    save_table = au.extract_subtable_from_column(
-        bad_dwarfs, "2MASS_ID", ["2M19580559+4422509"])
-    # Teff corrections
-    save_table["TEFF_COR"] = (
-        save_table["TEFF_FIT"] + aspcor.aspcap_dwarf_teff_correction( 
-            save_table["FE_H"], save_table["LOGG_FIT"],
-            save_table["LOGG_COR"]))
+@au.memoized
+def hot_nonkic_data_splitter():
+    '''A persistent Datasplitter for hot stars without original KIC values.'''
+    dwarfs = dwarf_data_splitter()
+    hot_nonkic = split.general_to_hot_nonkic_sample(dwarfs)
+    return hot_nonkic
 
-    data = vstack([asteroseismic_dwarfs, save_table])
-    return data
-
-def get_cool_sample():
-    '''Get the final sample of cool dwarfs.
-    
-    Note that these include those without McQuillan detections.'''
-    splitter = dwarf_data_splitter()
-
-    # These are all the targets which were observed with APOGEE1
-    apogee1_samp = get_cool_apogee1_sample(splitter)
-    # Now get the targets which were observed in APOGEE2 that meet Jen's
-    # selection criteria: KIC log(g) > 4.0, Pinsonneault SDSS Teff < 5500 K,
-    # and 7 < H < 11.
-    apogee2_samp = splitter.subsample([
-        "APOGEE2_APOKASC_DWARF", "Jen Dwarf", "H Jen", "Jen Cool"])
-    # There were a bunch of targets which did not have SDSS Teffs because they
-    # were outside of the calibration region. Include the very cool ones.
-    nosdss_samp = splitter.subsample([
-        "APOGEE2_APOKASC_DWARF", "Jen Dwarf", "H Jen", "No SDSS Teff", 
-        "KIC Jen Cool"])
-
-    fullcool = vstack([apogee1_samp, apogee2_samp, nosdss_samp])
-
-    return fullcool
-
-def get_cool_apogee1_sample(splitter):
-    '''Get the subset of Jen's sample that were observed in APOGEE1.
-
-    This essentially selects based on the targeting flags in apogeesplitter to
-    check for APOGEE_KEPLER_COOLDWARF.'''
-    apogee1_samp = splitter.subsample(["APOGEE_KEPLER_COOLDWARF"])
-    return apogee1_samp
-
-def get_cool_apogee2_sample(apogeesplitter):
-    '''Get the subset of Jen's sample observed in APOGEE2.'''
-    pass
+@au.memoized
+def cool_data_splitter():
+    '''A persistent Datasplitter for Jen's cool sample.'''
+    dwarfs = dwarf_data_splitter()
+    cool_dwarfs = split.general_to_cool_sample(dwarfs)
+    split.initialize_cool_KICs(cool_dwarfs)
+    return cool_dwarfs
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
 
     Asteroseismic targets should be blue while cool dwarfs ought to be red.'''
-    asteroseismic = get_asteroseismic_dwarfs()
-    cooldwarfs = get_cool_sample()
+    asteroseismic = asteroseismic_data_splitter()
+    hot_kic = hot_kic_data_splitter()
+    hot_nonkic = hot_nonkic_data_splitter()
+    cooldwarfs = cool_data_splitter()
 
+    ast_mcq = asteroseismic.subsample(["Asteroseismic Dwarfs", "~Bad", "Mcq"])
+    hot_kic_mcq = hot_kic.subsample(["~Bad", "Mcq"])
+    hot_nonkic_mcq = hot_nonkic.subsample(["~Bad", "Mcq"])
+    cool_dwarf_mcq = cooldwarfs.subsample(["~Bad", "Mcq"])
+
+    ast_nomcq = asteroseismic.subsample([
+        "Asteroseismic Dwarfs", "~Bad", "Unknown Mcq"])
+    hot_kic_nomcq = hot_kic.subsample(["~Bad", "Unknown Mcq"])
+    hot_nonkic_nomcq = hot_nonkic.subsample(["~Bad", "Unknown Mcq"])
+    cool_dwarf_nomcq = cooldwarfs.subsample(["~Bad", "Unknown Mcq"])
+
+    ast_data = asteroseismic.subsample(["Asteroseismic Dwarfs", "~Bad"])
+    hot_kic_data = hot_kic.subsample(["~Bad"])
+    hot_nonkic_data = hot_nonkic.subsample(["~Bad"])
+    cool_dwarf_data = cooldwarfs.subsample(["~Bad"])
+
+    fig, axarr = plt.subplots(2, 2, sharex="all", sharey="all", figsize=(7, 5))
+    bigmark = 4
+    smallmark=2
     hr.logg_teff_plot(
-        asteroseismic["TEFF_COR"], asteroseismic["LOGG_FIT"], color=bc.blue,
-        marker="*", markersize=9, linestyle="")
+        ast_mcq["TEFF_COR"], ast_mcq["LOGG_FIT"], color=bc.yellow,
+        marker="o", markersize=bigmark, linestyle="", style="",
+        label="McQuillan", axis=axarr[0][0])
     hr.logg_teff_plot(
-        cooldwarfs["TEFF"], cooldwarfs["FPARAM"][:,1], color=bc.red,
-        marker="o", linestyle="")
-    plt.xlim(7000, 3500)
-    plt.ylim(5.0, 0.0)
+        ast_nomcq["TEFF_COR"], ast_nomcq["LOGG_FIT"], color=bc.orange,
+        marker="o", markersize=bigmark, linestyle="", style="",
+        label="Unanalyzed", axis=axarr[0][0])
+    hr.logg_teff_plot(
+        ast_data["TEFF_COR"], ast_data["LOGG_FIT"], color=bc.black,
+        marker=".", markersize=smallmark, linestyle="", style="",
+        label="Sample", axis=axarr[0][0])
+    axarr[0][0].legend()
+    axarr[0][0].set_ylabel("APOGEE log(g)")
+    axarr[0][0].set_title("Asteroseismic")
+    hr.logg_teff_plot(
+        hot_kic_mcq["TEFF"], hot_kic_mcq["FPARAM"][:,1], color=bc.yellow,
+        marker="o", markersize=bigmark, linestyle="", style="", axis=axarr[0][1])
+    hr.logg_teff_plot(
+        hot_kic_nomcq["TEFF"], hot_kic_nomcq["FPARAM"][:,1], color=bc.orange,
+        marker="o", markersize=bigmark, linestyle="", style="", axis=axarr[0][1])
+    hr.logg_teff_plot(
+        hot_kic_data["TEFF"], hot_kic_data["FPARAM"][:,1], color=bc.black,
+        marker=".", markersize=smallmark, linestyle="", style="", axis=axarr[0][1])
+    axarr[0][1].set_title("Hot KIC")
+    hr.logg_teff_plot(
+        hot_nonkic_mcq["TEFF"], hot_nonkic_mcq["FPARAM"][:,1], color=bc.yellow,
+        marker="o", markersize=bigmark, linestyle="", style="", axis=axarr[1][0])
+    hr.logg_teff_plot(
+        hot_nonkic_nomcq["TEFF"], hot_nonkic_nomcq["FPARAM"][:,1], color=bc.orange,
+        marker="o", markersize=bigmark, linestyle="", style="", axis=axarr[1][0])
+    hr.logg_teff_plot(
+        hot_nonkic_data["TEFF"], hot_nonkic_data["FPARAM"][:,1], color=bc.black,
+        marker=".", markersize=smallmark, linestyle="", style="", axis=axarr[1][0])
+    axarr[1][0].set_xlabel("APOGEE Teff")
+    axarr[1][0].set_ylabel("APOGEE log(g)")
+    axarr[1][0].set_title("Hot Non-KIC")
+    hr.logg_teff_plot(
+        cool_dwarf_mcq["TEFF"], cool_dwarf_mcq["FPARAM"][:,1],
+        color=bc.yellow, marker="o", markersize=bigmark, linestyle="", style="", 
+        axis=axarr[1][1])
+    hr.logg_teff_plot(
+        cool_dwarf_nomcq["TEFF"], cool_dwarf_nomcq["FPARAM"][:,1],
+        color=bc.orange, marker="o", markersize=bigmark, linestyle="", style="", 
+        axis=axarr[1][1])
+    hr.logg_teff_plot(
+        cool_dwarf_data["TEFF"], cool_dwarf_data["FPARAM"][:,1],
+        color=bc.black, marker=".", markersize=smallmark, linestyle="", style="", 
+        axis=axarr[1][1])
+    axarr[1][1].set_xlabel("APOGEE Teff")
+    axarr[1][1].set_ylabel("")
+    axarr[1][1].set_xlim(7000, 3500)
+    axarr[1][1].set_ylim(5.0, 0.0)
+    axarr[1][1].set_title("Cool Dwarf")
 
     plt.savefig(str(dest))
 
@@ -216,6 +249,23 @@ def metallicity_on_hr_diagram(
 
     fig.suptitle("Metallicity Trend")
 
+def plot_hot_kic_vs_nonkic():
+    '''Plot the location of targets with and without original KIC targets.'''
+    hot_kic = hot_kic_data_splitter()
+    hot_kic_data = hot_kic.subsample(["~Bad"])
+    hot_nonkic = hot_nonkic_data_splitter()
+    hot_nonkic_data = hot_nonkic.subsample(["~Bad"])
+
+    hr.logg_teff_plot(
+        hot_kic_data["TEFF"], hot_kic_data["LOGG_FIT"], "k.", label="KIC")
+    hr.logg_teff_plot(
+        hot_nonkic_data["TEFF"], hot_nonkic_data["LOGG_FIT"], "ro", label="No KIC")
+
+    plt.xlabel("APOGEE Teff")
+    plt.ylabel("APOGEE log(g)")
+    plt.legend()
+
+
 def display_asteroseismic_census():
     '''Display relevant numbers in the asteroseismic sample.'''
     astero = asteroseismic_data_splitter()
@@ -232,6 +282,22 @@ def display_asteroseismic_census():
         astero_dwarfs.subsample_len(["~Bad", "~DLSB", "Mcq"]),
         astero_dwarfs.subsample_len(["~Bad", "~DLSB"])))
 
+def display_hot_star_census():
+    '''Display relevant numbers in the hot star sample.'''
+    hot_nonkic = hot_nonkic_data_splitter()
+    hot_kic = hot_kic_data_splitter()
+
+    totalsample = hot_nonkic.subsample_len([]) + hot_kic.subsample_len([])
+    print("Total number of targeted objects: {0:d}".format(totalsample))
+    print("Targets with KIC parameters: {0:d}/{1:d}".format(
+        hot_kic.subsample_len([]), totalsample))
+    print("Targets without KIC parameters: {0:d}/{1:d}".format(
+        hot_nonkic.subsample_len([]), totalsample))
+
+    print("KIC parameter targets with bad fits: {0:d}/{1:d}".format(
+        hot_kic.subsample_len(["Bad"]), hot_kic.subsample_len([])))
+    print("Non-KIC parameter targets with bad fits: {0:d}/{1:d}".format(
+        hot_nonkic.subsample_len(["Bad"]), hot_nonkic.subsample_len([])))
 
 if __name__ == "__main__":
 
