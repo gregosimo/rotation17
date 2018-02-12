@@ -151,18 +151,33 @@ demarcate the STAR\_WARN groups somehow}. }
 We selected 426 asteroseismic dwarfs from the APOKASC catalog v4.2.4. To 
 obtain a high-quality sample for further study, we removed three objects with 
 the STAR\_BAD flag because they tended to be cases with bad subtraction or
-normalization in the ASPCAP pipeline \gc{One of them had a spectrum that
-looked okay. But none of the corrections were applied}. We also set aside 51 
-objects with 
-the STAR\_WARN and 46 objects with the VSINI\_WARN flags for further 
-inspection to ensure that their ASPCAP stellar parameters are reliable. 93 of
-these stars have periods in \citet{McQuillan14}. The combined 77 APOGEE spectra without
-quality flags were
-also inspected by eye for double-lined spectra, which excluded two
-(2M19252467+4207248/KIC6689943 \& 2M19034695+4055143/KIC5689219) objects. 
-None of the final sample of 75 objects exhibit stable variability in
-their light curves indicative of pulsations. The remaining asteroseismic 
-dwarfs are shown in blue in \cref{fig:targeting}
+normalization in the ASPCAP pipeline. We include 51 objects with 
+the STAR\_WARN and 46 objects with the VSINI\_WARN flags after further 
+inspection because we observed that their ASPCAP stellar parameters are
+generally reliable. All targets with \(\vsini \ge 10\) \kms were visually
+inspected for double-lined spectra. Four were excluded due to the obvious
+presence of double-lines, and are included in \cref{tab:dlsb}. 91 of
+the remaining stars have period detections in \citet{McQuillan14}, 240 were
+period nondetections, and 88 did not fall under the selection criteria in 
+\citet{McQuillan14}. The full asteroseismic dwarf sample with subsets of those
+having McQuillan period detections, non-detections, and being unanalyzed are 
+shown in the upper left panel of \cref{fig:targeting}
+
+Objects targeted under the APOGEE-2 APOKASC dwarf program were selected to have
+\(5000 \textrm{ K} \le \Teff \le 6500 \textrm{ K}\) and \(\logg > 3.5\) as
+determined by \citet{Huber14} \citep{Zasowski13}. Since the targeting criteria
+were based on the \citet{Huber14} analysis, both targets with original KIC
+values as well as targets with stellar parameters determined exclusively by 2MASS 
+colors. In total, there are 2640 targets with the
+\texttt{APOGEE2\_APOKASC\_DWARF} flag enabled. 1980 had stellar parameters in
+the original KIC while 660 were not, a substantial 25\% increase in the number
+of stars with stellar parameters. The subsets with and without KIC parameters
+are shown in the top right and bottom left panels of \cref{fig:targeting},
+respectively. Of the targets with KIC parameters, 64 had
+the \texttt{STAR\_BAD} flag set, while 28 of those targets without KIC
+parameters had the \texttt{STAR\_BAD} flag set; Since these objects only
+account for 3\% and 4\% of the samples with and without KIC targets,
+respectively, they are left out of the comparative analysis.
 
 We define the cool star regime as the region in
 the HR-diagram of \citet{Huber14} parameters, where the subgiant branch for
