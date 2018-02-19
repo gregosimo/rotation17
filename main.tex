@@ -426,6 +426,8 @@ disagreement is significantly more severe for the dwarfs than the
 subgiants. Therefore, we explore what could go wrong in radius, \vsini{}, or
 rotation period.
 
+\subsubsection{Radii determination}
+
 One of the obvious places where things can go wrong is with the stellar
 radii. Subgiants misclassified as dwarfs would have equatorial
 velocities that are severely underestimated by the \citet{Huber14}
@@ -463,11 +465,32 @@ misclassified as dwarfs by \citet{Huber14}; rather APOGEE indicates that
 dwarfs are being misclassified as subgiants. This exacerbates the
 problem of the radii being underestimated.
 
+For objects confined to the main sequence, radius uncertainties can come from
+loosely constrained ages, uncertainties in measured effective temperature, and
+uncertainties in the metallicity. We model the radius uncertainty over the main
+sequence by taking DSEP isochrones at solar metallicity between 1 and 14 Gyr,
+and calculating the radius change over that time. That evolution in radius is
+shown in \cref{fig:dsep_radius}. 
+
+Uncertainties due to metallicity are expected to be low, as APOGEE spectra are
+able to constrain metallicity relatively to within 0.05 dex \citep{Holtzman15}.
+According to the DSEP isochrones, this metallicity uncertainty translates to a
+radius uncertainty of \gc{Fill this in}.
+
+There is also an uncertainty due to the assignment of effective temperatures. 
+APOGEE claims an accuracy of effective temperatures on the order of 100 K. 
 
 % Are Asteroseismic sample in DR13?
 % Compare to hot star sample NOT in DR13.
 
 \section{Results}
+
+\subsection{Huber colors}
+
+Based on \cref{fig:targeting}, we don't find that there is a significant bias
+in the type of objects that the original KIC failed to determine stellar
+parameters for, and those that it successfully determined stellar parameters
+for. \gc{Based on a method of resampling from the distribution}
 
 % From the sample that overlaps with APOGEE, we find that the sample of
 % rapidly-rotating objects with high \vsini{} follows a distribution
