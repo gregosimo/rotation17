@@ -208,6 +208,7 @@ it is capable of validating the methodology of the \citet{Huber14} parameters.
 
 
 \section{\vsini{} Comparison}
+\label{sec:vsini}
 
 The analysis performed in this manuscript relies heavily on
 measurements of rotation period, stellar radius, and \vsini. Because we
@@ -303,6 +304,38 @@ good down to the uncertainty limit quoted in \citep{Stauffer87} of 10
 test.}
 
 \section{Rotation Comparison}
+
+\subsection{Rapid Rotator Criteria}
+
+Since much of our analysis focuses around classifying targets into rapid and
+slow rotators, we require a definition of rapid rotator which is meaningful
+from both spectroscopic and photometric points of view. 
+
+Due to the temperature-dependent nature of the stellar radius, any flat cut in
+period or \vsini{} space will necessarily be temperature dependent in the
+transformed space. We characterized this dependence by fitting a second-order
+polynomial to \citet{Huber14} radii for \citet{Huber14} dwarfs with \(4250
+\textrm{ K } \le \Teff \le 5450\). Determination of a star as a \citet{Huber14}
+dwarf is done by a flat cut at \(\logg > 4.2\). The hottest part of our sample
+was excluded from the fit due to the strong dependence of the radius on age 
+evolution; the coolest part of the sample was excluded due to poor model fits
+in APOGEE spectra. The observed spread in radii is driven by inferred metallicity
+differences in the models. \gc{Add figure on this. And maybe it would be worth
+doing the lower envelope instead of the median.}
+
+In addition to fitting to the \citet{Huber14} radii, we also determine a
+\Teff-radius relation on the dwarf sequence using DSEP isochrones directly.
+This approach also allows us to quantify the uncertainty imparted by the
+age-dependence on radius.
+
+As discussed in \cref{sec:vsini}, we established a reliable detection limit for
+APOGEE \vsini{}s to be 10 \kms. This cutoff translates to a temperature (and
+metallicity)-dependent cutoff in period space. Likewise, a flat period
+dependence ends up becoming a temperature-dependent cutoff in period space.
+\gc{Add double-panelled figure that demonstrates this.} In order to have full
+completeness, we select a flat period cutoff of 3 days so that all
+\vsini{} measurements will be above the detection limit. We report rapid
+rotator fractions using both flat \vsini{} and flat period cut criteria.
 
 \subsection{Asteroseismic Dwarfs}
 
