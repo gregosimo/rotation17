@@ -461,11 +461,21 @@ looking for tidally-synchronized binaries in the Kepler field."""
     args = parser.parse_args()
 
     figlist = {
-        "targeting": targeting_figure
+        "Bruntt": Bruntt_vsini_comparison,
+        "SH": Pleiades_vsini_comparison,
+        "asterosamp": asteroseismic_sample_loggs,
+        "coolsamp": cool_dwarf_hr,
+        "asterorot": asteroseismic_rotation_analysis,
+        "coolrot": cool_dwarf_rotation_analysis
     }
 
     genfigs = args.figs
     if not genfigs:
         print(figlist.keys())
     for figname in genfigs:
-        figlist[figname]()
+        if figname == "all":
+            for fig in figlist.values():
+                fig()
+            break
+        else:
+            figlist[figname]()

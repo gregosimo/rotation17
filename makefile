@@ -1,5 +1,31 @@
 figdir = fig
-latexfigures := $(wildcard $(figdir)/*)
+latexfigures = Bruntt_comp.pdf   \
+	       Pleiades_comp.pdf \
+	       astero.pdf        \
+	       cool_sample.pdf   \
+	       astero_rot.pdf    \
+	       cool_rot.pdf
+
+Bruntt_comp.pdf: paperexport.py
+	python paperexport.py Bruntt
+
+Pleiades_comp.pdf: paperexport.py
+	python paperexport.py SH
+
+astero.pdf: paperexport.py
+	python paperexport.py asterosamp
+
+cool_samp.pdf: paperexport.py
+	python paperexport.py coolsamp
+
+astero_rot.pdf: paperexport.py
+	python paperexport.py asterorot
+
+cool_rot.pdf: paperexport.py
+	python paperexport.py coolrot
+
+figures: paperexport.py
+	python paperexport.py all
 
 tabledir = tables
 tablelist := $(wildcard $(tabledir)/*)
