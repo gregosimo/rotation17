@@ -79,27 +79,27 @@ def Bruntt_vsini_comparison():
 
     astero_dwarfs = catin.bruntt_dr14_overlap()
     bad_indices = astero_dwarfs["VSINI"] < 0
-    vsini_diff = ((astero_dwarfs["vsini"][~bad_indices] -
-                   astero_dwarfs["VSINI"][~bad_indices]) /
-                  astero_dwarfs["vsini"][~bad_indices])
-    vsini_baddiff = np.ones(np.count_nonzero(bad_indices))
-    plt.plot(astero_dwarfs["vsini"][~bad_indices], vsini_diff, 'ko')
-    plt.plot(astero_dwarfs["vsini"][bad_indices], vsini_baddiff, 'rv')
-    plt.plot([0, 35], [0, 0], 'k--')
-    plt.ylim([-0.2, 0.5])
-#   plt.plot(astero_dwarfs["vsini"][~bad_indices],
-#            astero_dwarfs["VSINI"][~bad_indices], 'ko')
-#   plt.plot(astero_dwarfs["vsini"][bad_indices],
-#            np.zeros(np.count_nonzero(bad_indices)), 'rx')
-#   plt.plot([0, 35], [0, 35], 'k--')
-    outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
-    assert len(outlier) == 1
-    print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
-        outlier["kepid"][0], outlier["vsini"][0], outlier["VSINI"][0]))
+#   vsini_diff = ((astero_dwarfs["vsini"][~bad_indices] -
+#                  astero_dwarfs["VSINI"][~bad_indices]) /
+#                 astero_dwarfs["vsini"][~bad_indices])
+#   vsini_baddiff = np.ones(np.count_nonzero(bad_indices))
+#   plt.plot(astero_dwarfs["vsini"][~bad_indices], vsini_diff, 'ko')
+#   plt.plot(astero_dwarfs["vsini"][bad_indices], vsini_baddiff, 'rv')
+#   plt.plot([0, 35], [0, 0], 'k--')
+#   plt.ylim([-0.2, 0.5])
+    plt.loglog(astero_dwarfs["VSINI"][~bad_indices],
+             astero_dwarfs["vsini"][~bad_indices], 'ko')
+    plt.loglog(astero_dwarfs["vsini"][bad_indices],
+             np.zeros(np.count_nonzero(bad_indices)), 'rx')
+    plt.loglog([1, 35], [1, 35], 'k--')
+#   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
+#   assert len(outlier) == 1
+#   print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
+#       outlier["kepid"][0], outlier["vsini"][0], outlier["VSINI"][0]))
     print("Bad objects:")
     print(astero_dwarfs[["KIC", "vsini"]][bad_indices])
-    plt.xlabel("Bruntt vsini (km/s)")
-    plt.ylabel("(Bruntt vsini - ASPCAP vsini) / Bruntt vsini")
+    plt.xlabel("ASPCAP vsini (km/s)")
+    plt.ylabel("Bruntt vsini (km/s)")
 
 @write_plot("Pleiades_comp")
 def Pleiades_vsini_comparison():
@@ -112,24 +112,28 @@ def Pleiades_vsini_comparison():
     nondet_targets = good_targets[nondetections]
     detected_errors = (detected_targets["vsini"] / 2 / (
         1 + detected_targets["R"])).filled(0)
-    det_frac = ((detected_targets["vsini"] - detected_targets["VSINI"]) /
-                detected_targets["vsini"])
-    frac_errors = detected_errors * (
-        detected_targets["VSINI"] / detected_targets["vsini"]**2)
-    nondet_frac = ((nondet_targets["vsini"] - nondet_targets["VSINI"]) /
-                   nondet_targets["vsini"])
+#   det_frac = ((detected_targets["vsini"] - detected_targets["VSINI"]) /
+#               detected_targets["vsini"])
+#   frac_errors = detected_errors * (
+#       detected_targets["VSINI"] / detected_targets["vsini"]**2)
+#   nondet_frac = ((nondet_targets["vsini"] - nondet_targets["VSINI"]) /
+#                  nondet_targets["vsini"])
                    
-#   plt.errorbar(detected_targets["vsini"], detected_targets["VSINI"], 
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.errorbar(detected_targets["VSINI"], detected_targets["vsini"],
+                 yerr=detected_errors, fmt='ko')
+    plt.plot(nondet_targets["VSINI"], nondet_targets["vsini"], 'rv')
+    plt.plot([1, 100], [1, 100], 'k-')
+#   plt.errorbar(detected_targets["vsini"], det_frac, yerr=frac_errors, 
 #                xerr=detected_errors, fmt='ko')
-#   plt.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'r<')
-#   plt.plot([0, 80], [0, 80], 'k-')
-    plt.errorbar(detected_targets["vsini"], det_frac, yerr=frac_errors, 
-                 xerr=detected_errors, fmt='ko')
 #   plt.plot(nondet_targets["vsini"], nondet_frac, 'r<')
-    plt.plot([15, 15], [-0.3, 0.5], 'r--')
-    plt.plot([0, 75], [0, 0], 'k--')
-    plt.ylabel("(SH vsini - APOGEE vsini) / (SH vsini)")
-    plt.xlabel("SH vsini")
+#   plt.plot([15, 15], [-0.3, 0.5], 'r--')
+#   plt.plot([0, 75], [0, 0], 'k--')
+    plt.ylabel("Stauffer and Hartmann (1987) vsini (km/s)")
+    plt.xlabel("APOGEE vsini")
+    plt.xlim(1, 100)
+    plt.ylim(9, 100)
 
 @write_plot("astero")
 def asteroseismic_sample_loggs():
