@@ -28,7 +28,12 @@
 \newcommand{\McQuillan}{\citep{McQuillan14}}
 \newcommand{\Teff}{\ensuremath{T_{eff}}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
-\newcommand{\kms}{\textrm{km~s}\ensuremath{^{-1}}}
+\newcommand{\kms}{\textrm{ km~s}\ensuremath{^{-1}}}
+
+% Targeting flags
+\newcommand{\STARBAD}{\texttt{STAR\_BAD}}
+\newcommand{\STARWARN}{\texttt{STAR\_WARN}}
+\newcommand{\VSINIWARN}{\textt{VSINI\_WARN}}
 
 \newcommand{\gvs}{\authorcomment1}
 
@@ -56,49 +61,42 @@ These rotation rates are expected to be extremely useful to deriving a field
 gyrochronology, which can lead to a better characterization of the ages of
 \Kepler{} stars, and hence a better understanding of the discovered planets.
 
-The \Kepler{} field was designed to point outside of the plane of the galactic
-disk, making the field biased toward old stars. Despite the old age of the
+The \Kepler{} field was selected to point outside of the plane of the galactic
+disk, biasing the field toward older stars. Despite the old age of the
 field, there is still a population of rapid rotators at the level of 1\% of the
 population which have rotation rates significantly higher than expected from
-existing gyrochronological relations. One possible explanation for these rapid
-rotators are that they are tidally-synchronized binaries. The synchronized
+existing gyrochronological relations \citep{McQuillan14}. One possible 
+explanation for these rapid
+rotators are that they are tidally-synchronized binaries. Identification
+of a large number of synchronized
 binaries are useful because they provide insight into the formation of binaries
-at scales too small for disk fragmentation to occur. 
+at scales too small for disk fragmentation to occur \citep{Bonnell14}. 
 
 While there have been many attempts to evaluate the determination of rotation
-periods in stars throughout the \Kepler{} field, they have all been through
-comparisons between different periodogram analysis, but not with independent 
+periods in \Kepler{} field stars, all have been 
+comparisons between different periodograms, but not with independent 
 measures of rotation, such as \vsini.
 
-One of the valuable tools in performing this analysis is a uniform derivation
-of the radii of these targets. The initial attempt at characterizing stars and
-providing radii was the original KIC \citep{Brown11}, which fit broad-band
-\textit{griz} and an intermediate-band \textit{D51} photometry to
-\citet{Castelli04} stellar atmospheres and \citet{Girardi00} isochrones.
-High-resolution spectroscopy found that radii from the original KIC were found 
+One valuable tool in performing this analysis is a uniform derivation
+of stellar radii. An initial attempt at characterizing stars and
+estimating stellar radii was the original KIC \citep{Brown11}, which fit 
+broad-band \textit{griz} and an intermediate-band \textit{D51} filter 
+photometry to \citet{Castelli04} stellar atmospheres and \citet{Girardi00} 
+isochrones. High-resolution spectroscopy found that radii from the original 
+KIC were found 
 to be systematically underestimated \citep{Everett13}. Additionally, around 5\%
 of \Kepler{} targets had KIC parameters which were considered unphysical for an 
 old field population \citep{Batalha13}. 
 
-\citet{Huber14}, and the updated methodology in \citep{Mathur17} attempt to
+\citet{Huber14}, and the updated methodology in \citet{Mathur17}, attempt to
 address the shortcomings in the original stellar parameter classification by
 re-adjusting the KIC parameters to conform to more current DSEP isochrones 
-\citep{Dotter08}, and also used more precise input stellar parameters such as
-asteroseismology and spectroscopy. In addition to refitting the original KIC 
-stellar parameters, \citet{Huber14} derives stellar parameters for the 7\% of 
-observed \Kepler{}  
-targets without KIC stellar parameters due to missing photometric measurements. 
-\citet{Huber14} classified these stars using 
-asteroseismology, 2MASS colors, and \Kepler-INT Sloan photometry
-\citep{Greiss12}. Because
-the APOGEE-2 targeting program \citep{Zasowski17} was based on \citep{Huber14}
-stellar parameters without regard to their presence in the original KIC, and
-serendipitously observed many of these missing targets, providing a check on
-how successful the \citet{Huber14} methodology worked in the absence of full
-photometry, 
+\citep{Dotter08}, and also incorporate more precise input stellar parameters 
+such as asteroseismology and spectroscopy. 
 
-In this paper, we look at the rotation distribution of \Kepler{} targets as
-seen from APOGEE \vsini{}s. In Section~\ref{sec:sample} we describe how we
+In this paper, we study the rotation distribution of \Kepler{} targets as
+seen from APOGEE \vsini{}s and compare to published periods. In 
+Section~\ref{sec:sample} we describe how we
 selected our sample of cool dwarfs to ensure a reliable comparison between
 \vsini{} and period. In Section~\ref{sec:analysis}, we describe the reliability
 of the quantities we need in order to compare rotation via \vsini{} and
@@ -142,14 +140,14 @@ denoted with cyan stars.\label{fig:sample}}
 We select our sample to minimize ambiguity in the stellar radius when
 comparing rotation periods to \vsini. In general, large uncertainties in
 determining stellar parameters propogate to the radius estimates, especially in 
-the hot star regime, where a star of a given \Teff{} and \logg{} can have 
-multiple different radii due to overlap with higher-mass subgiants.
+the hot star regime, where higher-mass subgiants and lower-mass dwarfs
+have very similar \Teff{} and \logg{} values.
 
 In order to sidestep detailed modeling of the complex radius uncertainties 
 for all \Kepler{} targets, which will soon be simplified greatly with upcoming
 \Gaia{} parallaxes, we choose instead to study measures of
-stellar rotation in the cool (\(\Teff < 5500\)) K dwarf regime, where the long
-timescale of age evolution leads to a clean separation between dwarf and
+stellar rotation in the cool (\(\Teff < 5500\)) K dwarf regime, where
+slow stellar evolution maintains a clean separation between dwarf and
 subgiants. 
 
 For our base sample, we choose objects observed as part of the APOGEE cool
@@ -157,35 +155,51 @@ dwarf ancillary targeting
 program\footnote{\url{http://www.sdss.org/dr14/algorithms/ancillary/apogee/kepler_dwarfs/}}.
 This program targeted stars observed by \Kepler{} with SDSS-corrected
 \(\Teff < 5500\) K \citep{Pinsonneault12}, original KIC \(\logg > 4.0\)
-\citep{Brown11} and \(7 < H < 11\). While many of these objects had the
+\citep{Brown11} and 2MASS \(7 < H < 11\). While many of these objects
+were observed in the first phase of APOGEE with the
 \textit{APOGEE\_KEPLER\_COOLDWARF} targeting flag enabled, much of the rest of
 the sample was observed in APOGEE-2 under the \textit{APOGEE2\_SEISMO\_DWARF}
 flag. We applied the original selection criteria to the new sample in order get
 the new data. As of APOGEE DR14, the program has been \gvs{Percentage} 
 completed with \gvs{Check number} objects having been observed. 
 
-Stellar classification with the original KIC photometry was very rough. There
-were many cases of contamination in the dwarf sample by subgiants and giants
-\citep{Mann12,Gaidos13}. Because the APOGEE Cool Dwarf sample was selected
-based on photometry from the original KIC, we'd expect contamination in the
-sample from subgiant and giants. APOGEE stellar parameters, on the other hand,
-despite being uncalibrated for dwarfs and suffering from systematic
-uncertainties, are still able to distinguish between subgiants and dwarfs. As
-seen in the bottom right panel of  \cref{fig:sample}, there is a relatively clean 
-separation between the dwarf and subgiant branches. We also use asteroseismic 
-dwarfs, shown in the top left panel of \cref{fig:sample}, to probe the dwarf-subgiant separation 
-with APOGEE stellar parameters. As will be shown in Section~\ref{sec:astero}, we see no true
-subgiant masquarading as spectroscopic dwarfs. \gvs{Check Serenelli to make
+Stellar classification with the original KIC photometry was rough. Later
+analyses found many cases of contamination in the dwarf sample by subgiants 
+and giants \citep{Mann12,Gaidos13}. Because the APOGEE cool dwarf sample was 
+selected based on photometry from the original KIC, we'd expect contamination 
+in the sample from subgiant and giants. APOGEE stellar parameters, on the 
+other hand, despite being uncalibrated for dwarfs and suffering from 
+systematic uncertainties, are still able to distinguish between subgiants and 
+dwarfs. As seen in the top left panel of  \cref{fig:sample}, there is a 
+relatively clean separation between the dwarf and subgiant branches. We also 
+use asteroseismic dwarfs, shown in the top right panel of
+\cref{fig:sample} as a well-characterized test sample, to probe the 
+dwarf-subgiant separation with APOGEE stellar parameters. \gvs{Check Serenelli to make
 sure there aren't selection effects explaining this}
 
-A small fraction of the sample has the \textit{STAR\_BAD} quality flag enabled. 
-A visual inspection over a sample of these targets show that they are largely
+We additionally look at the quality of the APOGEE stellar parameters
+fits. We separate the sample into those with \STARBAD, \STARWARN,
+\VSINIWARN, and no flag enabled to check the quality of the fits. We
+visually inspected the spectra for a representative sample of these
+quality classes. Only a small fraction of the sample has the \textit{STAR\_BAD} quality flag enabled. 
+Visual inspection over these targets show that they are largely
 the result of poor subtraction or normalization of the spectrum in the
-pipeline, or due to poor model fits on the cool (\(\Teff < 4250\) K) end. We
-also visually inspect spectral fits for stars labeled as \textit{STAR\_WARN}.
-We generally find that for cases where this flag is enabled, the model fits look 
+pipeline, or due to poor model fits on the cool (\(\Teff < 4250\) K) end. 
+Stars labeled as \STARWARN{} are a significantly more sizable fraction
+of the sample.
+We generally find through visual inspection of this sample that for cases where this flag is enabled, the model fits look 
 reasonably similar to the target spectra. For this reason, we retain targets
-with the \textit{STAR\_WARN} flag enabled.
+with the \STARWARN{} flag enabled. The same occurs for targets with the
+\VSINIWARN flags.
+
+We also inspected the spectra for every target with \(\vsini > 7 \kms\)
+to search for double-lined spectra. While some targets were obvious
+cases where ASPCAP attempted to fit a single broad line to two narrow
+features, we also inspected individual visit spectra to lok for cases
+where the lines do not have large separations. We note that there are
+also cases where the observed spectrum experiences high RV variability,
+but there is no second component visible. We include these cases in our
+sample.
 
 Because we're interested in a point-by-point analysis of rotation according to
 \vsini{} and rotation periods, we take the subset of \gvs{around 550} objects
@@ -205,7 +219,7 @@ between the two. We perform validation to make sure that the quantities adopted
 for these three measures are reasonable.
 
 
-\subsection{\vsini validation}
+\subsection{\vsini{} validation}
 
 \vsini{} measurements were only added to the ASPCAP pipeline in DR13, hence
 they have not been extensively vetted and verified. We undertake 
@@ -225,7 +239,7 @@ A comparison between the APOGEE and \citet{Bruntt12} targets is shown in
 KIC 11137075, which has a \citet{Bruntt12}
 \(\vsini = 1.0 \kms\) and ASPCAP \(\vsini = 3.3 \kms\) consistent with being a
 nondetection in APOGEE. Also not shown are six
-objects which the ASPCAP pipeline classified as giants, and skipped calculating
+objects which the ASPCAP pipeline classified as giants, and omitted
 \vsini{}. The \citet{Bruntt12} \vsini{} is less than 5
 \kms{} for all of these objects, again making them consistent with nondetections.
 The rest of the sample shows a discontinuity in the scatter at \citet{Bruntt12} 
@@ -256,18 +270,19 @@ The validation of rotational periods in the \Kepler{} field has been a
 well-studied problem. There have been multiple different approaches to
 measuring rotation periods \citep{Reinhold13,Nielsen13,McQuillan14,Garcia14}.
 Based on the analysis with \citet{McQuillan14}, the overlap between their
-and previous samples has period agreement within \(\sim\)95\%, with visual 
-inspection of the light curve indicating that the disagreement was caused by
-aliases detected by previous work. 
+and previous samples has period agreement for \(\sim\)95\% of the
+sample, with visual 
+inspection of the light curve indicating that much of the disagreement was 
+caused by aliases detected by previous work. 
 
 A comprehensive, blinded comparison of periodograms analyzed the performance of
-several different algorithms \citet{Aigrain15} on injected stellar rotation
-signals. The Autocorrelation Function used in \citet{McQuillan14} was found to
-have an extremely high detection fraction while still maintaining around 70
-percent reliability in detecting the injected signal. Given the intensive study
-of different photometric period-detection routines, we refer thd reader to
-\citep{Aigrain15} for a detailed discussion about the performance of
-periodograms.
+several different algorithms on injected stellar rotation \citep{Aigrain15} 
+signals. The Autocorrelation Function method used in \citet{McQuillan14} was 
+found to have an extremely high detection fraction while still maintaining 
+around 70 percent reliability in detecting the injected signal. Given the 
+intensive study of different photometric period-detection routines, we refer 
+the reader to \citet{Aigrain15} for a detailed discussion about the 
+performance of periodograms.
 
 \subsection{Comparison for Asteroseismic Targets}
 \label{sec:astero}
