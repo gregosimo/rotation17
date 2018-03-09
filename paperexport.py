@@ -10,6 +10,7 @@ from astropy.table import Table, vstack
 from astropy.io import ascii
 import statop as stat
 import functools
+import scipy
 
 sys.path.append(os.path.join(os.environ["THESIS"], "scripts"))
 import observations as obs
@@ -101,6 +102,39 @@ def Bruntt_vsini_comparison():
     plt.xlabel("ASPCAP vsini (km/s)")
     plt.ylabel("Bruntt vsini (km/s)")
 
+def plot_lower_limit_Bruntt_test():
+    '''Plot results of two-sample AD test for checking lower limit.'''
+    astero_dwarfs = catin.bruntt_dr14_overlap()
+    bad_indices = astero_dwarfs["VSINI"] < 0
+    notbad_dwarfs = astero_dwarfs[~bad_indices]
+
+    bruntt_vsinis = notbad_dwarfs["vsini"]
+    apogee_vsinis = notbad_dwarfs["VSINI"]
+    vsini_diffs = bruntt_vsinis - apogee_vsinis
+    # Enable to test how often false positives occur.
+    vsini_diffs = np.where(
+        bruntt_vsinis > 10, scipy.stats.norm.rvs(size=len(bruntt_vsinis)), 
+        scipy.stats.uniform.rvs(size=len(bruntt_vsinis), scale=10))
+
+    ad_values = np.zeros(len(notbad_dwarfs))
+    for i in range(len(ad_values)):
+        below_vals = bruntt_vsinis <= bruntt_vsinis[i]
+        above_vals = bruntt_vsinis > bruntt_vsinis[i]
+
+        try:
+            ad_values[i] = scipy.stats.anderson_ksamp([
+                vsini_diffs[below_vals],
+                vsini_diffs[above_vals]]).significance_level
+        except ValueError:
+            ad_values[i] = np.nan
+
+    sort_indices = np.argsort(bruntt_vsinis)
+    plt.plot(bruntt_vsinis[sort_indices], ad_values[sort_indices], '-')
+    plt.xlabel("Bruntt vsini (km/s)")
+    plt.ylabel("Probability that high and low distributions are the same")
+
+
+
 @write_plot("Pleiades_comp")
 def Pleiades_vsini_comparison():
     '''Create figure comparing vsini for Pleiades targets.'''
@@ -134,6 +168,35 @@ def Pleiades_vsini_comparison():
     plt.xlabel("APOGEE vsini")
     plt.xlim(1, 100)
     plt.ylim(9, 100)
+
+def plot_lower_limit_Pleiades_test():
+    '''Plot results of two-sample AD test for checking lower limit.'''
+    targets = catin.Stauffer_APOGEE_overlap()
+    non_dlsbs = targets[npstr.find(targets["Notes"], "5") < 0]
+    good_targets = catalog.apogee_filter_quality(non_dlsbs, quality="bad")
+
+    sh_vsinis = good_targets["vsini"]
+    apogee_vsinis = good_targets["VSINI"]
+    vsini_diffs = np.log10(sh_vsinis) - np.log10(apogee_vsinis)
+    # Enable to test how often false positives occur.
+#    vsini_diffs = scipy.stats.norm.rvs(size=len(sh_vsinis))
+
+    ad_values = np.zeros(len(good_targets))
+    for i in range(len(ad_values)):
+        below_vals = sh_vsinis <= sh_vsinis[i]
+        above_vals = sh_vsinis > sh_vsinis[i]
+
+        try:
+            ad_values[i] = scipy.stats.anderson_ksamp([
+                vsini_diffs[below_vals],
+                vsini_diffs[above_vals]]).significance_level
+        except ValueError:
+            ad_values[i] = np.nan
+
+    sort_indices = np.argsort(sh_vsinis)
+    plt.plot(sh_vsinis[sort_indices], ad_values[sort_indices], 'k-')
+    plt.xlabel("Stauffer-Hartmann vsini (km/s)")
+    plt.ylabel("Probability that high and low distributions are the same")
 
 @write_plot("astero")
 def asteroseismic_sample_loggs():

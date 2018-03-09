@@ -109,33 +109,44 @@ the impact of our findings in Section~\ref{sec:conclusions}.
 \label{sec:sample}
 
 \begin{figure}
-    \gridline{\fig{Bruntt_comp}{0.5\textwidth}{(a)}
-    \fig{Pleiades_comp}{0.5\textwidth}{(b)}}
     \gridline{\fig{astero}{0.5\textwidth}{(c)}
     \fig{cool_sample}{0.5\textwidth}{(d)}}
-    \caption{\emph{Top Left:} Behavior of fractional vsini difference for 
-        \citet{Bruntt12} overlap sample with APOGEE\@. A discontinuity in the
+    \gridline{\fig{Bruntt_comp}{0.5\textwidth}{(a)}
+    \fig{Pleiades_comp}{0.5\textwidth}{(b)}}
+    \caption{
+        \emph{Top Left:} Stellar properties of the cool dwarf sample as
+        measured by APOGEE. Stars classified as dwarf and subgiants are shown in 
+        red and green, respectively. The rapid rotators are denoted with cyan 
+        stars.
+        \emph{Top Right:} Stellar properties of asteroseismic sample. The 
+        underlying APOGEE sample consists of targets with the 
+        \texttt{APOGEE2\_SEISMO\_DWARF} flag used to collect statistics on 
+        asteroseismic non-detections (see \citet{Zasowski17} for specific 
+        targeting criteria). Asteroseismically-derived \logg{}s are marked 
+        as green stars, while spectroscopically-derived \logg{}s are marked as 
+        violet circles.
+        \emph{Bottom Left:} \vsini comparison for the \citet{Bruntt12} overlap 
+        sample with APOGEE\@. A discontinuity in the
         scatter occurs around \(\vsini=7 \kms\). Not shown is KIC11137075,
         which lies below the figure, but has a \citet{Bruntt12}
         \vsini{} of 1.0 \kms, which is significantly below the APOGEE detection 
         limit. Also not shown are targets run through the APOGEE giant grid, 
         which does not calculate \vsini. All of those targets have
-    \citet{Bruntt12} \(\vsini < 5 \kms\). \emph{Top Right:} Behavior of
+    \citet{Bruntt12} \(\vsini < 5 \kms\). 
+    
+    Behavior of
 fractional vsini difference for Pleiades cool dwarfs \citep{Stauffer87} overlap
 sample with APOGEE\@. In this case, a visible discontinuity occurs around
 \(\vsini=15\kms\). Not shown is 2MASS J03475973+2443528 (HII 1653), which is
 likely a SB2. \gvs{Uncertainty past 15 \kms remains at about 10\%?}. Red points
 are upper limits in \citet{Stauffer87}, which provide an upper limit to the
 fractional uncertainty. \gvs{Consider removing these points and just note that
-they're all consistent} \emph{Bottom Left:} Stellar properties of asteroseismic
-sample. The underlying APOGEE sample consists of targets with the
-\texttt{APOGEE2\_SEISMO\_DWARF} flag (see \citet{Zasowski17} for specific
-targeting criteria). Asteroseismically-derived \logg{}s are marked as green
-stars, while spectroscopically-derived \logg{}s are marked as violet circles.
-\emph{Bottom right:} Stellar properties of the cool dwarfs. The dwarf and
-subgiants are shown in red and green, respectively. The rapid rotators are
-denoted with cyan stars.\label{fig:sample}}
+they're all consistent}\label{fig:sample}
+}
 \end{figure}
+
+\emph{Bottom Right:} 
+
 
 We select our sample to minimize ambiguity in the stellar radius when
 comparing rotation periods to \vsini. In general, large uncertainties in
