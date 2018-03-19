@@ -2,9 +2,10 @@ figdir = fig
 latexfigures = Bruntt_comp.pdf   \
 	       Pleiades_comp.pdf \
 	       astero.pdf        \
-	       cool_sample.pdf   \
+	       cool_samp.pdf   \
 	       astero_rot.pdf    \
-	       cool_rot.pdf
+	       cool_rot.pdf 	 \
+	       detection_fraction.pdf
 
 Bruntt_comp.pdf: paperexport.py
 	python paperexport.py Bruntt
@@ -20,6 +21,9 @@ cool_samp.pdf: paperexport.py
 
 astero_rot.pdf: paperexport.py
 	python paperexport.py asterorot
+
+detection_fraction.pdf: paperexport.py
+	python paperexport.py rrfracs
 
 cool_rot.pdf: paperexport.py
 	python paperexport.py coolrot
