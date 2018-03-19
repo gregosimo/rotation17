@@ -13,7 +13,6 @@ import functools
 import scipy
 
 sys.path.append(os.path.join(os.environ["THESIS"], "scripts"))
-import observations as obs
 import path_config as paths
 import read_catalog as catin
 import hrplots as hr
