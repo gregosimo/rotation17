@@ -77,7 +77,7 @@ def hot_dwarf_splitter():
     hot_dwarfs = dwarfs.split_subsample(["APOGEE2_APOKASC_DWARF"])
     return hot_dwarfs
 
-#@write_plot("Bruntt_comp")
+@write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
     '''Create figure comparison vsini for asteroseismic targets.
 
@@ -109,9 +109,9 @@ def Bruntt_vsini_comparison():
         np.log10(detected_table["vsini"])-meanx, np.log10(detected_table["VSINI"]), 1, 
         cov=True)
     polyeval = np.poly1d(fitval)
-    polyx = np.linspace(1, 40, 10) - meanx
-    polyy = 10**polyeval(np.log10(polyx))
-    plt.loglog(polyx+meanx, polyy, 'k--', linewidth=3)
+    polyx = np.log10(np.linspace(1, 40, 10)) - meanx
+    polyy = 10**polyeval(polyx)
+    plt.loglog(10**(polyx+meanx), polyy, 'k--', linewidth=3)
     # Calculate the slope and error in the slope.
     slope = fitval[0]
     intercept = fitval[1]-meanx
@@ -121,17 +121,16 @@ def Bruntt_vsini_comparison():
         slope, slope_error))
     print("The measured intercept is {0:.2f} +/- {1:.2f}".format(
         intercept, intercept_error))
-    return cov
     # Calculate the 1-sigma offset of the intercept.
     residuals = (
         np.log10(detected_table["VSINI"]) - 
-        polyeval(np.log10(detected_table["vsini"])))
+        polyeval(np.log10(detected_table["vsini"])-meanx))
     var = np.sum(residuals**2) / (len(residuals) - 2 - 1)
-#    offset = np.sqrt(var)/2
-    offset = intercept_error/2
+    offset = np.sqrt(var)
+#    offset = intercept_error/2
     print("Uncertainty is {0:.1f}%".format(offset*np.log(10)*100))
-    plt.loglog(polyx, polyy*10**offset, 'k--')
-    plt.loglog(polyx, polyy/10**offset, 'k--')
+    plt.loglog(10**(polyx+meanx), polyy*10**(offset/2), 'k--')
+    plt.loglog(10**(polyx+meanx), polyy/10**(offset/2), 'k--')
 #   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
 #   assert len(outlier) == 1
 #   print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
@@ -656,7 +655,8 @@ looking for tidally-synchronized binaries in the Kepler field."""
         "asterosamp": asteroseismic_sample_loggs,
         "coolsamp": cool_dwarf_hr,
         "asterorot": asteroseismic_rotation_analysis,
-        "coolrot": cool_dwarf_rotation_analysis
+        "coolrot": cool_dwarf_rotation_analysis,
+        "rrfracs": plot_rr_fractions
     }
 
     genfigs = args.figs
