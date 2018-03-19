@@ -33,6 +33,8 @@ tablelist := $(wildcard $(tabledir)/*)
 mainfile = main
 maintex = $(mainfile).tex
 
+bibfile = references.bib
+
 revision = main_mnras.tex
 
 all: $(mainfile).pdf
@@ -40,20 +42,20 @@ all: $(mainfile).pdf
 mnras: mnras.tar.gz
 	
 mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
-	tar -zcf mnras.tar.gz $(maintex) main.bbl references.bib readme.mnras \
+	tar -zcf mnras.tar.gz $(maintex) main.bbl $(bibfile) readme.mnras \
 	    $(latexfigures) $(tablelist)
 
 # Is there an automated way to add dependencies for tables and figures in here? 
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
 # that may be annoyingly difficult.
 #
-$(mainfile).pdf: $(maintex)
-	latexmk -pdfdvi $(maintex)
+$(mainfile).pdf: $(maintex) $(bibfile)
+	latexmk -pdf $(maintex)
 
-$(mainfile).ps: $(maintex)
+$(mainfile).ps: $(maintex) $(bibfile)
 	latexmk -ps $(maintex)
 
-$(mainfile).bbl: $(maintex)
+$(mainfile).bbl: $(maintex) $(bibfile)
 	bibtex $(mainfile)
 
 referee: diff.pdf

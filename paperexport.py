@@ -70,7 +70,14 @@ def cool_data_splitter():
     split.initialize_cool_KICs(cool_dwarfs)
     return cool_dwarfs
 
-@write_plot("Bruntt_comp")
+@au.memoized
+def hot_dwarf_splitter():
+    '''A persistent Datasplitter for the hot dwarf sample.'''
+    dwarfs = dwarf_data_splitter()
+    hot_dwarfs = dwarfs.split_subsample(["APOGEE2_APOKASC_DWARF"])
+    return hot_dwarfs
+
+#@write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
     '''Create figure comparison vsini for asteroseismic targets.
 
@@ -87,19 +94,53 @@ def Bruntt_vsini_comparison():
 #   plt.plot(astero_dwarfs["vsini"][bad_indices], vsini_baddiff, 'rv')
 #   plt.plot([0, 35], [0, 0], 'k--')
 #   plt.ylim([-0.2, 0.5])
-    plt.loglog(astero_dwarfs["VSINI"][~bad_indices],
-             astero_dwarfs["vsini"][~bad_indices], 'ko')
+    plt.loglog(astero_dwarfs["vsini"][~bad_indices], 
+               astero_dwarfs["VSINI"][~bad_indices], 'ko')
     plt.loglog(astero_dwarfs["vsini"][bad_indices],
              np.zeros(np.count_nonzero(bad_indices)), 'rx')
-    plt.loglog([1, 35], [1, 35], 'k--')
+    plt.loglog([1, 40], [1, 40], 'k-')
+    detection_lim = 6
+    plt.loglog([1, 40], [detection_lim, detection_lim], 'k:')
+
+    # Now to fit the data to a line.
+    detected_table = astero_dwarfs[astero_dwarfs["VSINI"] >= detection_lim]
+    meanx = np.mean(np.log10(detected_table["vsini"]))
+    fitval, cov = np.polyfit(
+        np.log10(detected_table["vsini"])-meanx, np.log10(detected_table["VSINI"]), 1, 
+        cov=True)
+    polyeval = np.poly1d(fitval)
+    polyx = np.linspace(1, 40, 10) - meanx
+    polyy = 10**polyeval(np.log10(polyx))
+    plt.loglog(polyx+meanx, polyy, 'k--', linewidth=3)
+    # Calculate the slope and error in the slope.
+    slope = fitval[0]
+    intercept = fitval[1]-meanx
+    slope_error = np.sqrt(cov[0, 0])
+    intercept_error = np.sqrt(cov[1, 1])
+    print("The measured slope is {0:.2f} +/- {1:.2f}".format(
+        slope, slope_error))
+    print("The measured intercept is {0:.2f} +/- {1:.2f}".format(
+        intercept, intercept_error))
+    return cov
+    # Calculate the 1-sigma offset of the intercept.
+    residuals = (
+        np.log10(detected_table["VSINI"]) - 
+        polyeval(np.log10(detected_table["vsini"])))
+    var = np.sum(residuals**2) / (len(residuals) - 2 - 1)
+#    offset = np.sqrt(var)/2
+    offset = intercept_error/2
+    print("Uncertainty is {0:.1f}%".format(offset*np.log(10)*100))
+    plt.loglog(polyx, polyy*10**offset, 'k--')
+    plt.loglog(polyx, polyy/10**offset, 'k--')
 #   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
 #   assert len(outlier) == 1
 #   print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
 #       outlier["kepid"][0], outlier["vsini"][0], outlier["VSINI"][0]))
     print("Bad objects:")
     print(astero_dwarfs[["KIC", "vsini"]][bad_indices])
-    plt.xlabel("ASPCAP vsini (km/s)")
-    plt.ylabel("Bruntt vsini (km/s)")
+    plt.xlabel("Bruntt vsini (km/s)")
+    plt.ylabel("ASPCAP vsini (km/s)")
+    return cov
 
 def plot_lower_limit_Bruntt_test():
     '''Plot results of two-sample AD test for checking lower limit.'''
@@ -145,6 +186,7 @@ def Pleiades_vsini_comparison():
     nondet_targets = good_targets[nondetections]
     detected_errors = (detected_targets["vsini"] / 2 / (
         1 + detected_targets["R"])).filled(0)
+
 #   det_frac = ((detected_targets["vsini"] - detected_targets["VSINI"]) /
 #               detected_targets["vsini"])
 #   frac_errors = detected_errors * (
@@ -154,8 +196,13 @@ def Pleiades_vsini_comparison():
                    
     plt.xscale("log")
     plt.yscale("log")
+    weird_targets = np.logical_and(detected_targets["VSINI"] < 10,
+                                   detected_targets["vsini"] > 10)
     plt.errorbar(detected_targets["VSINI"], detected_targets["vsini"],
                  yerr=detected_errors, fmt='ko')
+    plt.errorbar(detected_targets["VSINI"][weird_targets],
+                 detected_targets["vsini"][weird_targets],
+                 yerr=detected_errors[weird_targets], fmt='b*')
     plt.plot(nondet_targets["VSINI"], nondet_targets["vsini"], 'rv')
     plt.plot([1, 100], [1, 100], 'k-')
 #   plt.errorbar(detected_targets["vsini"], det_frac, yerr=frac_errors, 
@@ -167,6 +214,30 @@ def Pleiades_vsini_comparison():
     plt.xlabel("APOGEE vsini")
     plt.xlim(1, 100)
     plt.ylim(9, 100)
+
+def Pleiades_teff_vsini_comparison():
+    '''Show vsini uncertainties with Teff.'''
+    targets = catin.Stauffer_APOGEE_overlap()
+    non_dlsbs = targets[npstr.find(targets["Notes"], "5") < 0]
+    good_targets = catalog.apogee_filter_quality(non_dlsbs, quality="bad")
+    nondetections = good_targets["vsini lim"] == stat.UPPER
+    detected_targets = good_targets[~nondetections]
+    nondet_targets = good_targets[nondetections]
+    detected_errors = (detected_targets["vsini"] / 2 / (
+        1 + detected_targets["R"])).filled(0)
+    vsini_diff = detected_targets["VSINI"] - detected_targets["vsini"]
+    weird_targets = np.logical_and(detected_targets["VSINI"] < 10,
+                                   detected_targets["vsini"] > 10)
+
+    plt.errorbar(detected_targets["TEFF"], vsini_diff, yerr=detected_errors,
+                 fmt="ko")
+    plt.errorbar(detected_targets["TEFF"][weird_targets],
+                 vsini_diff[weird_targets], yerr=detected_errors[weird_targets],
+                 fmt="b*")
+    plt.ylabel("APOGEE - SH vsini (km/s)")
+    plt.xlabel("APOGEE Teff (K)")
+    hr.invert_x_axis()
+    print(np.std(vsini_diff[detected_targets["TEFF"] < 4000]))
 
 def plot_lower_limit_Pleiades_test():
     '''Plot results of two-sample AD test for checking lower limit.'''
@@ -247,38 +318,91 @@ def cool_dwarf_hr():
     plt.ylabel("APOGEE Logg")
     plt.legend()
 
+@write_plot("detection_fraction")
+def plot_rr_fractions():
+    '''Plot spectroscopic and photometric rapid rotator fractions.'''
+    cool_data = cool_data_splitter()
+    cool_dwarfs_mcq = cool_data.subsample([
+        "~Bad", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+    cool_dwarfs_nomcq = cool_data.subsample([
+        "~Bad", "~DLSB", "~Mcq", "Dwarf", "~Too Hot"])
+    cool_subgiants = cool_data.subsample([
+        "~Bad", "~DLSB", "Subgiant"])
+    hot_data = hot_dwarf_splitter()
+    hot_dwarfs = hot_data.subsample([
+        "~Bad", "~DLSB"])
+
+    mcq = catin.read_McQuillan_catalog()
+    periodpoints = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
+
+    samp.generate_DSEP_radius_column_with_errors(periodpoints)
+
+    samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
+        periodpoints["VSINI"], periodpoints["Prot"], 
+        periodpoints["DSEP radius"])
+    samp.plot_rapid_rotation_detection_limits(
+        cool_dwarfs_nomcq["VSINI"], ls="--", label="Mcquillan Nondetections",
+        offset=0.05)
+    samp.plot_rapid_rotation_detection_limits(
+        cool_subgiants["VSINI"], ls=":", label="Subgiants", offset=-0.05)
+    plt.legend(loc="upper right")
+
+
 @write_plot("astero_rot")
 def asteroseismic_rotation_analysis():
     '''Plot rotation comparison of asteroseismic sample.'''
     astero = asteroseismic_data_splitter()
-    datapoints = astero.subsample([
+    marginal = astero.subsample([
+        "~Bad", "Asteroseismic Dwarfs", "Vsini marginal", "~DLSB", "Mcq"])
+    detections = astero.subsample([
         "~Bad", "Asteroseismic Dwarfs", "Vsini det", "~DLSB", "Mcq"])
 
     mcq = catin.read_McQuillan_catalog()
-    periodpoints = au.join_by_id(datapoints, mcq, "kepid", "KIC")
+    marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
+    detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
 
-    rot.compare_rotation_velocity_radius(
-        periodpoints["VSINI"], periodpoints["Prot"], periodpoints["radius"],
-        raderr_below=periodpoints["radius_err1"],
-        raderr_above=periodpoints["radius_err2"])
+    subplot_tup = rot.plot_rotation_velocity_radius(
+        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"],
+        marginal_periodpoints["radius"], 
+        raderr_below=marginal_periodpoints["radius_err1"],
+        raderr_above=marginal_periodpoints["radius_err2"], color=bc.sky_blue)
+
+    rot.plot_rotation_velocity_radius(
+        detections_periodpoints["VSINI"], detections_periodpoints["Prot"],
+        detections_periodpoints["radius"], 
+        raderr_below=detections_periodpoints["radius_err1"],
+        raderr_above=detections_periodpoints["radius_err2"], color=bc.blue,
+        subplot_tup=subplot_tup)
 
 @write_plot("cool_rot")
 def cool_dwarf_rotation_analysis():
     '''Plot rotation comparison of cool dwarf sample.'''
     cool_dwarf = cool_data_splitter()
-    datapoints = cool_dwarf.subsample([
+    marginal = cool_dwarf.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf"])
+    detections = cool_dwarf.subsample([
         "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf"])
 
     mcq = catin.read_McQuillan_catalog()
-    periodpoints = au.join_by_id(datapoints, mcq, "kepid", "KIC")
+    marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
+    detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
 
-    samp.generate_DSEP_radius_column_with_errors( periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(marginal_periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(detections_periodpoints)
 
-    rot.compare_rotation_velocity_radius(
-        periodpoints["VSINI"], periodpoints["Prot"], periodpoints["DSEP radius"],
-        raderr_below=periodpoints["DSEP radius lower"],
-        raderr_above=periodpoints["DSEP radius upper"], vsini_lim=15)
+    subplot_tup = rot.plot_rotation_velocity_radius(
+        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"], 
+        marginal_periodpoints["DSEP radius"],
+        raderr_below=marginal_periodpoints["DSEP radius lower"],
+        raderr_above=marginal_periodpoints["DSEP radius upper"],
+        color=bc.sky_blue)
         
+    rot.plot_rotation_velocity_radius(
+        detections_periodpoints["VSINI"], detections_periodpoints["Prot"], 
+        detections_periodpoints["DSEP radius"],
+        raderr_below=detections_periodpoints["DSEP radius lower"],
+        raderr_above=detections_periodpoints["DSEP radius upper"],
+        color=bc.blue, subplot_tup=subplot_tup)
     
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
