@@ -346,6 +346,8 @@ def plot_rr_fractions():
         offset=0.05)
     samp.plot_rapid_rotation_detection_limits(
         cool_subgiants["VSINI"], ls=":", label="Subgiants", offset=-0.05)
+    samp.plot_rapid_rotation_detection_limits(
+        hot_dwarfs["VSINI"], ls="-.", label="Hot Dwarfs", offset=0.1)
     plt.legend(loc="upper right")
 
 
