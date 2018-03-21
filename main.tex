@@ -50,21 +50,20 @@
 \email{simonian@astronomy.ohio-state.edu}
 
 \begin{abstract}
-    Photometric studies of the \Kepler{} field indicate a 5\% fraction of rapid
-    (\(P_{rot} < 5\) day) rotators among the cool (\(\Teff < 5500\) K) dwarfs, 
-    which is inconsistent with gyrochronology of a \(> 1\) Gyr field. We use 
-    APOGEE \vsini{} to independently determine the rate of rapid rotation for
-    the well-characterized APOKASC asteroseismic sample, and a magnitude-limited 
-    sample of cool dwarfs in the \Kepler{} field. We find that the two measures
-    of rotation produce consistent results for the asteroseismic sample. For
-    the cool dwarf sample, we find a larger spectroscopic rapid rotator
-    fraction of 8\%, larger than the photometric rapid rotator fraction and
-    inconsistent with inclination effects. In a point-by-point analysis of cool 
-    dwarfs with readily-characterizable radii, we find 20 out of 21 
-    spectroscopic rapid rotators in the cool dwarf sample have \vsini{} too large 
-    to be explained by the rotation period. These results indicate the 
-    presence of severe systematics in the measurement of rotation or stellar
-    classification for cool dwarfs.
+    The \Kepler{} fields have yielded a large data set of photometric rotation
+    periods; they serve as a crucial benchmark for studies of stellar rotation
+    in field stars. We report on spectroscopic measurements from the APOGEE
+    survey of stellar rotation in a sample of over 600 cool dwarfs in the
+    \Kepler{} fields. Our data are in good agreement with literature values for
+    targets in common, with a detection threshold between 7 and 12 \kms. We
+    find a rapid rotation fraction of \(\sim 10\%\), a larger than expected
+    population of young stars. When comparing spectroscopic to photometric
+    rotation rates, we find that the photometric rapid rotator fraction is
+    lower than the spectroscopic fraction by a factor of 4-5. A point-by-point
+    analysis reveals that almost all targets have rotation periods too long for
+    their measured \vsini{}. We find these results suggest that large-scale
+    photometric surveys may mis-characterize or exclude cool rapid rotators in
+    the field.
 \end{abstract}
 \keywords{stars: rotation}
 
@@ -143,18 +142,20 @@ the impact of our findings in Section~\ref{sec:conclusions}.
         violet circles.
         \emph{Bottom Left:} \vsini{} comparison for the \citet{Bruntt12} overlap 
         sample with APOGEE\@. A discontinuity in the
-        scatter occurs around APOGEE \(\vsini=7 \kms\). The thick solid line 
+        scatter occurs around APOGEE \(\vsini=7 \kms\), indicated by the dotted
+        line. The thick solid line 
         marks the one-to-one line while the thick dashed line is a linear fit in 
-        log space to the detections. Thin dashed lines mark 1-\(\sigma\) offsets
-        off of the best-fit line of 13\%. Not shown are targets run through the 
-        APOGEE giant grid, which does not calculate \vsini. All of those targets 
-        have \citet{Bruntt12} \(\vsini < 5 \kms\). \gvs{Errorbar looks too
-        small. Maybe errors are correlated.}
+        log space to the detections. The gray region shades the \(1-\sigma\)
+        uncertainty off of the best-fit line of 13\%. Not shown are targets 
+        run through the APOGEE giant grid, which does not calculate \vsini. 
+        All of those targets have \citet{Bruntt12} \(\vsini < 5 \kms\). 
         \emph{Bottom Right:} 
         \vsini{} comparison for the Pleiades cool dwarfs \citep{Stauffer87} 
         overlap sample with APOGEE\@. In this case, a visible discontinuity 
-        occurs around \(\vsini=12\kms\). Not shown is 2MASS J03475973+2443528 (HII 1653), which 
-        is likely a SB2. \gvs{Uncertainty past 15 \kms remains at about 10\%?}. 
+        occurs around \(\vsini=12\kms\), indicated by the dotted line. Not 
+        shown is 2MASS J03475973+2443528 (HII 1653), which 
+        is likely a SB2. The thick solid line marks the one-to-one line, and
+        the gray band indicates the 13\% uncertainty region.
         Red points are upper limits in \citet{Stauffer87}.\label{fig:sample}}
 \end{figure}
 
@@ -162,7 +163,12 @@ The central dataset for this analysis is from the Apache Point Observatory
 Galactic Evolution Experiment (APOGEE) \citep{Blanton17,Majewski17}. The
 APOGEE instrument is a high-resolution (\(R \sim 22,000\) multi-fiber 
 near-infrared spectrograph \citep{Wilson10}, mounted on the SDSS 2.5-meter 
-telescope at Apache Point Observatory \citep{Gunn06}. 
+telescope at Apache Point Observatory \citep{Gunn06}. Observations for each
+target are automatically reduced and combined as part of the APOGEE data 
+pipeline \citep{Nidever15}. Stellar parameters are then determined from the 
+combined spectra through the APOGEE Stellar Parameters and Chemical Abundance 
+Pipeline (ASPCAP), which determines \Teff{}, \logg{}, \([M/H]\), \vsini{}, as 
+well as 15 additional chemical abundances \citep{GarciaPerez16}.
 
 Under several major observing programs, APOGEE systematically observed over 
 5,000 dwarfs and subgiants in the \Kepler{} field. Around half were
@@ -489,12 +495,14 @@ to account for photometric rapid rotators scattering into low
     \centering
     \includegraphics[width=0.8\textwidth]{detection_fraction}
     \caption{Rapid rotator fraction as a function of \vsini{} detection limit.
-    The black line connects spectroscopic rapid rotator fractions for different
-    \vsini{} thresholds. Error bars represent 1-\(\sigma\) Poisson confidence
-    levels. The red line marks the fraction of targets with \citet{McQuillan14} 
-periods short enough to be detectable over the given \vsini{} threshold. The
-photometric rapid rotator fractions are all multiplied by 0.785 to account for
-inclination effects.\label{fig:detection_fraction}}
+    The solid black line connects spectroscopic rapid rotator fractions for 
+    different \vsini{} thresholds. Error bars represent 1-\(\sigma\) binomial 
+    confidence levels. The dashed black line marks the fraction of targets 
+    with \citet{McQuillan14} periods short enough to be detectable over the 
+    given \vsini{} threshold. The photometric rapid rotator fractions are all 
+    multiplied by 0.785 to account for inclination effects. Also plotted are
+the \citet{McQuillan14} nondetection sample (red), and the rapid rotator
+fraction in the subgiants (blue).\label{fig:detection_fraction}}
 \end{figure}
 
 We validate this exercise by comparing the photometric and spectroscopic
@@ -528,13 +536,10 @@ significant. This may suggest either the existence of rapidly-rotating,
 low-activity targets, or that \citet{McQuillan14} is not detecting rapid
 rotation in genuine, spotted rapid rotators.
 
-\gvs{Make deeper claims? This must indicate that there are slow rotators in the
-\Kepler{} field, but that doesn't seem like a useful thing to say. Also, most
-of the nondetections are for hot stars, not cool stars.}
-
 We also check the rapid rotation sample in the subgiants. We classify subgiants
 as those stars observed by the \Kepler{} cool dwarf program with
-\logg{} too low to be a dwarf, but also less than 3.5. Again, since there
+\logg{} lower than the cut in Section~\ref{sec:sample} to be a dwarf, but 
+also less than 3.5. Again, since there
 isn't a reliable mapping from velocity to period space for these objects, we
 only report the spectroscopi rapid rotator fraction. The subgiants behave
 similarly to the cool dwarfs, with a rapid rotator fraction of around 10\%.
@@ -554,78 +559,83 @@ another paper}
 
 After selecting dwarfs with detectable rotation in APOGEE,
 visually inspecting for DLSBs, and cross-matching with \citet{McQuillan14}, we 
-end up with 19 targets where we can compare the results of rotation. 
-The comparison for these targets is shown in 
+end up with 26 targets with confident \vsini{}, and 26 targets with marginal
+\vsini{} where we can compare two rotation measures. A point-by-point
+comparison for these targets is shown in 
 \cref{fig:cool_rot}. Unlike what was observed for the
-asteroseismic sample, the \vsini{} is too large given the observed period and 
-radius for the cool stars.
+asteroseismic sample, the measured \vsini{} are consistently larger than the 
+given period and radius for all but one star in the sample.
 
-This offset isn't be the result of inclination effects, but rather is
-exacerbated by them because inclination effects would act to decrease the
-amount of line broadening.
+The discrepancy between spectroscopoic and photometric rapid rotation fractions
+can be seen in other published work as well. The APOGEE M-dwarf rotation
+program \citep{Gilhool18} surveyed a color- and proper-motion-selected sample
+of nearby M-dwarfs. Unlike in this work, the \vsini{} were measured directly
+through the spectra as opposed to through ASPCAP\@. For the \Teff{} range that
+overlaps with \citet{McQuillan14} \(\Teff > 3200\) K, they find that 5.8\% of
+their targets have \(\vsini > 8 \kms\). This is significantly greater than our
+rapid rotator fraction at 8 \kms of 2.5\%. 
+
+The most obvious systematic error that could cause this problem is
+misclassification of subgiants. Subgiant contamination would explain 
+results where the measured vsini would be
+larger than the inferred equatorial velocity, because the radius is
+underestimated. Despite predicting from the asteroseismic sample that
+contamination should be low, it may be possible that asteroseismic subgiants
+are not representative of the \Kepler{} subgiant population. Even if this
+unlikely possibility were true, it would only be able to explain those rapid
+rotators with inferred radii up to four solar radii, not all of them.
+Contamination from larger red giants would be significantly less likely, and
+detection of rapid rotation on red giants would be a significant finding
+\citep{Tayar15}.
 
 Confusion in the \Kepler{} pixels is also a potential explanation for the
-discrepancy. Because the \Kepler{} pixels are relatively large (4\arcsec), it
-may be possible to have a bright, hot primary in the APOGEE fiber, with a
-fainter, spottier companion contributing the photometric modulation in the
-\Kepler{} light curve. A blend with a bright, spotless rapidly spinning G/K 
-primary and fainter spotty secondary is expected to be rare given our 
-understanding of stellar activity, where angular momentum loss becomes less
-efficient with stellar mass. Nevertheless, we check for bright companions
+discrepancy. Because the \Kepler{} pixels are relatively large (4\arcsec), a 
+bright, hot primary in the APOGEE fiber with a fainter, spottier companion 
+contributing the photometric modulation in the
+\Kepler{} light curve would explain the observed contradiction between
+\vsini{} and rotation period. While this setup is unlikely, because for stars
+cooler than the Kraft break, rotation and activity are highly correlated, 
+we check for bright companions
 within the \Kepler{} pixel using the public high-resolution UK Infrared Telescope
-J-band imaging of the \Kepler{} field. We do not find bright companions near
-most of the targets, indicating that confusion is likely not the main source of
-the problem.
+J-band imaging of the \Kepler{} field. We do not find a correlation between 
+that the presence of a bright companion and the magnitude of the offset, 
+indicating that confusion is likely not the main source of the problem.
 
-Subgiant contamination would explain results where the measured vsini would be
-larger than the inferred equatorial velocity, because the radius is
-underestimated. While this may explain some of the objects with
-larger-than-expected \vsini{}s, it does not explain all of them. A significant
-portion of the sample has \vsini{} values which are factors of several larger
-than the predicted ones, a greater magnitude than subgiant contamination can 
-explain.
-
-Our most plausible explanation for the mismatch between the photometric
+One other potential explanation for the mismatch between the photometric
 rotation periods and \vsini{} is the presence of SB2s with a special geometry
 where the two components are offset enough that their spectral features
 overlap, yet not offset enough for the two components to be visually
-distinguished. 
+distinguished.  To determine the likelihood of this scenario, we check whether
+these targets show signs of composite spectra \citep{ElBadry18}. We 
+find that 21/23 of the confident detection and 17/23 of the marginal detections
+in the overlap sample shows signs of composite spectra based on their
+data-driven classification.
 
-We look at the overlap of these targets with \citep{ElBadry18}, which attempted
-to use data-driven models to find APOGEE objects exhibiting composite spectra. We 
-find that 28/30 of the overlap sample shows signs of composite spectra according
-to their analysis. This is supported by the finding that only one 
-objects shows significant RV variability \(> 15 \kms\), and it is one of
-the only objects that have a correspondingly fast period.
+One last potential explanation is that the periodograms used in large-scale
+analyses are biased against rapid rotators. While it's unlikely there there is
+a hard-limit intrinsic to the period-finding algorithms \citep{Aigrain15}, it
+may be possible that in the case of real-nonidealized data, with blending of
+multiple variability sources, the algorithms tend to favor long periods over
+short ones. When we invert the question, and ask how many photometric rapid
+rotators are detected as spectroscopic rapid rotators, we find that 7/8 objects
+with \(P < 3\) day are spectroscopic rapid rotators. So it appears that the
+\citet{McQuillan14} periods are incomplete for the rapid rotators. This is in
+agreement with the presence of spectroscopic rapid rotators in the
+\citet{McQuillan14} nondetection sample.
 
 \section{Conclusion}
 \label{sec:conclusions}
 
-We took a sample of 21 cool rapidly rotating dwarfs in the \Kepler{} field with 
-both APOGEE \vsini{} measurements and \citet{McQuillan14} rotation periods, and 
-performed a point-by-point comparison to determine if the rotation periods and
-\vsini{}s were concordant. Use imposed a cut of \(\vsini > 15 \kms\) as the
-criterion for rapid rotation, which corresponds to a rotation period between
-2-3 days for the range of stellar radii within our sample.
+We analyzed the APOGEE sample of 400 cool in the \Kepler{} field with 
+rotation periods in \citet{McQuillan14} using DSEP-derived stellar radii. We 
+find a substantial discrepancy between the two, with the spectroscopic rapid
+rotator rate being 4-5 times the photometric rapid rotator rate. 
 
-Stellar radii were derived using DSEP isochrones, with uncertainties bounded by
-the expected age of the \Kepler{} field. While the uncertainties due to age
-evolution on the main sequence are less than 10\%, mischaracterization as
-subgiants will cause a significantly larger effect. However, we expect that
-APOGEE-derived stellar parameters should be able to sufficiently classify
-targets such that subgiant contamination should be low.
-
-We validate our methodology by using the \Kepler{} asteroseismic sample as a
-test bed. The asteroseismic sample have radii which are precisely
-characterized, and has been generally well-studied. The rotation analysis for
-the asteroseismic sample indicates concordance between \vsini{} and photometric
-period.
-
-When performing the same analysis on the cool sample, we find that rotational
-periods for the entire sample are far too long to match the \vsini{}. The fact
-that this is universally seen among all rapid rotators in the \Kepler{} field
-is troubling, meaning there are systematic mischaracterizations in rotation or
-radius for the \Kepler field.
+A point-by-point analysis of the 52 rapid rotators in our sample reveals that
+rotational periods for the entire sample are universally too long to match the 
+\vsini{}. This finding implies severe systematic uncertainties in either the
+measurement of \vsini{}, rotation period, or in stellar classification. We
+suggest several possible ways to investigate the underlying causes.
 
 If the discrepancy lies with either concealed binarity or subgiant
 misclassification, the upcoming \Gaia{} data release would be able to
@@ -636,6 +646,20 @@ substantially alter the measured \vsini{} would also be bright enough to
 show a significant luminosity excess given the temperature of the star.
 Therefore, rapid rotator false positives should appear anomalous in
 luminosity compared to main-sequence isochrones.
+
+Systematic uncertainties in period determinations will be significantly more
+difficult to investigate. One start may be to perform a targeted period search
+at short periods for the rapid rotators where the blind search returned a long
+period. The presence of a short-period signal would confirm that the
+spectroscopic rapid rotators are physical. Another direction would be to use an
+algorithm which can successfully identify multiple periods, as has been used
+for the K2 cluster campaign \citep{Rebull16,Rebull17}. If multiple signals are
+present in a light curve, these methods may be able to pick both as opposed to
+favoring one over the other.
+
+Regardless of the source, we caution readers about interpreting large
+datasets of rotation in the \Kepler{} field without independent confirmation
+until the source of this inconsistency is found.
 
 
 \bibliographystyle{aasjournal}
