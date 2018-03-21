@@ -313,6 +313,7 @@ def cool_dwarf_hr():
                       color=bc.sky_blue, marker="*", label="Rapid Rotators",
                       ls="", ms=7)
     plt.plot([4640, 5690], [3.72, 4.43], 'k-')
+    plt.plot([5450, 5450], [3.5, 4.7], 'k:')
     plt.xlim(5750, 3500)
     plt.ylim(4.7, 3.5)
     plt.xlabel("APOGEE Teff")
@@ -383,9 +384,9 @@ def cool_dwarf_rotation_analysis():
     '''Plot rotation comparison of cool dwarf sample.'''
     cool_dwarf = cool_data_splitter()
     marginal = cool_dwarf.subsample([
-        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf"])
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
     detections = cool_dwarf.subsample([
-        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf"])
+        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
 
     mcq = catin.read_McQuillan_catalog()
     marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
