@@ -129,8 +129,9 @@ def Bruntt_vsini_comparison():
     offset = np.sqrt(var)
 #    offset = intercept_error/2
     print("Uncertainty is {0:.1f}%".format(offset*np.log(10)*100))
-    plt.loglog(10**(polyx+meanx), polyy*10**(offset/2), 'k--')
-    plt.loglog(10**(polyx+meanx), polyy/10**(offset/2), 'k--')
+    plt.fill_between(
+        10**(polyx+meanx), polyy*10**(offset/2), polyy*10**(-offset/2),
+        facecolor="gray")
 #   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
 #   assert len(outlier) == 1
 #   print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
@@ -138,7 +139,7 @@ def Bruntt_vsini_comparison():
     print("Bad objects:")
     print(astero_dwarfs[["KIC", "vsini"]][bad_indices])
     plt.xlabel("Bruntt vsini (km/s)")
-    plt.ylabel("ASPCAP vsini (km/s)")
+    plt.ylabel("APOGEE vsini (km/s)")
     return cov
 
 def plot_lower_limit_Bruntt_test():
@@ -197,20 +198,21 @@ def Pleiades_vsini_comparison():
     plt.yscale("log")
     weird_targets = np.logical_and(detected_targets["VSINI"] < 10,
                                    detected_targets["vsini"] > 10)
-    plt.errorbar(detected_targets["VSINI"], detected_targets["vsini"],
-                 yerr=detected_errors, fmt='ko')
-    plt.errorbar(detected_targets["VSINI"][weird_targets],
-                 detected_targets["vsini"][weird_targets],
-                 yerr=detected_errors[weird_targets], fmt='b*')
-    plt.plot(nondet_targets["VSINI"], nondet_targets["vsini"], 'rv')
-    plt.plot([1, 100], [1, 100], 'k-')
-#   plt.errorbar(detected_targets["vsini"], det_frac, yerr=frac_errors, 
-#                xerr=detected_errors, fmt='ko')
-#   plt.plot(nondet_targets["vsini"], nondet_frac, 'r<')
-#   plt.plot([15, 15], [-0.3, 0.5], 'r--')
-#   plt.plot([0, 75], [0, 0], 'k--')
-    plt.ylabel("Stauffer and Hartmann (1987) vsini (km/s)")
-    plt.xlabel("APOGEE vsini")
+    plt.errorbar(detected_targets["vsini"], detected_targets["VSINI"], 
+                 xerr=detected_errors, fmt='ko')
+    plt.errorbar(detected_targets["vsini"][weird_targets],
+                 detected_targets["VSINI"][weird_targets],
+                 xerr=detected_errors[weird_targets], fmt='b*')
+    plt.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'rv')
+    one_to_one = np.array([1, 100])
+    plt.plot(one_to_one, one_to_one, 'k-')
+    error = 0.13
+    plt.fill_between(one_to_one, one_to_one*(1+error/2), one_to_one*(1-error/2),
+                     facecolor="gray")
+    plt.plot(one_to_one, [12, 12], 'k:')
+    
+    plt.xlabel("Stauffer and Hartmann (1987) vsini (km/s)")
+    plt.ylabel("APOGEE vsini (km/s)")
     plt.xlim(1, 100)
     plt.ylim(9, 100)
 
@@ -341,11 +343,12 @@ def plot_rr_fractions():
         periodpoints["DSEP radius"])
     samp.plot_rapid_rotation_detection_limits(
         cool_dwarfs_nomcq["VSINI"], ls="--", label="Mcquillan Nondetections",
-        offset=0.05)
+        color=bc.red)
     samp.plot_rapid_rotation_detection_limits(
-        cool_subgiants["VSINI"], ls=":", label="Subgiants", offset=-0.05)
-    samp.plot_rapid_rotation_detection_limits(
-        hot_dwarfs["VSINI"], ls="-.", label="Hot Dwarfs", offset=0.1)
+        cool_subgiants["VSINI"], ls=":", label="Subgiants", 
+        color=bc.blue)
+#   samp.plot_rapid_rotation_detection_limits(
+#       hot_dwarfs["VSINI"], ls="-.", label="Hot Dwarfs", offset=0.1)
     plt.legend(loc="upper right")
 
 
