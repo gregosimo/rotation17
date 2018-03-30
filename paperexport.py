@@ -98,9 +98,8 @@ def Bruntt_vsini_comparison():
                astero_dwarfs["VSINI"][~bad_indices], 'ko')
     plt.loglog(astero_dwarfs["vsini"][bad_indices],
              np.zeros(np.count_nonzero(bad_indices)), 'rx')
-    plt.loglog([1, 40], [1, 40], 'k-')
-    detection_lim = 6
-    plt.loglog([1, 40], [detection_lim, detection_lim], 'k:')
+    detection_lim = 7
+    plt.loglog([detection_lim, detection_lim], [1, 40], 'k:')
 
     # Now to fit the data to a line.
     detected_table = astero_dwarfs[astero_dwarfs["VSINI"] >= detection_lim]
@@ -121,6 +120,7 @@ def Bruntt_vsini_comparison():
         slope, slope_error))
     print("The measured intercept is {0:.2f} +/- {1:.2f}".format(
         intercept, intercept_error))
+    
     # Calculate the 1-sigma offset of the intercept.
     residuals = (
         np.log10(detected_table["VSINI"]) - 
@@ -129,8 +129,9 @@ def Bruntt_vsini_comparison():
     offset = np.sqrt(var)
 #    offset = intercept_error/2
     print("Uncertainty is {0:.1f}%".format(offset*np.log(10)*100))
-    plt.loglog(10**(polyx+meanx), polyy*10**(offset/2), 'k--')
-    plt.loglog(10**(polyx+meanx), polyy/10**(offset/2), 'k--')
+#   plt.fill_between(
+#       10**(polyx+meanx), polyy*10**(offset/2), polyy*10**(-offset/2),
+#       facecolor="gray")
 #   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
 #   assert len(outlier) == 1
 #   print("Ignoring KIC{0:d}: Bruntt vsini = {1:.1f}, ASPCAP vsini = {2:.1f}".format(
@@ -138,7 +139,7 @@ def Bruntt_vsini_comparison():
     print("Bad objects:")
     print(astero_dwarfs[["KIC", "vsini"]][bad_indices])
     plt.xlabel("Bruntt vsini (km/s)")
-    plt.ylabel("ASPCAP vsini (km/s)")
+    plt.ylabel("APOGEE vsini (km/s)")
     return cov
 
 def plot_lower_limit_Bruntt_test():
@@ -197,22 +198,17 @@ def Pleiades_vsini_comparison():
     plt.yscale("log")
     weird_targets = np.logical_and(detected_targets["VSINI"] < 10,
                                    detected_targets["vsini"] > 10)
-    plt.errorbar(detected_targets["VSINI"], detected_targets["vsini"],
-                 yerr=detected_errors, fmt='ko')
-    plt.errorbar(detected_targets["VSINI"][weird_targets],
-                 detected_targets["vsini"][weird_targets],
-                 yerr=detected_errors[weird_targets], fmt='b*')
-    plt.plot(nondet_targets["VSINI"], nondet_targets["vsini"], 'rv')
-    plt.plot([1, 100], [1, 100], 'k-')
-#   plt.errorbar(detected_targets["vsini"], det_frac, yerr=frac_errors, 
-#                xerr=detected_errors, fmt='ko')
-#   plt.plot(nondet_targets["vsini"], nondet_frac, 'r<')
-#   plt.plot([15, 15], [-0.3, 0.5], 'r--')
-#   plt.plot([0, 75], [0, 0], 'k--')
-    plt.ylabel("Stauffer and Hartmann (1987) vsini (km/s)")
-    plt.xlabel("APOGEE vsini")
+    plt.errorbar(detected_targets["vsini"], detected_targets["VSINI"], 
+                 xerr=detected_errors, fmt='ko')
+    plt.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'r<')
+    one_to_one = np.array([1, 100])
+    plt.plot(one_to_one, one_to_one, 'k-')
+    plt.plot([12, 12], one_to_one, 'k:')
+    
+    plt.xlabel("Stauffer and Hartmann (1987) vsini (km/s)")
+    plt.ylabel("APOGEE vsini (km/s)")
     plt.xlim(1, 100)
-    plt.ylim(9, 100)
+    plt.ylim(1, 100)
 
 def Pleiades_teff_vsini_comparison():
     '''Show vsini uncertainties with Teff.'''
@@ -283,8 +279,9 @@ def asteroseismic_sample_loggs():
         label="APOGEE", ls="")
     hr.logg_teff_plot(astero["TEFF_COR"], astero["LOGG_DW"], color=bc.green,
                       marker="*", ms=8, label="Asteroseismic log(g)", ls="")
-    hr.logg_teff_plot(astero["TEFF_COR"], astero["LOGG_FIT"], color=bc.sky_blue,
-                      marker="o", ms=6, label="Spectroscopic log(g)", ls="")
+    hr.logg_teff_plot(astero["TEFF_COR"], astero["LOGG_FIT"],
+                      color=bc.light_pink, marker="o", ms=6, 
+                      label="Spectroscopic log(g)", ls="")
 
     plt.xlim([6750, 4750])
     plt.ylim([5.0, 3.0])
@@ -304,13 +301,14 @@ def cool_dwarf_hr():
     cool_rapid_dwarfs = cool.subsample([
         "~Bad", "Vsini det", "~DLSB", "Dwarf", "Mcq"])
     hr.logg_teff_plot(cool_subgiants["TEFF"], cool_subgiants["LOGG_FIT"], 
-                      color=bc.green, marker=".", label="Subgiants", ls="")
+                      color=bc.purple, marker=".", label="Subgiants", ls="")
     hr.logg_teff_plot(cool_dwarfs["TEFF"], cool_dwarfs["LOGG_FIT"], 
                       color=bc.red, marker=".", label="Dwarfs", ls="")
     hr.logg_teff_plot(cool_rapid_dwarfs["TEFF"], cool_rapid_dwarfs["LOGG_FIT"], 
-                      color=bc.sky_blue, marker="*", label="Rapid Rotators",
+                      color=bc.blue, marker="*", label="Rapid Rotators",
                       ls="", ms=7)
-    plt.plot([4640, 5690], [3.72, 4.43], 'k-')
+    plt.plot([4500, 5690], [3.62, 4.43], 'k-')
+    plt.plot([5450, 5450], [3.5, 4.7], 'k:')
     plt.xlim(5750, 3500)
     plt.ylim(4.7, 3.5)
     plt.xlabel("APOGEE Teff")
@@ -325,11 +323,6 @@ def plot_rr_fractions():
         "~Bad", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
     cool_dwarfs_nomcq = cool_data.subsample([
         "~Bad", "~DLSB", "~Mcq", "Dwarf", "~Too Hot"])
-    cool_subgiants = cool_data.subsample([
-        "~Bad", "~DLSB", "Subgiant"])
-    hot_data = hot_dwarf_splitter()
-    hot_dwarfs = hot_data.subsample([
-        "~Bad", "~DLSB"])
 
     mcq = catin.read_McQuillan_catalog()
     periodpoints = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
@@ -341,11 +334,7 @@ def plot_rr_fractions():
         periodpoints["DSEP radius"])
     samp.plot_rapid_rotation_detection_limits(
         cool_dwarfs_nomcq["VSINI"], ls="--", label="Mcquillan Nondetections",
-        offset=0.05)
-    samp.plot_rapid_rotation_detection_limits(
-        cool_subgiants["VSINI"], ls=":", label="Subgiants", offset=-0.05)
-    samp.plot_rapid_rotation_detection_limits(
-        hot_dwarfs["VSINI"], ls="-.", label="Hot Dwarfs", offset=0.1)
+        color=bc.red)
     plt.legend(loc="upper right")
 
 
@@ -380,9 +369,9 @@ def cool_dwarf_rotation_analysis():
     '''Plot rotation comparison of cool dwarf sample.'''
     cool_dwarf = cool_data_splitter()
     marginal = cool_dwarf.subsample([
-        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf"])
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
     detections = cool_dwarf.subsample([
-        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf"])
+        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
 
     mcq = catin.read_McQuillan_catalog()
     marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
