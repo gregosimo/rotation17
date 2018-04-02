@@ -333,9 +333,9 @@ def plot_rr_fractions():
         periodpoints["VSINI"], periodpoints["Prot"], 
         periodpoints["DSEP radius"])
     samp.plot_rapid_rotation_detection_limits(
-        cool_dwarfs_nomcq["VSINI"], ls="--", label="Mcquillan Nondetections",
-        color=bc.red)
-    plt.legend(loc="upper right")
+        cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
+        color=bc.black, ls="--") #    plt.ylim(0.7, 1.0)
+    plt.legend(loc="lower right")
 
 
 @write_plot("astero_rot")
@@ -362,7 +362,7 @@ def asteroseismic_rotation_analysis():
         detections_periodpoints["radius"], 
         raderr_below=detections_periodpoints["radius_err1"],
         raderr_above=detections_periodpoints["radius_err2"], color=bc.blue,
-        subplot_tup=subplot_tup)
+        subplot_tup=subplot_tup, label="Asteroseismic")
 
 @write_plot("cool_rot")
 def cool_dwarf_rotation_analysis():
@@ -392,8 +392,7 @@ def cool_dwarf_rotation_analysis():
         detections_periodpoints["DSEP radius"],
         raderr_below=detections_periodpoints["DSEP radius lower"],
         raderr_above=detections_periodpoints["DSEP radius upper"],
-        color=bc.blue, subplot_tup=subplot_tup)
-    
+        color=bc.blue, subplot_tup=subplot_tup, label="Cool dwarfs") 
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
