@@ -329,12 +329,13 @@ def plot_rr_fractions():
 
     samp.generate_DSEP_radius_column_with_errors(periodpoints)
 
-    samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
-        periodpoints["VSINI"], periodpoints["Prot"], 
-        periodpoints["DSEP radius"])
+#   samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
+#       periodpoints["VSINI"], periodpoints["Prot"], 
+#       periodpoints["DSEP radius"], min_limit=5, max_limit=15)
     samp.plot_rapid_rotation_detection_limits(
         cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
-        color=bc.black, ls="--") #    plt.ylim(0.7, 1.0)
+        color=bc.black, ls="--", min_limit=5, max_limit=15) 
+    plt.ylim(0.7, 1.0)
     plt.legend(loc="lower right")
 
 
