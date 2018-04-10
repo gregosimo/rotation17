@@ -475,18 +475,21 @@ def asteroseismic_rotation_analysis():
     marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
     detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
 
-    subplot_tup = rot.plot_rotation_velocity_radius(
+    f, ax = plt.subplots(1,1, figsize=(6,6))
+
+    rot.plot_vsini_velocity(
         marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"],
         marginal_periodpoints["radius"], 
         raderr_below=marginal_periodpoints["radius_err1"],
-        raderr_above=marginal_periodpoints["radius_err2"], color=bc.sky_blue)
+        raderr_above=marginal_periodpoints["radius_err2"], color=bc.sky_blue,
+        ax=ax, sini_label=False)
 
-    rot.plot_rotation_velocity_radius(
+    rot.plot_vsini_velocity(
         detections_periodpoints["VSINI"], detections_periodpoints["Prot"],
         detections_periodpoints["radius"], 
         raderr_below=detections_periodpoints["radius_err1"],
         raderr_above=detections_periodpoints["radius_err2"], color=bc.blue,
-        subplot_tup=subplot_tup, label="Asteroseismic")
+        ax=ax)
 
 @write_plot("cool_rot")
 def cool_dwarf_rotation_analysis():
