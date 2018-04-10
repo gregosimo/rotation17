@@ -44,9 +44,23 @@ def write_plot(filename, suffix=PLOT_SUFFIX, toplevel=FIGURE_PATH):
             plt.close("all")
             f()
             filepath = build_filepath(toplevel, filename, suffix=suffix)
+            # Have a hidden file that is modified every time the figure is
+            # written. This will work better with make.
+#            touch(build_filepath(toplevel.parent, "."+filename, suffix="txt"))
             plt.savefig(filepath)
         return wrapper
     return decorator
+
+def touch(fname, mode=0o666, dir_fd=None, **kwargs):
+    '''Function which acts as touch(1) for the given file.
+    
+    If the given file exists, it will change the modification time to the
+    current time. If it doesn't exist, it will create one.'''
+    flags = os.O_CREAT | os.O_APPEND
+    # In Python 3.6, os.open will accept path-like objects.
+    with os.fdopen(os.open(str(fname), flags=flags, mode=mode, dir_fd=dir_fd)) as f:
+        os.utime(f.fileno() if os.utime in os.supports_fd else fname,
+                 dir_fd=None if os.supports_fd else dir_fd, **kwargs)
 
 @au.memoized
 def asteroseismic_data_splitter():
@@ -299,8 +313,11 @@ def cool_dwarf_hr():
     cool_full = cool.subsample(["~Bad"])
     cool_subgiants = cool.subsample(["~Bad", "Subgiant"])
     cool_dwarfs = cool.subsample(["~Bad", "Dwarf"])
+    cool_giants = cool.subsample(["~Bad", "Giant"])
     cool_rapid_dwarfs = cool.subsample([
         "~Bad", "Vsini det", "~DLSB", "Dwarf", "Mcq"])
+    hr.logg_teff_plot(cool_giants["TEFF"], cool_giants["LOGG_FIT"], 
+                      color=bc.orange, marker=".", label="Giants", ls="")
     hr.logg_teff_plot(cool_subgiants["TEFF"], cool_subgiants["LOGG_FIT"], 
                       color=bc.purple, marker=".", label="Subgiants", ls="")
     hr.logg_teff_plot(cool_dwarfs["TEFF"], cool_dwarfs["LOGG_FIT"], 
@@ -311,11 +328,12 @@ def cool_dwarf_hr():
     plt.plot([4500, 5690], [3.62, 4.43], 'k-')
     plt.plot([5450, 5450], [3.5, 4.7], 'k:')
     plt.xlim(5750, 3500)
-    plt.ylim(4.7, 3.5)
+    plt.ylim(4.7, 0.5)
     plt.xlabel("APOGEE Teff")
     plt.ylabel("APOGEE Logg")
     plt.legend()
 
+@write_plot("teff_vsini")
 def vsini_teff_trend():
     '''Show vsini against Teff.'''
     cool = cool_data_splitter()
@@ -328,20 +346,23 @@ def vsini_teff_trend():
 
     # Black triangles for nondetections
     plt.plot(cool_dwarfs_nondet["TEFF"], 7*np.ones(len(cool_dwarfs_nondet)), 
-             marker="v", color=bc.black, ls="")
+             marker="v", color=bc.black, ls="", label="Nondetections")
     # Light blue star for marginal rotators
     plt.errorbar(cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["VSINI"],
                  cool_dwarfs_marginal["VSINI"]*0.15/2, marker="*",
-                 color=bc.sky_blue, ls="")
+                 color=bc.sky_blue, ls="", label=r"$v \sin i$ marginal")
     # Dark blue star for rapid rotators
     plt.errorbar(cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["VSINI"],
                  cool_dwarfs_rapid["VSINI"]*0.15/2, marker="*", color=bc.blue,
-                 ls="")
+                 ls="", label=r"$v \sin i$ detection")
 
     plt.xlabel("APOGEE Teff (K)")
     plt.ylabel("APOGEE $v \sin i$ (km/s)")
+    plt.legend(loc="upper left")
+                 
     hr.invert_x_axis()
 
+@write_plot("teff_radius")
 def radius_teff_trend():
     '''Show radius against Teff.'''
     cool = cool_data_splitter()
@@ -376,6 +397,7 @@ def radius_teff_trend():
     plt.ylabel("DSEP Radius")
     hr.invert_x_axis()
 
+@write_plot("teff_period")
 def period_teff_trend():
     '''Show radius against Teff.'''
     cool = cool_data_splitter()
@@ -430,9 +452,9 @@ def plot_rr_fractions():
 
     samp.generate_DSEP_radius_column_with_errors(periodpoints)
 
-#   samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
-#       periodpoints["VSINI"], periodpoints["Prot"], 
-#       periodpoints["DSEP radius"], min_limit=5, max_limit=15)
+    samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
+        periodpoints["VSINI"], periodpoints["Prot"], 
+        periodpoints["DSEP radius"], min_limit=5, max_limit=15)
     samp.plot_rapid_rotation_detection_limits(
         cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
         color=bc.black, ls="--", min_limit=5, max_limit=15) 
