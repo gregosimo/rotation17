@@ -210,6 +210,7 @@ def Pleiades_vsini_comparison():
     plt.xlim(1, 100)
     plt.ylim(1, 100)
 
+
 def Pleiades_teff_vsini_comparison():
     '''Show vsini uncertainties with Teff.'''
     targets = catin.Stauffer_APOGEE_overlap()
@@ -315,6 +316,106 @@ def cool_dwarf_hr():
     plt.ylabel("APOGEE Logg")
     plt.legend()
 
+def vsini_teff_trend():
+    '''Show vsini against Teff.'''
+    cool = cool_data_splitter()
+    cool_dwarfs_rapid = cool.subsample([
+        "~Bad", "Dwarf", "~DLSB", "Mcq", "Vsini det", "~Too Hot"])
+    cool_dwarfs_marginal = cool.subsample([
+        "~Bad", "Dwarf", "~DLSB", "Mcq", "Vsini marginal", "~Too Hot"])
+    cool_dwarfs_nondet = cool.subsample([
+        "~Bad", "Dwarf", "~DLSB", "Mcq", "Vsini nondet", "~Too Hot"])
+
+    # Black triangles for nondetections
+    plt.plot(cool_dwarfs_nondet["TEFF"], 7*np.ones(len(cool_dwarfs_nondet)), 
+             marker="v", color=bc.black, ls="")
+    # Light blue star for marginal rotators
+    plt.errorbar(cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["VSINI"],
+                 cool_dwarfs_marginal["VSINI"]*0.15/2, marker="*",
+                 color=bc.sky_blue, ls="")
+    # Dark blue star for rapid rotators
+    plt.errorbar(cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["VSINI"],
+                 cool_dwarfs_rapid["VSINI"]*0.15/2, marker="*", color=bc.blue,
+                 ls="")
+
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("APOGEE $v \sin i$ (km/s)")
+    hr.invert_x_axis()
+
+def radius_teff_trend():
+    '''Show radius against Teff.'''
+    cool = cool_data_splitter()
+    cool_dwarfs = cool.split_subsample([
+        "~Bad", "Dwarf", "~DLSB", "Mcq", "~Too Hot"])
+    samp.generate_DSEP_radius_column_with_errors(cool_dwarfs.data)
+
+    cool_dwarfs_rapid = cool_dwarfs.subsample(["Vsini det"])
+    cool_dwarfs_marginal = cool_dwarfs.subsample(["Vsini marginal"])
+    cool_dwarfs_nondet = cool_dwarfs.subsample(["Vsini nondet"])
+
+    # Black circles for nondetections
+    plt.errorbar(
+        cool_dwarfs_nondet["TEFF"], cool_dwarfs_nondet["DSEP radius"], 
+        yerr=[-cool_dwarfs_nondet["DSEP radius lower"], 
+              cool_dwarfs_nondet["DSEP radius upper"]], 
+        marker=".", color=bc.black, ls="", ms=5)
+    # Light blue star for marginal rotators
+    plt.errorbar(
+        cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["DSEP radius"], 
+        yerr=[-cool_dwarfs_marginal["DSEP radius lower"], 
+              cool_dwarfs_marginal["DSEP radius upper"]], 
+        marker="*", color=bc.sky_blue, ls="", ms=5)
+    # Dark blue star for rapid rotators
+    plt.errorbar(
+        cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["DSEP radius"], 
+        yerr=[-cool_dwarfs_rapid["DSEP radius lower"], 
+              cool_dwarfs_rapid["DSEP radius upper"]], 
+        marker="*", color=bc.blue, ls="")
+
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("DSEP Radius")
+    hr.invert_x_axis()
+
+def period_teff_trend():
+    '''Show radius against Teff.'''
+    cool = cool_data_splitter()
+    cool_dwarfs = cool.split_subsample([
+        "~Bad", "Dwarf", "~DLSB", "Mcq", "~Too Hot"])
+    mcq = catin.read_McQuillan_catalog()
+    cool_dwarfs.data = au.join_by_id(
+        cool_dwarfs.data, mcq, "kepid", "KIC", join_type="left")
+
+    cool_rapid = cool.subsample([
+        "Vsini det", "~Bad", "Dwarf", "~DLSB", "Mcq", "~Too Hot"])
+    cool_marginal = cool.subsample([
+        "Vsini marginal", "~Bad", "Dwarf", "~DLSB", "Mcq", "~Too Hot"])
+    cool_nondet = cool.subsample([
+        "Vsini nondet", "~Bad", "Dwarf", "~DLSB", "Mcq", "~Too Hot"])
+
+    cool_dwarfs_rapid = au.join_by_id(cool_rapid, mcq, "kepid", "KIC")
+    cool_dwarfs_marginal = au.join_by_id(cool_marginal, mcq, "kepid", "KIC")
+    cool_dwarfs_nondet = au.join_by_id(cool_nondet, mcq, "kepid", "KIC")
+
+    # Black circles for nondetections
+    plt.errorbar(
+        cool_dwarfs_nondet["TEFF"], cool_dwarfs_nondet["Prot"], 
+        yerr=cool_dwarfs_nondet["e_Prot"]/2,
+        marker=".", color=bc.black, ls="")
+    # Light blue star for marginal rotators
+    plt.errorbar(
+        cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["Prot"], 
+        yerr=cool_dwarfs_marginal["e_Prot"]/2,
+        marker="*", color=bc.sky_blue, ls="")
+    # Dark blue star for rapid rotators
+    plt.errorbar(
+        cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["Prot"], 
+        yerr=cool_dwarfs_rapid["e_Prot"]/2,
+        marker="*", color=bc.blue, ls="")
+
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("McQuillan Period")
+    hr.invert_x_axis()
+
 @write_plot("detection_fraction")
 def plot_rr_fractions():
     '''Plot spectroscopic and photometric rapid rotator fractions.'''
@@ -382,18 +483,19 @@ def cool_dwarf_rotation_analysis():
     samp.generate_DSEP_radius_column_with_errors(detections_periodpoints)
 
     subplot_tup = rot.plot_rotation_velocity_radius(
-        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"], 
-        marginal_periodpoints["DSEP radius"],
-        raderr_below=marginal_periodpoints["DSEP radius lower"],
-        raderr_above=marginal_periodpoints["DSEP radius upper"],
-        color=bc.sky_blue)
-        
-    rot.plot_rotation_velocity_radius(
         detections_periodpoints["VSINI"], detections_periodpoints["Prot"], 
         detections_periodpoints["DSEP radius"],
         raderr_below=detections_periodpoints["DSEP radius lower"],
         raderr_above=detections_periodpoints["DSEP radius upper"],
-        color=bc.blue, subplot_tup=subplot_tup, label="Cool dwarfs") 
+        color=bc.blue, label="Cool dwarfs") 
+
+    rot.plot_rotation_velocity_radius(
+        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"], 
+        marginal_periodpoints["DSEP radius"],
+        raderr_below=marginal_periodpoints["DSEP radius lower"],
+        raderr_above=marginal_periodpoints["DSEP radius upper"],
+        subplot_tup=subplot_tup, color=bc.sky_blue)
+        
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
