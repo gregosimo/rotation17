@@ -304,9 +304,37 @@ def asteroseismic_sample_loggs():
     plt.ylabel("Log(g) [cm/s/s]")
     plt.legend(loc="upper left")
 
-@write_plot("cool_sample")
-def cool_dwarf_hr():
-    '''Plot the cool dwarf sample on an HR diagram.
+@write_plot("cool_mk_sample")
+def cool_dwarf_mk():
+    '''Plot the cool dwarf sample on an HR diagram with M_K.
+
+    Illustrate the dwarf/subgiant division in Gaia parallax space.'''
+    cool = cool_data_splitter()
+    cool_full = cool.subsample(["~Bad"])
+    cool_subgiants = cool.subsample(["~Bad", "Subgiant"])
+    cool_dwarfs = cool.subsample(["~Bad", "Dwarf"])
+    cool_giants = cool.subsample(["~Bad", "Giant"])
+    cool_rapid_dwarfs = cool.subsample([
+        "~Bad", "Vsini det", "~DLSB", "Dwarf", "Mcq"])
+    hr.absmag_teff_plot(cool_giants["TEFF"], cool_giants["M_K"], 
+                      color=bc.orange, marker=".", label="Giants", ls="")
+    hr.absmag_teff_plot(cool_subgiants["TEFF"], cool_subgiants["M_K"], 
+                      color=bc.purple, marker=".", label="Subgiants", ls="")
+    hr.absmag_teff_plot(cool_dwarfs["TEFF"], cool_dwarfs["M_K"], 
+                      color=bc.red, marker=".", label="Dwarfs", ls="")
+    hr.absmag_teff_plot(cool_rapid_dwarfs["TEFF"], cool_rapid_dwarfs["M_K"], 
+                      color=bc.blue, marker="*", label="Rapid Rotators",
+                      ls="", ms=7)
+    plt.plot([4500, 5690], [2.24, 2.47], 'k-')
+    plt.plot([5450, 5450], [6, -8], 'k:')
+    plt.xlim(5750, 3500)
+    plt.ylim(6, -8)
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel(r"$M_K$")
+    plt.legend()
+
+def cool_dwarf_logg():
+    '''Plot the cool dwarf sample on an HR diagram using log(g).
 
     Illustrate the subgiant/dwarf division, and overplot rapid rotators.'''
     cool = cool_data_splitter()
@@ -349,11 +377,11 @@ def vsini_teff_trend():
              marker="v", color=bc.black, ls="", label="Nondetections")
     # Light blue star for marginal rotators
     plt.errorbar(cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["VSINI"],
-                 cool_dwarfs_marginal["VSINI"]*0.15/2, marker="*",
+                 cool_dwarfs_marginal["VSINI"]*0.15, marker="*",
                  color=bc.sky_blue, ls="", label=r"$v \sin i$ marginal")
     # Dark blue star for rapid rotators
     plt.errorbar(cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["VSINI"],
-                 cool_dwarfs_rapid["VSINI"]*0.15/2, marker="*", color=bc.blue,
+                 cool_dwarfs_rapid["VSINI"]*0.15, marker="*", color=bc.blue,
                  ls="", label=r"$v \sin i$ detection")
 
     plt.xlabel("APOGEE Teff (K)")
@@ -421,17 +449,17 @@ def period_teff_trend():
     # Black circles for nondetections
     plt.errorbar(
         cool_dwarfs_nondet["TEFF"], cool_dwarfs_nondet["Prot"], 
-        yerr=cool_dwarfs_nondet["e_Prot"]/2,
+        yerr=cool_dwarfs_nondet["e_Prot"],
         marker=".", color=bc.black, ls="")
     # Light blue star for marginal rotators
     plt.errorbar(
         cool_dwarfs_marginal["TEFF"], cool_dwarfs_marginal["Prot"], 
-        yerr=cool_dwarfs_marginal["e_Prot"]/2,
+        yerr=cool_dwarfs_marginal["e_Prot"],
         marker="*", color=bc.sky_blue, ls="")
     # Dark blue star for rapid rotators
     plt.errorbar(
         cool_dwarfs_rapid["TEFF"], cool_dwarfs_rapid["Prot"], 
-        yerr=cool_dwarfs_rapid["e_Prot"]/2,
+        yerr=cool_dwarfs_rapid["e_Prot"],
         marker="*", color=bc.blue, ls="")
 
     plt.xlabel("APOGEE Teff (K)")
@@ -753,6 +781,194 @@ def display_hot_star_census():
         hot_kic.subsample_len(["Bad"]), hot_kic.subsample_len([])))
     print("Non-KIC parameter targets with bad fits: {0:d}/{1:d}".format(
         hot_nonkic.subsample_len(["Bad"]), hot_nonkic.subsample_len([])))
+
+def plot_targs_with_parallaxes():
+    '''Display the rapid rotators in a CMD.'''
+    cool_dwarf = cool_data_splitter()
+    fullsamp = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot"])
+    dlsbs = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot", "DLSB"])
+    marginal = cool_dwarf.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+    detections = cool_dwarf.subsample([
+        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+
+    gaia = catin.read_Gaia_DR2_Kepler()
+    gaia_targets = gaia
+    samp_gaia = au.join_by_id(gaia_targets, fullsamp, "kepid", "kepid")
+    samp_gaia["K_ABSMAG"] = (
+        samp_gaia["K"] + 5 * np.log10(samp_gaia["parallax"]/100))
+    dlsbs_gaia = au.join_by_id(
+        samp_gaia, dlsbs, "kepid", "kepid", conflict_suffixes=("", "_copy"))
+    marginal_gaia = au.join_by_id(samp_gaia, marginal, "kepid", "kepid",
+                                  conflict_suffixes=("", "_copy"))
+    detections_gaia = au.join_by_id(samp_gaia, detections, "kepid", "kepid",
+                                    conflict_suffixes=("", "_copy"))
+
+    mcq = catin.read_McQuillan_catalog()
+    mcq_short = mcq[mcq["Prot"] < 5]
+    mcq_gaia = au.join_by_id(samp_gaia, mcq_short, "kepid", "KIC")
+
+    iso_lowmet = sed.DSEPInterpolator(3, -0.25)
+    iso_highmet = sed.DSEPInterpolator(3, 0.25)
+    isomean = sed.DSEPInterpolator(3, 0.0)
+    dsepteffs = np.linspace(min(fullsamp["TEFF"]), max(fullsamp["TEFF"]), 50)
+    dsepmags = isomean.teff_to_abs_mag(dsepteffs, "Ks")
+    lowmetmags = iso_lowmet.teff_to_abs_mag(dsepteffs, "Ks")
+    highmetmags = iso_highmet.teff_to_abs_mag(dsepteffs, "Ks")
+
+    plt.plot(dsepteffs, dsepmags, color=bc.black, ls="-", 
+             label="DSEP Fiducial")
+    plt.plot(dsepteffs, dsepmags-2.5*np.log10(2), color=bc.black, ls="--", 
+             label="DSEP Binary")
+    plt.plot(dsepteffs, lowmetmags, color=bc.blue, ls="-", 
+             label="[Fe/H] = -0.25")
+    plt.plot(dsepteffs, highmetmags, color=bc.red, ls="-", 
+             label="[Fe/H] = +0.25")
+
+    plt.plot(
+        samp_gaia["TEFF"], samp_gaia["K_ABSMAG"],
+        color=bc.black, ls="None", marker=".", label="APOGEE Dwarfs")
+    plt.plot(
+        dlsbs_gaia["TEFF"], dlsbs_gaia["K_ABSMAG"],
+        color=bc.purple, ls="None", marker="*", label="Known DLSBs", ms=10)
+    plt.plot(
+        marginal_gaia["TEFF"], marginal_gaia["K_ABSMAG"],
+        color=bc.sky_blue, ls="None", marker="o", label="Marginal vsini")
+    plt.plot(
+        detections_gaia["TEFF"], detections_gaia["K_ABSMAG"],
+        color=bc.blue, ls="None", marker="o", label="Vsini detection")
+    plt.plot(
+        mcq_gaia["TEFF"], mcq_gaia["K_ABSMAG"],
+        color=bc.orange, ls="None", marker="^", label="Photometric rapid")
+    print(len(samp_gaia))
+    print(len(dlsbs_gaia))
+    print(len(marginal_gaia))
+    print(len(detections_gaia))
+    print(len(mcq_gaia))
+
+    hr.invert_x_axis()
+    hr.invert_y_axis()
+
+    plt.xlabel("TEFF")
+    plt.ylabel("M_Ks")
+    plt.legend(loc="upper right")
+
+
+def plot_distances_with_targs():
+    '''Display the rapid rotators in a CMD.'''
+    cool_dwarf = cool_data_splitter()
+    fullsamp = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot"])
+    dlsbs = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot", "DLSB"])
+    marginal = cool_dwarf.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+    detections = cool_dwarf.subsample([
+        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+
+    gaia = catin.read_Gaia_DR2_Kepler()
+    gaia_targets = gaia
+    samp_gaia = au.join_by_id(gaia_targets, fullsamp, "kepid", "kepid")
+    samp_gaia["K_ABSMAG"] = (
+        samp_gaia["K"] + 5 * np.log10(samp_gaia["parallax"]/100))
+    dlsbs_gaia = au.join_by_id(
+        samp_gaia, dlsbs, "kepid", "kepid", conflict_suffixes=("", "_copy"))
+    marginal_gaia = au.join_by_id(samp_gaia, marginal, "kepid", "kepid",
+                                  conflict_suffixes=("", "_copy"))
+    detections_gaia = au.join_by_id(samp_gaia, detections, "kepid", "kepid",
+                                    conflict_suffixes=("", "_copy"))
+
+    mcq = catin.read_McQuillan_catalog()
+    mcq_short = mcq[mcq["Prot"] < 5]
+    mcq_gaia = au.join_by_id(samp_gaia, mcq_short, "kepid", "KIC")
+
+    iso_highmet = sed.DSEPInterpolator(3, 0.4)
+    isomean = sed.DSEPInterpolator(3, 0.0)
+    binaries = (samp_gaia["K_ABSMAG"] < 
+               iso_highmet.teff_to_abs_mag(samp_gaia["TEFF"]))
+    singles  = np.logical_not(binaries)
+
+    plt.plot(
+        samp_gaia["TEFF"][singles], 100/samp_gaia["parallax"][singles],
+        color=bc.black, ls="None", marker=".", label="APOGEE Singles")
+    plt.plot(
+        samp_gaia["TEFF"][binaries], 100/samp_gaia["parallax"][binaries],
+        color=bc.pink, ls="None", marker="8", label="APOGEE Binaries")
+    plt.plot(
+        dlsbs_gaia["TEFF"], 100/dlsbs_gaia["parallax"],
+        color=bc.purple, ls="None", marker="*", label="Known DLSBs", ms=10)
+    plt.plot(
+        marginal_gaia["TEFF"], 100/marginal_gaia["parallax"],
+        color=bc.sky_blue, ls="None", marker="o", label="Marginal vsini")
+    plt.plot(
+        detections_gaia["TEFF"], 100/detections_gaia["parallax"],
+        color=bc.blue, ls="None", marker="o", label="Vsini detection")
+    plt.plot(
+        mcq_gaia["TEFF"], 100/mcq_gaia["parallax"],
+        color=bc.orange, ls="None", marker="^", label="Photometric rapid")
+
+    hr.invert_x_axis()
+
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("Distance (Mpc)")
+    plt.legend(loc="upper right")
+
+def plot_targs_rv_scatter():
+    '''Display the rapid rotators in a CMD.'''
+    cool_dwarf = cool_data_splitter()
+    fullsamp = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot"])
+    dlsbs = cool_dwarf.subsample(["~Bad", "Dwarf", "~Too Hot", "DLSB"])
+    marginal = cool_dwarf.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+    detections = cool_dwarf.subsample([
+        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+
+    gaia = catin.read_Gaia_DR2_Kepler()
+    gaia_targets = gaia
+    samp_gaia = au.join_by_id(gaia_targets, fullsamp, "kepid", "kepid")
+    samp_gaia["K_ABSMAG"] = (
+        samp_gaia["K"] + 5 * np.log10(samp_gaia["parallax"]/100))
+    dlsbs_gaia = au.join_by_id(
+        samp_gaia, dlsbs, "kepid", "kepid", conflict_suffixes=("", "_copy"))
+    marginal_gaia = au.join_by_id(samp_gaia, marginal, "kepid", "kepid",
+                                  conflict_suffixes=("", "_copy"))
+    detections_gaia = au.join_by_id(samp_gaia, detections, "kepid", "kepid",
+                                    conflict_suffixes=("", "_copy"))
+
+    mcq = catin.read_McQuillan_catalog()
+    mcq_short = mcq[mcq["Prot"] < 5]
+    mcq_gaia = au.join_by_id(samp_gaia, mcq_short, "kepid", "KIC")
+
+    isomean = sed.DSEPInterpolator(3, 0.0)
+
+    plt.plot(
+        samp_gaia["radial_velocity_error"], 
+        samp_gaia["K_ABSMAG"] - isomean.teff_to_abs_mag(samp_gaia["TEFF"], "Ks"), 
+        color=bc.black, ls="None", marker=".", label="APOGEE Dwarfs")
+    plt.plot(
+        dlsbs_gaia["radial_velocity_error"], 
+        dlsbs_gaia["K_ABSMAG"] - isomean.teff_to_abs_mag(
+            dlsbs_gaia["TEFF"], "Ks"),
+        color=bc.purple, ls="None", marker="*", label="Known DLSBs", ms=10)
+    plt.plot(
+        marginal_gaia["radial_velocity_error"],
+        marginal_gaia["K_ABSMAG"] - isomean.teff_to_abs_mag(
+            marginal_gaia["TEFF"], "Ks"),
+        color=bc.sky_blue, ls="None", marker="o", label="Marginal vsini")
+    plt.plot(
+        detections_gaia["radial_velocity_error"],
+        detections_gaia["K_ABSMAG"] - isomean.teff_to_abs_mag(
+            detections_gaia["TEFF"], "Ks"),
+        color=bc.blue, ls="None", marker="o", label="Vsini detection")
+    plt.plot(
+        mcq_gaia["radial_velocity_error"],
+        mcq_gaia["K_ABSMAG"] - isomean.teff_to_abs_mag(
+            mcq_gaia["TEFF"], "Ks"),
+        color=bc.orange, ls="None", marker="^", label="Photometric rapid")
+
+    hr.invert_y_axis()
+
+    plt.xlabel("RV uncertainty (km/s)")
+    plt.ylabel("Photometric excess")
+    plt.legend(loc="upper right")
 
 if __name__ == "__main__":
 

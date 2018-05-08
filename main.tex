@@ -80,7 +80,20 @@ gyrochronology, which can better characterize the ages of
 \Kepler{} stars, and hence better understand discovered planets.
 
 The \Kepler{} field was chosen to point outside of the plane of the galactic
-disk, biasing the field toward older stars. Despite the old age of the
+disk, biasing the field toward older stars. 
+
+Current attempts to synthesize rotation information with known ages of
+asteroseismic targets in the \Kepler{} field have consistently found a dearth
+of long-period (\(P_{rot} \sim 60\) day) rotators \citet{Angus15,vanSaders16}. 
+Forward modeling of the \Kepler{} field using existing rotation-activity
+relations and estimates of the \Kepler{} selection function further confirm 
+that models significantly under-predict the number of (\(P_{rot} > 30\) day) 
+rotators in the \Kepler{} field \citep{vanSaders18}. Proposed solutions for 
+relieving this tension have been modifying the activity relation in models to 
+drop precipitously at a particular rotation threshold, or modifyling angular 
+momentum loss to shut off at \(P_{rot} \sim 30\) days \citep{vanSaders18}.
+
+Despite the old age of the
 field, there is still a population of rapid rotators at the level of 1\% 
 which have rotation rates significantly higher than expected from
 existing gyrochronological relations \citep{McQuillan14}. Possible explanation
@@ -175,18 +188,15 @@ were also observed
 by APOGEE in the \Kepler{} field, but with more complex selection functions, 
 which we didn't include in this analysis.
 
-We limited our sample to cool dwarfs in order to minimize ambiguity in the 
-stellar radius when comparing rotation periods to \vsini. Large uncertainties 
-in determining stellar parameters propogate to the radius estimates. This is 
-especially prominent for targets with \(\Teff > 5500\) K, where higher-mass 
-subgiants and lower-mass dwarfs can have overlapping \Teff{} and
-\logg{} values.
 
-While detailed modeling of the complex radius uncertainties 
-for all \Kepler{} targets, would allow for a comprehensive analysis of
-rotation, those uncertainties will be greatly reduced in upcoming
-\Gaia{} parallaxes. We chose instead to study measures of
-stellar rotation in the cool  dwarf regime, where
+We selected our sample to minimize ambiguity in the stellar radius when
+comparing rotation periods to \vsini. The hot (\(\Teff > 5500 K\)) star regime
+in particular contains significant confusion between main-sequence stars,
+photometric binaries, and subgiants crossing the Hertzsprung Gap.
+
+In order to sidestep detailed modeling of the complex radius uncertainties 
+for all \Kepler{} targets, we chose instead to study measures of
+stellar rotation in the cool dwarf regime, where
 slow stellar evolution maintains a clean separation between dwarf and
 subgiants. 
 
