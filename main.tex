@@ -184,12 +184,12 @@ We selected our sample to minimize ambiguity in the stellar radius when
 comparing rotation periods to \vsini. The hot (\(\Teff > 5500 K\)) star regime
 in particular contains significant confusion between main-sequence stars,
 photometric binaries, and subgiants crossing the Hertzsprung Gap.
-
 In order to sidestep detailed modeling of the complex radius uncertainties 
 for all \Kepler{} targets, we chose instead to study measures of
 stellar rotation in the cool dwarf regime, where
-slow stellar evolution maintains a clean separation between dwarf and
-subgiants. 
+slow stellar evolution allows the radii to be easily characterizable through
+stellar models, and the cool subgiants where photometric binaries are not a
+contamination source. 
 
 For our base sample, we chose objects observed as part of the APOGEE cool
 dwarf ancillary targeting
@@ -201,9 +201,8 @@ were observed in the first phase of APOGEE with the
 \textit{APOGEE\_KEPLER\_COOLDWARF} targeting flag enabled, much of the rest of
 the sample was observed in APOGEE-2 under the \textit{APOGEE2\_SEISMO\_DWARF}
 flag. We applied the original selection criteria to the new sample in order get
-the updated target list \gvs{Use Jen's original list for this?}. As of the DR14, 
-the program has been \(\sim 85\)\% completed with 1028 objects having been 
-observed. 
+the updated target list. As of the DR14, the program has been \(\sim 85\)\% 
+completed with 1028 objects having been observed. 
 
 We also selected targets based on APOGEE stellar parameter fits. We categorized the 
 sample into those with \STARBAD, \STARWARN,
@@ -219,18 +218,30 @@ sample. We found that the model fits reasonably resembled the target spectra.
 For this reason, we retained targets with the \STARWARN{} flag enabled. The 
 same occured for targets with the \VSINIWARN{} flags.
 
-Systematic uncertainties in \logg{} permeated the original KIC stellar
-classification. Later analyses found many cases of contamination in the dwarf 
-sample by subgiants 
-and giants \citep{Mann12,Gaidos13}. Because the APOGEE cool dwarf sample was 
-selected based on photometry from the original KIC, we expected contamination 
-from subgiant and giants. However, APOGEE stellar parameters, 
-despite being uncalibrated for dwarfs and suffering from 
-systematic uncertainties, are readily able to distinguish between subgiants and 
-dwarfs. This discrimination is demonstrated in the left panel of 
-\cref{fig:sample}; there is a relatively clean separation between the dwarf 
-and subgiant branches. We used the temperature-dependent \logg{} cut shown in 
-\cref{fig:sample} to select 657 dwarfs. 
+We supplement the stellar parameters provided by APOGEE with distances and radii from the 
+\Gaia{} satellite \citep{Gaia16} Data Release 2 \citep{Gaia18}, reanalyzed 
+using the methodology of \citet{Huber14} \citep{Berger18}. In summary, this
+procedure derived new stellar parameters based on priors informed from stellar
+parameters in the Kepler Stellar Parameter Pipeline DR25 \citep{Mathur17}.
+These parameters were ultimately derived from KIC photometry \citep{Brown11},
+with more precise inputs where applicable.
+
+We classify our sample into dwarfs, subgiants, and giants according to
+K-band absolute magnitude from 2MASS \citep{Skrutskie06}. The full sample is
+shown in the left panel of \cref{fig:sample}. The dwarf and subgiant branches
+show a clean separation in K-band absolute magnitude at \(M_K = 2.4\) mag,
+which we use as our cut criterion. To separate subgiants from giants, we use a
+absolute magnitude cut of \(M_K = 0.7\) mag, which roughly corresponds to the
+luminosity of objects with \(\logg = 3.5\), which we define as our subgiant
+criterion. We these K-band absolute magnitude lead to a sample of 654 dwarfs 
+and 91 subgiants. \gvs{Check this}
+
+To cross-check the validity of this classification, and to ensure that the Gaia
+data do not suffer from large systematics, we perform a similar separation
+using raw APOGEE \logg{} values to check how well the two methods agree. When
+APOGEE \logg{} is plotted against \Teff{}, the subgiants and dwarf
+qualitatively behave like two separate branches, despite the branches in detail
+behaving unphysically.
 
 To control for differences between the photometric and spectroscopic sample,
 we performed the bulk of our analysis on the subset of 408 objects
@@ -603,7 +614,7 @@ of 2.5\%.
 
 While spectroscopic rapid rotation didn't necessarily imply photometric rapid
 rotation, we find that photometric rapid rotation is reflected in spectroscopy.
-This can be seen in \cref{fig:
+This can be seen in \gvs{Add figure}
 
 The most obvious systematic error that could cause this problem is
 misclassification of subgiants. Subgiant contamination would explain 
