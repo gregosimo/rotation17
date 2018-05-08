@@ -158,7 +158,7 @@ Under several major observing programs, APOGEE systematically observed over
 5,000 dwarfs and subgiants in the \Kepler{} field. Around half were
 observed as part of a program to determine false positives for
 asteroseismic
-detections\footnote{http://www.sdss.org/dr14/irspec/targets/#AsteroseismicTargets}. 
+detections\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#AsteroseismicTargets}}. 
 They were part of a magnitude-limited sample
 selected according to 6500 K \(> \Teff > 5000\) K and \(\logg > 3.5\)
 according to parameters derived by \citet{Huber14} \citep{Zasowski17}.
@@ -168,9 +168,9 @@ by \citet{Pinsonneault12} and \citet{Brown11} were also
 observed\footnote{\url{http://www.sdss.org/dr14/algorithms/ancillary/apogee/kepler_dwarfs/}}, 
 and the full sample is shown in the left panel of \cref{fig:sample}. 
 Eclipsing
-binaries\footnote{\url{http://www.sdss.org/dr14/irspec/targets/#EclipsingBinaries}} 
+binaries\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#EclipsingBinaries}} 
 and transiting planet host 
-candidates\footnote{\url{http://www.sdss.org/dr14/irspec/targets/#KeplerObjectsofInterest}} 
+candidates\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#KeplerObjectsofInterest}} 
 were also observed 
 by APOGEE in the \Kepler{} field, but with more complex selection functions, 
 which we didn't include in this analysis.
@@ -396,12 +396,12 @@ measuring rotation periods \citep{Reinhold13,Nielsen13,McQuillan14,Garcia14}.
 respectively. Within these overlaps, the different methods get
 consistent periods 65\% and 94\% of the time, respectively, and detect
 aliased periods 7\% and 2\% of the time. The large discrepancy with
-\citet{Reinhold} is attributed to the short baseline of one \Kepler
+\citet{Reinhold13} is attributed to the short baseline of one \Kepler
 quarter, in contrast to the 12 used by \citet{McQuillan14}.
 
 The completeness of \citet{McQuillan14}, on the other hand, is fairly
 good. For targets which had periods reported by \citet{Reinhold13},
-\citet{Mcquillan14} reported missing 1503 of them, leading to a detection
+\citet{McQuillan14} reported missing 1503 of them, leading to a detection
 discrepancy of 7\%. The discrepancy with \citet{Nielsen13} is 2\%.
 
 A comprehensive, hounds-and-hares exercise analyzed the performance of
@@ -409,7 +409,7 @@ several different periodograms on injected stellar rotation signals
 \citep{Aigrain15}. The Autocorrelation Function method used in 
 \citet{McQuillan14} was found to have a 100\% detection rate on noisy
 data while still maintaining around 70 percent reliability in correctly
-identifying an injected signal. In contrast, \citet{Neilsen13} has a low
+identifying an injected signal. In contrast, \citet{Nielsen13} has a low
 detection fraction of 16\%, but 100\% reliability \citep{Aigrain15}.
 \citet{Aigrain15} identifies the most prominent failure modes: detection
 of the spot lifetime instead of the rotational period, and detection of
@@ -510,8 +510,7 @@ rotators observed.
 \label{sec:fraction}
 
 \begin{figure}[htb]
-    \centering
-    \includegraphics[width=0.8\textwidth]{detection_fraction}
+    \plotone{detection_fraction}
     \caption{Cumulative distribution function of \vsini{} for four
     samples. The rapid rotator fraction at a given \vsini{} threshold
     would be one minus the value of the cumulative distribution function
@@ -520,7 +519,7 @@ rotators observed.
     1-\(\sigma\) binomial confidence levels. The solid red line denotes
     the cumulative distribution function of \(v_{eq}\) derived from the
     rotation periods and stellar radii. The dotted red line denotes the
-    cumulative distribution function of \(\v_{eq}\), but corrected for
+    cumulative distribution function of \(v_{eq}\), but corrected for
     random inclinations. Lastly, the dashed black line marks the
     cumulative distribution function of \vsini{} for the cool dwarf
     sample without periods detected in 
@@ -627,8 +626,22 @@ rapid rotation in genuine, spotted rapid rotators.
 \section{Results}
 \label{sec:results}
 
+\begin{figure*}
+  \plotone{cool_rot}
+  \caption{\emph{Left:} APOGEE \vsini{} plotted against equatorial
+  velocity computed from the rotation period and radius for targets with
+  detected rapid rotation. The confirmed \vsini{} detections are shown
+  in dark blue while the marginal \vsini{} detections are shown in light
+  blue. The solid and dashed lines correspond to values where \(\sin i =
+  1, 0.5\), respectively. The hatched area represents the forbidden
+  region where \(\sin i > 1\). \emph{Right:} Symbols are similar to left
+  side, except points are projected such that the DSEP-derived radius is
+  plotted against the radius inferred from \vsini{} and rotation
+  period.\label{fig:rot}}
+\end{figure*}
+
 \begin{figure}
-  \plotone{period_vsini}
+  \plotone{teff_period}
   \caption{The APOGEE \Teff-\citet{McQuillan14} period distribution of the 
   cool dwarf sample. Confident \vsini{} detections are shown as dark blue
   stars while marginal \vsini{} detections are shown as light blue
@@ -675,10 +688,6 @@ overlaps with \citet{McQuillan14} \(4000 \textrm{ K } > \Teff > 3200\) K, they
 find that 5.8\% of their targets have \(\vsini > 8 \kms\). This is 
 significantly greater than our photometric rapid rotator fraction at 8 \kms{} 
 of 2.5\%. 
-
-While spectroscopic rapid rotation didn't necessarily imply photometric rapid
-rotation, we find that photometric rapid rotation is reflected in spectroscopy.
-This can be seen in \cref{fig:
 
 While spectroscopic rapid rotation didn't necessarily imply photometric
 rapid rotation, we find that photometric rapid rotation is generally
