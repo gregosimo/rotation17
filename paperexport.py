@@ -42,12 +42,13 @@ def write_plot(filename, suffix=PLOT_SUFFIX, toplevel=FIGURE_PATH):
         @functools.wraps(f)
         def wrapper():
             plt.close("all")
-            f()
+            a = f()
             filepath = build_filepath(toplevel, filename, suffix=suffix)
             # Have a hidden file that is modified every time the figure is
             # written. This will work better with make.
 #            touch(build_filepath(toplevel.parent, "."+filename, suffix="txt"))
             plt.savefig(filepath)
+            return a
         return wrapper
     return decorator
 
@@ -311,27 +312,68 @@ def cool_dwarf_mk():
     Illustrate the dwarf/subgiant division in Gaia parallax space.'''
     cool = cool_data_splitter()
     cool_full = cool.subsample(["~Bad"])
-    cool_subgiants = cool.subsample(["~Bad", "Subgiant"])
-    cool_dwarfs = cool.subsample(["~Bad", "Dwarf"])
-    cool_giants = cool.subsample(["~Bad", "Giant"])
-    cool_rapid_dwarfs = cool.subsample([
-        "~Bad", "Vsini det", "~DLSB", "Dwarf", "Mcq"])
+    cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
+    cool_dwarfs = cool.subsample(["~Bad", "Berger Main Sequence"])
+    cool_giants = cool.subsample(["~Bad", "Berger Giant"])
+    cool_binaries = cool.subsample(["~Bad", "Berger Cool Binary"])
+    cool_rapid = cool.subsample([
+        "~Bad", "Vsini det", "~DLSB", "~Giant"])
+    cool_marginal = cool.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "~Giant"])
+    apogee_misclassified_subgiants = cool.subsample([
+        "~Bad", "APOGEE Subgiant", "Dwarf"])
+    apogee_misclassified_dwarfs = cool.subsample([
+        "~Bad", "APOGEE Dwarf", "Subgiant"])
+    dlsbs = cool.subsample([ "~Bad", "DLSB", "~Giant"])
+
+    cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
+    mcq = catin.read_McQuillan_catalog()
+    mcq_joined = au.join_by_id(cool_mcq, mcq, "kepid", "KIC")
+    rapid_rotators = mcq_joined[mcq_joined["Prot"] < 3]
+
     hr.absmag_teff_plot(cool_giants["TEFF"], cool_giants["M_K"], 
                       color=bc.orange, marker=".", label="Giants", ls="")
     hr.absmag_teff_plot(cool_subgiants["TEFF"], cool_subgiants["M_K"], 
                       color=bc.purple, marker=".", label="Subgiants", ls="")
     hr.absmag_teff_plot(cool_dwarfs["TEFF"], cool_dwarfs["M_K"], 
-                      color=bc.red, marker=".", label="Dwarfs", ls="")
-    hr.absmag_teff_plot(cool_rapid_dwarfs["TEFF"], cool_rapid_dwarfs["M_K"], 
-                      color=bc.blue, marker="*", label="Rapid Rotators",
+                      color=bc.algae, marker=".", label="Dwarfs", ls="")
+    hr.absmag_teff_plot(cool_binaries["TEFF"], cool_binaries["M_K"], 
+                      color=bc.green, marker=".", label="Binaries", ls="")
+    hr.absmag_teff_plot(cool_rapid["TEFF"], cool_rapid["M_K"], 
+                      color=bc.blue, marker="o", label="Rapid Rotators",
                       ls="", ms=7)
-    plt.plot([4500, 5690], [2.24, 2.47], 'k-')
+    hr.absmag_teff_plot(cool_marginal["TEFF"], cool_marginal["M_K"], 
+                      color=bc.sky_blue, marker="o", label="Rapid Rotators",
+                      ls="", ms=7)
+    hr.absmag_teff_plot(rapid_rotators["TEFF"], rapid_rotators["M_K"],
+                        color=bc.violet, marker="d", label="P < 3 day", ls="")
+    hr.absmag_teff_plot(dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*",
+                        label="SB2", ls="")
+    hr.absmag_teff_plot(apogee_misclassified_subgiants["TEFF"],
+                        apogee_misclassified_subgiants["M_K"], color=bc.red,
+                        marker="x", label="Mismatched Spec. Ev. State", ls="",
+                        ms=7)
+    hr.absmag_teff_plot(apogee_misclassified_dwarfs["TEFF"],
+                        apogee_misclassified_dwarfs["M_K"], color=bc.red,
+                        marker="x", ls="", label="", ms=7)
+
+    plt.plot([5750, 3500], [2.4, 2.4], 'k-')
+    plt.plot([5750, 3500], [0.7, 0.7], 'k-')
     plt.plot([5450, 5450], [6, -8], 'k:')
     plt.xlim(5750, 3500)
     plt.ylim(6, -8)
     plt.xlabel("APOGEE Teff (K)")
     plt.ylabel(r"$M_K$")
-    plt.legend()
+    plt.legend(loc="upper left")
+
+    print("APOGEE-classified dwarfs: {0:d}".format(cool.subsample_len(
+        ["~Bad", "Subgiant", "APOGEE Dwarf"])))
+    print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
+        ["~Bad", "Subgiant", "APOGEE Dwarf", "Vsini det", "~DLSB"])))
+    print("APOGEE-classified subgiants: {0:d}".format(cool.subsample_len(
+        ["~Bad", "Dwarf", "APOGEE Subgiant", "~DLSB"])))
+    print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
+        ["~Bad", "Dwarf", "APOGEE Subgiant", "Vsini det", "~DLSB"])))
 
 def cool_dwarf_logg():
     '''Plot the cool dwarf sample on an HR diagram using log(g).
@@ -360,6 +402,72 @@ def cool_dwarf_logg():
     plt.xlabel("APOGEE Teff")
     plt.ylabel("APOGEE Logg")
     plt.legend()
+
+def huber_apogee_teff_comparison():
+    '''Plot Huber vs APOGEE Teffs.'''
+
+    cool = cool_data_splitter()
+    cool_full = cool.subsample(["Bad"])
+    cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
+    cool_dwarfs = cool.subsample(["~Bad", "Berger Main Sequence"])
+    cool_giants = cool.subsample(["~Bad", "Berger Giant"])
+    cool_binaries = cool.subsample(["~Bad", "Berger Cool Binary"])
+    cool_rapid = cool.subsample([
+        "~Bad", "Vsini det", "~DLSB", "~Giant"])
+    cool_marginal = cool.subsample([
+        "~Bad", "Vsini marginal", "~DLSB", "~Giant"])
+    apogee_misclassified_subgiants = cool.subsample([
+        "~Bad", "APOGEE Subgiant", "Dwarf"])
+    apogee_misclassified_dwarfs = cool.subsample([
+        "~Bad", "APOGEE Dwarf", "Subgiant"])
+    dlsbs = cool.subsample([ "~Bad", "DLSB", "~Giant"])
+
+    plt.errorbar(
+        cool_giants["TEFF"], cool_giants["teff"]-cool_giants["TEFF"], 
+        yerr=[cool_giants["teff_err1"], -cool_giants["teff_err2"]], 
+        color=bc.orange, marker=".", label="Giants", ls="")
+    plt.errorbar(
+        cool_subgiants["TEFF"], cool_subgiants["teff"]-cool_subgiants["TEFF"], 
+        yerr=[cool_subgiants["teff_err1"], -cool_subgiants["teff_err2"]], 
+        color=bc.purple, marker=".", label="Subgiants", ls="")
+    plt.errorbar(
+        cool_dwarfs["TEFF"], cool_dwarfs["teff"]-cool_dwarfs["TEFF"], 
+        yerr=[cool_dwarfs["teff_err1"], -cool_dwarfs["teff_err2"]], 
+        color=bc.algae, marker=".", label="Dwarfs", ls="")
+    plt.errorbar(
+        cool_binaries["TEFF"], cool_binaries["teff"]-cool_binaries["TEFF"], 
+        yerr=[cool_binaries["teff_err1"], -cool_binaries["teff_err2"]], 
+        color=bc.green, marker=".", label="Binaries", ls="")
+    plt.errorbar(
+        cool_rapid["TEFF"], cool_rapid["teff"]-cool_rapid["TEFF"], 
+        yerr=[cool_rapid["teff_err1"], -cool_rapid["teff_err2"]], 
+        color=bc.blue, marker="o", label="Rapid Rotators", ls="", ms=7)
+    plt.errorbar(
+        cool_marginal["TEFF"], cool_marginal["teff"]-cool_marginal["TEFF"], 
+        yerr=[cool_marginal["teff_err1"], -cool_marginal["teff_err2"]], 
+        color=bc.sky_blue, marker="o", label="Rapid Rotators", ls="", ms=7)
+    plt.errorbar(
+        dlsbs["TEFF"], dlsbs["teff"]-dlsbs["TEFF"], 
+        yerr=[dlsbs["teff_err1"], -dlsbs["teff_err2"]], 
+        color=bc.light_pink, marker="*", label="SB2", ls="")
+    plt.errorbar(
+        apogee_misclassified_subgiants["TEFF"], 
+        apogee_misclassified_subgiants["teff"]-
+        apogee_misclassified_subgiants["TEFF"], 
+        yerr=[apogee_misclassified_subgiants["teff_err1"], -apogee_misclassified_subgiants["teff_err2"]], 
+        color=bc.red, marker="x", label="Mismatched Spec. Ev. State", ls="", 
+        ms=7)
+    plt.errorbar(
+        apogee_misclassified_dwarfs["TEFF"],
+        apogee_misclassified_dwarfs["teff"]-
+        apogee_misclassified_dwarfs["TEFF"], 
+        yerr=[apogee_misclassified_dwarfs["teff_err1"], -apogee_misclassified_dwarfs["teff_err2"]], 
+        color=bc.red, marker="x", ls="", label="", ms=7)
+
+    plt.plot([3500, 6500], [0.0, 0.0], 'k-')
+    plt.legend(loc="lower right")
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("Huber - APOGEE Teff (K)")
 
 @write_plot("teff_vsini")
 def vsini_teff_trend():
