@@ -53,7 +53,7 @@ mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
 # that may be annoyingly difficult.
 #
-$(mainfile).pdf: $(maintex) $(bibfile)
+$(mainfile).pdf: $(maintex) $(bibfile) paperexport.py
 	latexmk -pdf $(maintex)
 
 $(mainfile).ps: $(maintex) $(bibfile)
