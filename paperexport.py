@@ -280,7 +280,7 @@ def plot_lower_limit_Pleiades_test():
     plt.ylabel("Probability that high and low distributions are the same")
 
 @write_plot("astero")
-def asteroseismic_sample_loggs():
+def asteroseismic_sample_MK():
     '''Write an HR diagram consisting of the asteroseismic sample.
     
     Plot the asteroseismic and spectroscopic log(g) values separately. Should
@@ -290,19 +290,51 @@ def asteroseismic_sample_loggs():
     fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
     astero = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs"])
 
-    hr.logg_teff_plot(
-        fulldata["TEFF_COR"], fulldata["LOGG_FIT"], color=bc.black, marker=".",
-        label="APOGEE", ls="")
-    hr.logg_teff_plot(astero["TEFF_COR"], astero["LOGG_DW"], color=bc.green,
-                      marker="*", ms=8, label="Asteroseismic log(g)", ls="")
-    hr.logg_teff_plot(astero["TEFF_COR"], astero["LOGG_FIT"],
-                      color=bc.light_pink, marker="o", ms=6, 
-                      label="Spectroscopic log(g)", ls="")
+    hr.absmag_teff_plot(
+        fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
+        label="APOGEE Hot Sample", ls="")
+    hr.logg_teff_plot(astero["TEFF_COR"], astero["M_K"], color=bc.green,
+                      marker="*", ms=8, label="Asteroseismic sample", ls="")
 
     plt.xlim([6750, 4750])
-    plt.ylim([5.0, 3.0])
+    plt.ylim([6, -3])
     plt.xlabel("APOGEE Teff (K)")
-    plt.ylabel("Log(g) [cm/s/s]")
+    plt.ylabel(r"$M_K$")
+    plt.legend(loc="upper left")
+
+def asteroseismic_logg_Gaia_comparison():
+    '''Write an HR diagram consisting of the asteroseismic sample.
+    
+    Plot the asteroseismic and spectroscopic log(g) values separately. Should
+    also plot the underlying APOKASC sample.'''
+    apokasc = asteroseismic_data_splitter()
+    apokasc.split_targeting("APOGEE2_APOKASC_DWARF")
+    fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
+    astero_samp = apokasc.split_subsample(["~Bad", "Asteroseismic Dwarfs"])
+    astero_samp.split_logg(
+        "LOGG_DW", 4.2, ("Cool astero subgiant", "Cool astero dwarfs"), 
+        logg_crit="Seismic logg")
+    astero_hot = astero_samp.subsample(["Hot"])
+    astero_subgiants = astero_samp.subsample(["Cool", "Cool astero subgiant"])
+    astero_dwarfs = astero_samp.subsample(["Cool", "Cool astero dwarfs"])
+
+    hr.absmag_teff_plot(
+        fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
+        label="APOGEE", ls="")
+    hr.absmag_teff_plot(
+        astero_hot["TEFF_COR"], astero_hot["M_K"], color=bc.green, marker="*", 
+        ms=8, label="Hot stars", ls="")
+    hr.absmag_teff_plot(
+        astero_subgiants["TEFF_COR"], astero_subgiants["M_K"], 
+        color=bc.light_pink, marker="o", ms=6, label="Cool subgiants", ls="")
+    hr.absmag_teff_plot(
+        astero_dwarfs["TEFF_COR"], astero_dwarfs["M_K"], 
+        color=bc.violet, marker="o", ms=6, label="Cool dwarfs", ls="")
+
+    plt.xlim([6750, 4750])
+    plt.ylim([6, -8])
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("M_K")
     plt.legend(loc="upper left")
 
 @write_plot("cool_mk_sample")
@@ -407,7 +439,7 @@ def huber_apogee_teff_comparison():
     '''Plot Huber vs APOGEE Teffs.'''
 
     cool = cool_data_splitter()
-    cool_full = cool.subsample(["Bad"])
+    cool_full = cool.subsample(["~Bad"])
     cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
     cool_dwarfs = cool.subsample(["~Bad", "Berger Main Sequence"])
     cool_giants = cool.subsample(["~Bad", "Berger Giant"])
