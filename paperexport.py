@@ -296,6 +296,39 @@ def asteroseismic_sample_MK():
     hr.logg_teff_plot(astero["TEFF_COR"], astero["M_K"], color=bc.green,
                       marker="*", ms=8, label="Asteroseismic sample", ls="")
 
+    # Let's throw some isochrones here.
+    iso1GyrM00 = sed.DSEPInterpolator(
+        1, 0.0, highT=7000, lowT=3000, minlogG=1.0)
+    iso10GyrM00 = sed.DSEPInterpolator(
+        1, 0.0, highT=7000, lowT=3000, minlogG=1.0)
+    iso1GyrM05 = sed.DSEPInterpolator(
+        1, 0.5, highT=7000, lowT=3000, minlogG=1.0)
+    iso10GyrM05 = sed.DSEPInterpolator(
+        1, 0.5, highT=7000, lowT=3000, minlogG=1.0)
+    iso1GyrMm05 = sed.DSEPInterpolator(
+        1, -0.5, highT=7000, lowT=3000, minlogG=1.0)
+    iso10GyrMm05 = sed.DSEPInterpolator(
+        1, -0.5, highT=7000, lowT=3000, minlogG=1.0)
+
+    fullmasses = np.linspace(0.4, 1.4, 1000)
+    Teff1GyrM00 = iso1GyrM00.mass_to_teff(fullmasses)
+    MK1GyrM00 = iso1GyrM00.mass_to_abs_mag(fullmasses, "Ks")
+    plt.plot(Teff1GyrM00, MK1GyrM00, 'r-')
+
+    Teff10GyrM00 = iso10GyrM00.mass_to_teff(fullmasses[fullmasses < 1.043])
+    MK10GyrM00 = iso10GyrM00.mass_to_abs_mag(fullmasses[fullmasses < 1.043], "Ks")
+    plt.figure()
+    plt.plot(fullmasses[fullmasses < 1.043], Teff10GyrM00, 'k-')
+    plt.figure()
+    plt.plot(fullmasses[fullmasses < 1.043], MK10GyrM00, 'k-')
+    plt.figure()
+    print(fullmasses[fullmasses < 1.043])
+    print(Teff10GyrM00)
+    print(MK10GyrM00)
+    plt.plot(Teff10GyrM00, MK10GyrM00, 'c-')
+
+    
+
     plt.xlim([6750, 4750])
     plt.ylim([6, -3])
     plt.xlabel("APOGEE Teff (K)")
