@@ -53,20 +53,26 @@
     The \Kepler{} fields have yielded a large data set of photometric rotation
     periods, which when combined with \Gaia{} parallaxes and APOGEE
     high-resolution spectroscopic data for over 4,000 dwarfs and subgiants, 
-    will reveal significant insights into the evolution of rotation in stars, 
-    We report on 
-    spectroscopic measurements of stellar rotation from APOGEE in an
-    easily-characterized sample of over 600 cool dwarfs in the
-    \Kepler{} fields. Our data are in good agreement with literature values for
-    targets in common, with a detection threshold between 6 and 12 \kms. We
+    can reveal significant insights into the evolution of rotation in stars, 
+    We find that even with radii derived from \Gaia{} DR2 parallaxes and
+    spectroscopic parameters, uncertainties caused by confusion between the
+    main sequence, subgiants, and photometric binaries lead to difficulties
+    interpreting stellar rotation for hot (\(\Teff > 5500\) K) stars. We 
+    report on spectroscopic measurements of stellar rotation from APOGEE in an
+    easily-characterized sample of over 600 cool dwarfs and subgiants in the
+    \Kepler{} field. Our data are in good agreement with literature values for
+    targets in common, with a detection threshold between 7 and 10 \kms. We
     find a rapid rotation fraction of \(\sim 10\%\), a larger than expected
-    population of young stars. When comparing spectroscopic to photometric
-    rotation rates, we find that the photometric rapid rotator fraction is
-    lower than the spectroscopic fraction by a factor of 4-5. A point-by-point
-    analysis reveals that almost all targets have rotation periods too long for
-    their measured \vsini{}. We find these results suggest that current 
-    large-scale photometric surveys may mis-characterize or exclude cool rapid 
-    rotators in the field. 
+    population of young stars, an enhancement we attribute to rapid rotation
+    being associated with photometric binaries. When comparing spectroscopic 
+    to photometric rotation rates, we find that the photometric rapid rotator 
+    fraction is lower than the spectroscopic fraction by a factor of 4--5; a 
+    point-by-point analysis reveals that almost all targets have rotation 
+    periods too long for their measured \vsini{}. We find these results 
+    suggest that either significant contamination of field \vsini{}
+    measurements by photometric binaries with blended spectral features, or 
+    current large-scale photometric surveys may mis-characterize or exclude 
+    cool rapid rotators in the field. 
 \end{abstract}
 \keywords{stars: rotation}
 
@@ -142,18 +148,18 @@ Section~\ref{sec:conclusions}.
     \plottwo{astero}{cool_sample}
     \caption{\emph{Left:} Stellar properties of the full APOKASC 
     asteroseismic dwarf/subgiant control sample. The black points mark
-    spectroscopic \logg{}s for the full control sample. For the
-    subsampleshowing oscillations, asteroseismically-derived \logg{}s are 
-    marked as green stars, while spectroscopically-derived \logg{}s are 
-    marked as orange circles. 
+    K-band absolute magnitudes for the full control sample. Green stars mark
+    the subsample showing oscillations. 
     \emph{Right:} The full cool dwarf sample as measured with APOGEE stellar 
-    parameters. Stars with \(\logg < 3.0\) are classified as giants, and are 
-    labeled as pink circles. Subgiants and dwarfs are separated by the shown 
-    dividing line, with subgiants as purple circles and dwarfs as red circles. 
-    Rapid rotators with \(\vsini > 12 \kms\) are denoted with dark blue stars, 
-    while stars with marginally detected rotation \(7 \kms < \vsini < 12 
-    \kms\) are denoted with light blue stars. The dotted vertical line 
-    indicates the \(\Teff = 5450\) K boundary.\label{fig:sample}}
+    parameters. The stellar classifications follow that in \citet{Berger18},
+    with dwarfs, subgiants, and giants marked as teal, purple, and mustard
+    dots. Rapid rotators with \(\vsini > 10 \kms\) are denoted as dark blue 
+    circles, while stars with marginally detected rotation \(7 \kms < \vsini 
+    < 10 \kms\) are denoted with light blue circles. Objects showing rapid
+    (\(P_{rot} < 3 \) day) photometric rotation are indicated with purple
+    diamonds. Objects showing double-lined APOGEE spectra are indicated as 
+    salmon stars. The dotted vertical 
+    line indicates the \(\Teff = 5450\) K boundary.\label{fig:sample}}
 \end{figure*}
 
 The central dataset for this analysis is from the Apache Point Observatory 
@@ -188,6 +194,7 @@ were also observed
 by APOGEE in the \Kepler{} field, but with more complex selection functions, 
 which we didn't include in this analysis.
 
+\subsection{Hot Dwarfs}
 
 We selected our sample to minimize ambiguity in the stellar radius when
 comparing rotation periods to \vsini. The hot (\(\Teff > 5500 K\)) star regime
@@ -199,6 +206,8 @@ stellar rotation in the cool dwarf regime, where
 slow stellar evolution allows the radii to be easily characterizable through
 stellar models, and the cool subgiants where photometric binaries are not a
 contamination source. 
+
+\subsection{Cool Dwarfs}
 
 For our base sample, we chose objects observed as part of the APOGEE cool
 dwarf ancillary targeting
@@ -479,6 +488,34 @@ For the rest of the objects, a more comprehensive upcoming analysis
 (Simonian et al.\ in prep) indicates that not only are the \vsini{} values 
 physically plausible, but their distributions are consistent with the
 rotational periods within the given uncertainties.
+
+\subsection{Photometric Binaries}
+
+\Gaia{} parallaxes provide a valuable way of separating photometric binaries
+from the rest of the sample. As can be seen in \cref{fig:sample}, photometric
+binaries clearly stand out approximately 0.75 mag above the main sequence, a
+level significantly higher than the typical uncertainty in absolute magnitude. 
+We attempt to separate the photometric binaries from the main sequence by
+comparing the observed K-band absolute magnitude to that predicted by DSEP
+isochrones.
+
+The primary uncertainties in the predicted isochrone are the metallicity and
+age. The availability of APOGEE metallicities throughout the sample provides
+significantly improved constraints on whether targets are photometric binaries
+or not. For derive K-band absolute magnitudes by inputting APOGEE
+\Teff{} and [Fe/H] values, and assuming solar alpha abundance on a grid of
+models with metallicity differences of \([Fe/H] = 0.05\). The resulting offset
+between observed and calculated K-band absolute magnitude is shown in 
+\cref{fig:binarity}. 
+
+The effect of age can be seen as the temperature-dependent scatter on the main
+sequence. Based on DSEP-modelled K-band luminosity differences between 1--10
+Gyr, the scatter due to age ignorance can be up to 0.25 mag at \(\Teff \sim
+5500\) K, down to 0.05 mag at \(\Teff \sim 4000 \) K. For this reason, we adopt
+a more conservative cut at the hot end to avoid misclassifiying evolved single
+stars, with a more generous cut at the cool end, where age effects are less
+significant.
+
 
 \subsection{Stellar Radii Validation}
 \label{sec:radii}
