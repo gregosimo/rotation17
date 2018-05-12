@@ -378,18 +378,22 @@ def cool_dwarf_mk():
     cool = cool_data_splitter()
     cool_full = cool.subsample(["~Bad"])
     cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
-    cool_dwarfs = cool.subsample(["~Bad", "Berger Main Sequence"])
+    cool_dwarfs = cool.subsample(["~Bad", "Modified Berger Main Sequence"])
     cool_giants = cool.subsample(["~Bad", "Berger Giant"])
-    cool_binaries = cool.subsample(["~Bad", "Berger Cool Binary"])
+    cool_binaries = cool.subsample(["~Bad", "Modified Berger Cool Binary"])
     cool_rapid = cool.subsample([
-        "~Bad", "Vsini det", "~DLSB", "~Giant"])
+        "~Bad", "Vsini det", "~DLSB"])
     cool_marginal = cool.subsample([
-        "~Bad", "Vsini marginal", "~DLSB", "~Giant"])
-    apogee_misclassified_subgiants = cool.subsample([
-        "~Bad", "APOGEE Subgiant", "Dwarf"])
+        "~Bad", "Vsini marginal", "~DLSB"])
+
+    apogee_misclassified_subgiants = vstack([
+        cool.subsample([
+            "~Bad", "APOGEE Subgiant", "Modified Berger Main Sequence"]),
+        cool.subsample([
+            "~Bad", "APOGEE Subgiant", "Modified Berger Cool Binary"])])
     apogee_misclassified_dwarfs = cool.subsample([
-        "~Bad", "APOGEE Dwarf", "Subgiant"])
-    dlsbs = cool.subsample([ "~Bad", "DLSB", "~Giant"])
+        "~Bad", "APOGEE Dwarf", "Berger Subgiant"])
+    dlsbs = cool.subsample([ "~Bad", "DLSB", "~Berger Giant"])
 
     cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
     mcq = catin.read_McQuillan_catalog()
@@ -408,7 +412,7 @@ def cool_dwarf_mk():
                       color=bc.blue, marker="o", label="Rapid Rotators",
                       ls="", ms=7)
     hr.absmag_teff_plot(cool_marginal["TEFF"], cool_marginal["M_K"], 
-                      color=bc.sky_blue, marker="o", label="Rapid Rotators",
+                      color=bc.sky_blue, marker="o", label="Marginal Rotators",
                       ls="", ms=7)
     hr.absmag_teff_plot(rapid_rotators["TEFF"], rapid_rotators["M_K"],
                         color=bc.violet, marker="d", label="P < 3 day", ls="")
@@ -422,8 +426,6 @@ def cool_dwarf_mk():
                         apogee_misclassified_dwarfs["M_K"], color=bc.red,
                         marker="x", ls="", label="", ms=7)
 
-    plt.plot([5750, 3500], [2.4, 2.4], 'k-')
-    plt.plot([5750, 3500], [0.7, 0.7], 'k-')
     plt.plot([5450, 5450], [6, -8], 'k:')
     plt.xlim(5750, 3500)
     plt.ylim(6, -8)
@@ -644,21 +646,31 @@ def plot_rr_fractions():
     '''Plot spectroscopic and photometric rapid rotator fractions.'''
     cool_data = cool_data_splitter()
     cool_dwarfs_mcq = cool_data.subsample([
-        "~Bad", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+        "~Bad", "~DLSB", "Mcq", "Modified Berger Main Sequence", "~Too Hot"])
+    cool_binaries_mcq = cool_data.subsample([
+        "~Bad", "~DLSB", "Mcq", "Modified Berger Cool Binary", "~Too Hot"])
     cool_dwarfs_nomcq = cool_data.subsample([
-        "~Bad", "~DLSB", "~Mcq", "Dwarf", "~Too Hot"])
+        "~Bad", "~DLSB", "~Mcq", "Modified Berger Main Sequence", "~Too Hot"])
+    cool_binaries_nomcq = cool_data.subsample([
+        "~Bad", "~DLSB", "~Mcq", "Modified Berger Cool Binary", "~Too Hot"])
+
 
     mcq = catin.read_McQuillan_catalog()
-    periodpoints = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
+    dwarf_periods = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
+    binary_periods = au.join_by_id(cool_binaries_mcq, mcq, "kepid", "KIC")
 
-    samp.generate_DSEP_radius_column_with_errors(periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(dwarf_periods)
+    samp.generate_DSEP_radius_column_with_errors(binary_periods)
 
     samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
-        periodpoints["VSINI"], periodpoints["Prot"], 
-        periodpoints["DSEP radius"], min_limit=5, max_limit=15)
+        dwarf_periods["VSINI"], dwarf_periods["Prot"], 
+        dwarf_periods["DSEP radius"], min_limit=6, max_limit=12, linestyle="-")
+    samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
+        binary_periods["VSINI"], binary_periods["Prot"], 
+        binary_periods["DSEP radius"], min_limit=6, max_limit=12, linestyle=":")
     samp.plot_rapid_rotation_detection_limits(
         cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
-        color=bc.black, ls="--", min_limit=5, max_limit=15) 
+        color=bc.black, ls="--", min_limit=6, max_limit=12) 
     plt.ylim(0.7, 1.0)
     plt.legend(loc="lower right")
 
