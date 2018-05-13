@@ -289,45 +289,22 @@ def asteroseismic_sample_MK():
     apokasc.split_targeting("APOGEE2_APOKASC_DWARF")
     fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
     astero = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs"])
+    spec_rapid = apokasc.subsample([
+        "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini det", "~DLSB"])
+    dlsbs = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "DLSB"])
 
     hr.absmag_teff_plot(
         fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
         label="APOGEE Hot Sample", ls="")
-    hr.logg_teff_plot(astero["TEFF_COR"], astero["M_K"], color=bc.green,
-                      marker="*", ms=8, label="Asteroseismic sample", ls="")
-
-    # Let's throw some isochrones here.
-    iso1GyrM00 = sed.DSEPInterpolator(
-        1, 0.0, highT=7000, lowT=3000, minlogG=1.0)
-    iso10GyrM00 = sed.DSEPInterpolator(
-        1, 0.0, highT=7000, lowT=3000, minlogG=1.0)
-    iso1GyrM05 = sed.DSEPInterpolator(
-        1, 0.5, highT=7000, lowT=3000, minlogG=1.0)
-    iso10GyrM05 = sed.DSEPInterpolator(
-        1, 0.5, highT=7000, lowT=3000, minlogG=1.0)
-    iso1GyrMm05 = sed.DSEPInterpolator(
-        1, -0.5, highT=7000, lowT=3000, minlogG=1.0)
-    iso10GyrMm05 = sed.DSEPInterpolator(
-        1, -0.5, highT=7000, lowT=3000, minlogG=1.0)
-
-    fullmasses = np.linspace(0.4, 1.4, 1000)
-    Teff1GyrM00 = iso1GyrM00.mass_to_teff(fullmasses)
-    MK1GyrM00 = iso1GyrM00.mass_to_abs_mag(fullmasses, "Ks")
-    plt.plot(Teff1GyrM00, MK1GyrM00, 'r-')
-
-    Teff10GyrM00 = iso10GyrM00.mass_to_teff(fullmasses[fullmasses < 1.043])
-    MK10GyrM00 = iso10GyrM00.mass_to_abs_mag(fullmasses[fullmasses < 1.043], "Ks")
-    plt.figure()
-    plt.plot(fullmasses[fullmasses < 1.043], Teff10GyrM00, 'k-')
-    plt.figure()
-    plt.plot(fullmasses[fullmasses < 1.043], MK10GyrM00, 'k-')
-    plt.figure()
-    print(fullmasses[fullmasses < 1.043])
-    print(Teff10GyrM00)
-    print(MK10GyrM00)
-    plt.plot(Teff10GyrM00, MK10GyrM00, 'c-')
-
-    
+    hr.absmag_teff_plot(
+        spec_rapid["TEFF"], spec_rapid["M_K"], color=bc.blue, marker="o", 
+        label="Rapid Rotators", ls="", ms=7)
+    hr.absmag_teff_plot(
+        astero["TEFF_COR"], astero["M_K"], color=bc.green, marker="*", ms=8, 
+        label="Asteroseismic sample", ls="")
+    hr.absmag_teff_plot(
+        dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
+        label="SB2", ls="")
 
     plt.xlim([6750, 4750])
     plt.ylim([6, -3])
@@ -382,14 +359,14 @@ def cool_dwarf_mk():
     cool_giants = cool.subsample(["~Bad", "Berger Giant"])
     cool_binaries = cool.subsample(["~Bad", "Berger Cool Binary"])
     cool_rapid = cool.subsample([
-        "~Bad", "Vsini det", "~DLSB", "~Giant"])
+        "~Bad", "Vsini det", "~DLSB"])
     cool_marginal = cool.subsample([
-        "~Bad", "Vsini marginal", "~DLSB", "~Giant"])
+        "~Bad", "Vsini marginal", "~DLSB"])
     apogee_misclassified_subgiants = cool.subsample([
         "~Bad", "APOGEE Subgiant", "Dwarf"])
     apogee_misclassified_dwarfs = cool.subsample([
         "~Bad", "APOGEE Dwarf", "Subgiant"])
-    dlsbs = cool.subsample([ "~Bad", "DLSB", "~Giant"])
+    dlsbs = cool.subsample([ "~Bad", "DLSB"])
 
     cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
     mcq = catin.read_McQuillan_catalog()
