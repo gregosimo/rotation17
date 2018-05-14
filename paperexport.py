@@ -99,6 +99,7 @@ def Bruntt_vsini_comparison():
     The APOGEE vsinis are compared against the Bruntt et al (2012)
     spectroscopic vsinis for a set of asteroseismic targets.'''
 
+    f, ax = plt.subplots(1,1, figsize=(10,10))
     astero_dwarfs = catin.bruntt_dr14_overlap()
     bad_indices = astero_dwarfs["VSINI"] < 0
 #   vsini_diff = ((astero_dwarfs["vsini"][~bad_indices] -
@@ -109,12 +110,12 @@ def Bruntt_vsini_comparison():
 #   plt.plot(astero_dwarfs["vsini"][bad_indices], vsini_baddiff, 'rv')
 #   plt.plot([0, 35], [0, 0], 'k--')
 #   plt.ylim([-0.2, 0.5])
-    plt.loglog(astero_dwarfs["vsini"][~bad_indices], 
+    ax.loglog(astero_dwarfs["vsini"][~bad_indices], 
                astero_dwarfs["VSINI"][~bad_indices], 'ko')
-    plt.loglog(astero_dwarfs["vsini"][bad_indices],
+    ax.loglog(astero_dwarfs["vsini"][bad_indices],
              np.zeros(np.count_nonzero(bad_indices)), 'rx')
     detection_lim = 7
-    plt.loglog([detection_lim, detection_lim], [1, 40], 'k:')
+    ax.loglog([1, 40], [detection_lim, detection_lim], 'k:')
 
     # Now to fit the data to a line.
     detected_table = astero_dwarfs[astero_dwarfs["VSINI"] >= detection_lim]
@@ -125,7 +126,7 @@ def Bruntt_vsini_comparison():
     polyeval = np.poly1d(fitval)
     polyx = np.log10(np.linspace(1, 40, 10)) - meanx
     polyy = 10**polyeval(polyx)
-    plt.loglog(10**(polyx+meanx), polyy, 'k--', linewidth=3)
+    ax.loglog(10**(polyx+meanx), polyy, 'k--', linewidth=3)
     # Calculate the slope and error in the slope.
     slope = fitval[0]
     intercept = fitval[1]-meanx
@@ -144,7 +145,7 @@ def Bruntt_vsini_comparison():
     offset = np.sqrt(var)
 #    offset = intercept_error/2
     print("Uncertainty is {0:.1f}%".format(offset*np.log(10)*100))
-#   plt.fill_between(
+#   ax.fill_between(
 #       10**(polyx+meanx), polyy*10**(offset/2), polyy*10**(-offset/2),
 #       facecolor="gray")
 #   outlier = astero_dwarfs[~bad_indices][np.abs(vsini_diff) > 1.0]
@@ -153,8 +154,8 @@ def Bruntt_vsini_comparison():
 #       outlier["kepid"][0], outlier["vsini"][0], outlier["VSINI"][0]))
     print("Bad objects:")
     print(astero_dwarfs[["KIC", "vsini"]][bad_indices])
-    plt.xlabel("Bruntt vsini (km/s)")
-    plt.ylabel("APOGEE vsini (km/s)")
+    ax.set_xlabel(r"Bruntt $v \sin i$ (km/s)")
+    ax.set_ylabel(r"APOGEE $v \sin i$ (km/s)")
     return cov
 
 def plot_lower_limit_Bruntt_test():
@@ -193,6 +194,7 @@ def plot_lower_limit_Bruntt_test():
 @write_plot("Pleiades_comp")
 def Pleiades_vsini_comparison():
     '''Create figure comparing vsini for Pleiades targets.'''
+    f, ax = plt.subplots(1,1, figsize=(10,10))
     targets = catin.Stauffer_APOGEE_overlap()
     non_dlsbs = targets[npstr.find(targets["Notes"], "5") < 0]
     good_targets = catalog.apogee_filter_quality(non_dlsbs, quality="bad")
@@ -209,21 +211,21 @@ def Pleiades_vsini_comparison():
 #   nondet_frac = ((nondet_targets["vsini"] - nondet_targets["VSINI"]) /
 #                  nondet_targets["vsini"])
                    
-    plt.xscale("log")
-    plt.yscale("log")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
     weird_targets = np.logical_and(detected_targets["VSINI"] < 10,
                                    detected_targets["vsini"] > 10)
-    plt.errorbar(detected_targets["vsini"], detected_targets["VSINI"], 
+    ax.errorbar(detected_targets["vsini"], detected_targets["VSINI"], 
                  xerr=detected_errors, fmt='ko')
-    plt.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'r<')
+    ax.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'r<')
     one_to_one = np.array([1, 100])
-    plt.plot(one_to_one, one_to_one, 'k-')
-    plt.plot([12, 12], one_to_one, 'k:')
+    ax.plot(one_to_one, one_to_one, 'k-')
+    ax.plot(one_to_one, [10, 10], 'k:')
     
-    plt.xlabel("Stauffer and Hartmann (1987) vsini (km/s)")
-    plt.ylabel("APOGEE vsini (km/s)")
-    plt.xlim(1, 100)
-    plt.ylim(1, 100)
+    ax.set_xlabel(r"Stauffer and Hartmann (1987) $v \sin i$ (km/s)")
+    ax.set_ylabel(r"APOGEE $v \sin i$ (km/s)")
+    ax.set_xlim(1, 100)
+    ax.set_ylim(1, 100)
 
 
 def Pleiades_teff_vsini_comparison():
@@ -285,26 +287,32 @@ def asteroseismic_sample_MK():
     
     Plot the asteroseismic and spectroscopic log(g) values separately. Should
     also plot the underlying APOKASC sample.'''
+    f, ax = plt.subplots(1,1, figsize=(12,12))
     apokasc = asteroseismic_data_splitter()
     apokasc.split_targeting("APOGEE2_APOKASC_DWARF")
     fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
     astero = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs"])
     spec_rapid = apokasc.subsample([
         "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini det", "~DLSB"])
+    spec_marginal = apokasc.subsample([
+        "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini marginal", "~DLSB"])
     dlsbs = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "DLSB"])
 
     hr.absmag_teff_plot(
         fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
-        label="APOGEE Hot Sample", ls="")
+        label="APOGEE Hot Sample", ls="", axis=ax)
     hr.absmag_teff_plot(
-        spec_rapid["TEFF"], spec_rapid["M_K"], color=bc.blue, marker="o", 
-        label="Rapid Rotators", ls="", ms=7)
+        astero["TEFF_COR"], astero["M_K"], color=bc.green, marker="s", ms=8, 
+        label="Asteroseismic sample", ls="", axis=ax)
     hr.absmag_teff_plot(
-        astero["TEFF_COR"], astero["M_K"], color=bc.green, marker="*", ms=8, 
-        label="Asteroseismic sample", ls="")
+        spec_rapid["TEFF_COR"], spec_rapid["M_K"], color=bc.blue, marker="o", 
+        label="Rapid Rotators", ls="", ms=7, axis=ax)
     hr.absmag_teff_plot(
-        dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
-        label="SB2", ls="")
+        spec_marginal["TEFF_COR"], spec_marginal["M_K"], color=bc.sky_blue, 
+        marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
+    hr.absmag_teff_plot(
+        dlsbs["TEFF_COR"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
+        label="SB2", ls="", axis=ax, ms=7)
 
     plt.xlim([6750, 4750])
     plt.ylim([6, -3])
@@ -352,6 +360,7 @@ def cool_dwarf_mk():
     '''Plot the cool dwarf sample on an HR diagram with M_K.
 
     Illustrate the dwarf/subgiant division in Gaia parallax space.'''
+    f, ax = plt.subplots(1,1, figsize=(12,12))
     cool = cool_data_splitter()
     cool_full = cool.subsample(["~Bad"])
     cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
@@ -376,31 +385,37 @@ def cool_dwarf_mk():
     mcq_joined = au.join_by_id(cool_mcq, mcq, "kepid", "KIC")
     rapid_rotators = mcq_joined[mcq_joined["Prot"] < 3]
 
-    hr.absmag_teff_plot(cool_giants["TEFF"], cool_giants["M_K"], 
-                      color=bc.orange, marker=".", label="Giants", ls="")
-    hr.absmag_teff_plot(cool_subgiants["TEFF"], cool_subgiants["M_K"], 
-                      color=bc.purple, marker=".", label="Subgiants", ls="")
-    hr.absmag_teff_plot(cool_dwarfs["TEFF"], cool_dwarfs["M_K"], 
-                      color=bc.algae, marker=".", label="Dwarfs", ls="")
-    hr.absmag_teff_plot(cool_binaries["TEFF"], cool_binaries["M_K"], 
-                      color=bc.green, marker=".", label="Binaries", ls="")
-    hr.absmag_teff_plot(cool_rapid["TEFF"], cool_rapid["M_K"], 
-                      color=bc.blue, marker="o", label="Rapid Rotators",
-                      ls="", ms=7)
-    hr.absmag_teff_plot(cool_marginal["TEFF"], cool_marginal["M_K"], 
-                      color=bc.sky_blue, marker="o", label="Marginal Rotators",
-                      ls="", ms=7)
-    hr.absmag_teff_plot(rapid_rotators["TEFF"], rapid_rotators["M_K"],
-                        color=bc.violet, marker="d", label="P < 3 day", ls="")
-    hr.absmag_teff_plot(dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*",
-                        label="SB2", ls="")
-    hr.absmag_teff_plot(apogee_misclassified_subgiants["TEFF"],
-                        apogee_misclassified_subgiants["M_K"], color=bc.red,
-                        marker="x", label="Mismatched Spec. Ev. State", ls="",
-                        ms=7)
-    hr.absmag_teff_plot(apogee_misclassified_dwarfs["TEFF"],
-                        apogee_misclassified_dwarfs["M_K"], color=bc.red,
-                        marker="x", ls="", label="", ms=7)
+    hr.absmag_teff_plot(
+        cool_giants["TEFF"], cool_giants["M_K"], color=bc.orange, marker=".", 
+        label="Giants", ls="", axis=ax)
+    hr.absmag_teff_plot(
+        cool_subgiants["TEFF"], cool_subgiants["M_K"], color=bc.purple, 
+        marker=".", label="Subgiants", ls="", axis=ax)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.algae, marker=".", 
+        label="Dwarfs", ls="", axis=ax)
+    hr.absmag_teff_plot(
+        cool_binaries["TEFF"], cool_binaries["M_K"], color=bc.green, 
+        marker=".", label="Binaries", ls="", axis=ax)
+    hr.absmag_teff_plot(
+        cool_rapid["TEFF"], cool_rapid["M_K"], color=bc.blue, marker="o", 
+        label="Rapid Rotators", ls="", ms=7, axis=ax)
+    hr.absmag_teff_plot(
+        cool_marginal["TEFF"], cool_marginal["M_K"], color=bc.sky_blue, 
+        marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
+    hr.absmag_teff_plot(
+        rapid_rotators["TEFF"], rapid_rotators["M_K"], color=bc.violet, 
+        marker="d", label="P < 3 day", ls="", axis=ax)
+    hr.absmag_teff_plot(
+        dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
+        label="SB2", ls="", axis=ax, ms=7)
+    hr.absmag_teff_plot(
+        apogee_misclassified_subgiants["TEFF"], 
+        apogee_misclassified_subgiants["M_K"], color=bc.red, marker="x", 
+        label="Mismatched Spec. Ev. State", ls="", ms=7, axis=ax)
+    hr.absmag_teff_plot(
+        apogee_misclassified_dwarfs["TEFF"], apogee_misclassified_dwarfs["M_K"], 
+        color=bc.red, marker="x", ls="", label="", ms=7)
 
     plt.plot([5450, 5450], [6, -8], 'k:')
     plt.xlim(5750, 3500)
@@ -630,6 +645,7 @@ def plot_rr_fractions():
     cool_binaries_nomcq = cool_data.subsample([
         "~Bad", "~DLSB", "~Mcq", "Modified Berger Cool Binary", "~Too Hot"])
 
+    plt.figure(figsize=(10,10))
 
     mcq = catin.read_McQuillan_catalog()
     dwarf_periods = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
@@ -640,15 +656,33 @@ def plot_rr_fractions():
 
     samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
         dwarf_periods["VSINI"], dwarf_periods["Prot"], 
-        dwarf_periods["DSEP radius"], min_limit=6, max_limit=12, linestyle="-")
+        dwarf_periods["DSEP radius"], min_limit=6, max_limit=12,
+        color=bc.algae, label="Single")
+    samp.plot_rapid_rotation_detection_limits(
+        cool_dwarfs_nomcq["VSINI"], label="Single Mcquillan Nondetections",
+        color=bc.algae, ls=":", min_limit=6, max_limit=12) 
     samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
         binary_periods["VSINI"], binary_periods["Prot"], 
-        binary_periods["DSEP radius"], min_limit=6, max_limit=12, linestyle=":")
+        binary_periods["DSEP radius"], min_limit=6, max_limit=12,
+        color=bc.green, label="Binary")
     samp.plot_rapid_rotation_detection_limits(
-        cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
-        color=bc.black, ls="--", min_limit=6, max_limit=12) 
-    plt.ylim(0.7, 1.0)
+        cool_binaries_nomcq["VSINI"], label="Binary Mcquillan Nondetections",
+        color=bc.green, ls=":", min_limit=6, max_limit=12) 
     plt.legend(loc="lower right")
+    plt.ylim(0.0, 1.0)
+    ax1 = plt.gca()
+    ax2 = ax1.twinx()
+    ticks = ax1.get_yticks()
+    print(ticks)
+    fracticks = 1 - ticks
+    print(fracticks)
+    ax2.set_yticks(ticks)
+    ax2.set_yticklabels(fracticks)
+    ax1.set_xlim(5.5, 12.5)
+    ax2.set_xlim(5.5, 12.5)
+    ax1.set_ylabel(r"$N (< v \sin i) / N$")
+    ax1.set_xlabel(r"$v \sin i$")
+    ax2.set_ylabel("Rapid Rotator Fraction")
 
 
 @write_plot("astero_rot")
@@ -664,7 +698,7 @@ def asteroseismic_rotation_analysis():
     marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
     detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
 
-    f, ax = plt.subplots(1,1, figsize=(6,6))
+    f, ax = plt.subplots(1,1, figsize=(10,10))
 
     rot.plot_vsini_velocity(
         marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"],
@@ -684,10 +718,20 @@ def asteroseismic_rotation_analysis():
 def cool_dwarf_rotation_analysis():
     '''Plot rotation comparison of cool dwarf sample.'''
     cool_dwarf = cool_data_splitter()
-    marginal = cool_dwarf.subsample([
-        "~Bad", "Vsini marginal", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
-    detections = cool_dwarf.subsample([
-        "~Bad", "Vsini det", "~DLSB", "Mcq", "Dwarf", "~Too Hot"])
+    marginal = vstack([
+        cool_dwarf.subsample([
+            "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
+            "Modified Berger Main Sequence", "~Too Hot"]), 
+        cool_dwarf.subsample([
+            "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
+            "Modified Berger Cool Binary", "~Too Hot"])])
+    detections = vstack([
+        cool_dwarf.subsample([
+            "~Bad", "Vsini det", "~DLSB", "Mcq", 
+            "Modified Berger Main Sequence", "~Too Hot"]), 
+        cool_dwarf.subsample([
+            "~Bad", "Vsini det", "~DLSB", "Mcq", 
+            "Modified Berger Cool Binary", "~Too Hot"])])
 
     mcq = catin.read_McQuillan_catalog()
     marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")

@@ -145,20 +145,22 @@ Section~\ref{sec:conclusions}.
 \label{sec:sample}
 
 \begin{figure*}
-    \plottwo{astero}{cool_MK_sample}
+    \plottwo{astero}{cool_mk_sample}
     \caption{\emph{Left:} Stellar properties of the full APOKASC 
     asteroseismic dwarf/subgiant control sample. The black points mark
     K-band absolute magnitudes for the full control sample. Green stars mark
-    the subsample showing oscillations. 
+    the subsample showing oscillations. Rapid rotators with 
+    \(\vsini > 10 \kms\) are denoted as dark blue circles, while stars with 
+    marginally detected rotation \(7 \kms < \vsini < 10 \kms\) are denoted 
+    with light blue circles. Objects classified as showing double-lines in 
+    their APOGEE spectra are labeled as salmon stars.
     \emph{Right:} The full cool dwarf sample as measured with APOGEE stellar 
     parameters. The stellar classifications follow that in \citet{Berger18},
     with dwarfs, subgiants, and giants marked as teal, purple, and mustard
-    dots. Rapid rotators with \(\vsini > 10 \kms\) are denoted as dark blue 
-    circles, while stars with marginally detected rotation \(7 \kms < \vsini 
-    < 10 \kms\) are denoted with light blue circles. Objects showing rapid
-    (\(P_{rot} < 3 \) day) photometric rotation are indicated with purple
-    diamonds. Objects showing double-lined APOGEE spectra are indicated as 
-    salmon stars. The dotted vertical 
+    dots. Rapid rotators are classified similarly to the previous figure. 
+    Objects showing rapid (\(P_{rot} < 3 \) day) photometric rotation are 
+    indicated with purple diamonds. Objects showing double-lined APOGEE 
+    spectra are indicated as salmon stars. The dotted vertical 
     line indicates the \(\Teff = 5450\) K boundary.\label{fig:sample}}
 \end{figure*}
 
@@ -334,7 +336,7 @@ reasonable.
   \fig{astero_rot}{0.3\textwidth}{(c)}}
     \caption{\emph{Left:} \vsini{} comparison between the \citet{Bruntt12}
         overlap sample with APOGEE\@. A discontinuity in the scatter occurs
-        around \(\vsini = 6 \kms\), indicated by the dotted line. The dashed
+        around \(\vsini = 7 \kms\), indicated by the dotted line. The dashed
     line shows the best-fit relation between the two. Not shown are targets 
     run through the APOGEE giant grid. \emph{Middle:} \vsini{} comparison for 
     the Pleiades cool dwarfs \citep{Stauffer87} overlap sample with APOGEE\@. 
@@ -565,19 +567,19 @@ rotators observed.
 
 \begin{figure}[htb]
     \plotone{detection_fraction}
-    \caption{Cumulative distribution function of \vsini{} for four
-    samples. The rapid rotator fraction at a given \vsini{} threshold
+    \caption{Cumulative distribution function of \vsini{} for the single and
+        binary samples for spectroscopic and photometric rotation data. The 
+        rapid rotator fraction at a given \vsini{} threshold
     would be one minus the value of the cumulative distribution function
-    at that \vsini{} value. The solid black line denotes the cumulative
-    distribution function of APOGEE \vsini{}. Error bars represent 
-    1-\(\sigma\) binomial confidence levels. The solid red line denotes
+    at that \vsini{} value. Solid lines denote the cumulative
+    distribution function of APOGEE \vsini{} for the subsample with rotation
+    periods. Dashed lines denote  
     the cumulative distribution function of \(v_{eq}\) derived from the
-    rotation periods and stellar radii. The dotted red line denotes the
-    cumulative distribution function of \(v_{eq}\), but corrected for
-    random inclinations. Lastly, the dashed black line marks the
-    cumulative distribution function of \vsini{} for the cool dwarf
-    sample without periods detected in 
-    \citet{McQuillan14}.\label{fig:detection_fraction}}
+    rotation periods and stellar radii. Dotted lines denote the
+    cumulative distribution function of \vsini{} for the subsample without
+    rotation periods. The teal and green colors denote rapid rotator fractions
+in the single-star and photometric binary sequences. Error bars represent 
+    1-\(\sigma\) binomial confidence levels.\label{fig:detection_fraction}}
 \end{figure}
 
 The broadest check to determine agreement between the spectroscopic
@@ -688,19 +690,13 @@ rapid rotation in genuine, spotted rapid rotators.
   in dark blue while the marginal \vsini{} detections are shown in light
   blue. The solid and dashed lines correspond to values where \(\sin i =
   1, 0.5\), respectively. The hatched area represents the forbidden
-  region where \(\sin i > 1\). \emph{Right:} Symbols are similar to left
+  region where \(\sin i > 1\). \emph{Middle:} Symbols are similar to left
   side, except points are projected such that the DSEP-derived radius is
   plotted against the radius inferred from \vsini{} and rotation
-  period.\label{fig:rot}}
+  period. \emph{Right:} Symbols are similar to left side, except points are
+  projected such that the \citet{McQuillan14} period is plotted against the
+  period inferred from the \vsini{} and radius.\label{fig:rot}}
 \end{figure*}
-
-\begin{figure}
-  \plotone{teff_period}
-  \caption{The APOGEE \Teff-\citet{McQuillan14} period distribution of the 
-  cool dwarf sample. Confident \vsini{} detections are shown as dark blue
-  stars while marginal \vsini{} detections are shown as light blue
-  stars.\label{fig:periods}}
-\end{figure}
 
 After selecting dwarfs with detectable rotation in APOGEE,
 visually inspecting for DLSBs, and cross-matching with \citet{McQuillan14}, we 
