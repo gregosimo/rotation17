@@ -718,41 +718,83 @@ def asteroseismic_rotation_analysis():
 def cool_dwarf_rotation_analysis():
     '''Plot rotation comparison of cool dwarf sample.'''
     cool_dwarf = cool_data_splitter()
-    marginal = vstack([
-        cool_dwarf.subsample([
+    marginal_dwarfs = cool_dwarf.subsample([
             "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
-            "Modified Berger Main Sequence", "~Too Hot"]), 
-        cool_dwarf.subsample([
+            "Modified Berger Main Sequence", "~Too Hot"]) 
+    marginal_binaries = cool_dwarf.subsample([
             "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
-            "Modified Berger Cool Binary", "~Too Hot"])])
-    detections = vstack([
-        cool_dwarf.subsample([
+            "Modified Berger Cool Binary", "~Too Hot"])
+    dwarf_detections = cool_dwarf.subsample([
             "~Bad", "Vsini det", "~DLSB", "Mcq", 
-            "Modified Berger Main Sequence", "~Too Hot"]), 
-        cool_dwarf.subsample([
+            "Modified Berger Main Sequence", "~Too Hot"])
+    binary_detections = cool_dwarf.subsample([
             "~Bad", "Vsini det", "~DLSB", "Mcq", 
-            "Modified Berger Cool Binary", "~Too Hot"])])
+            "Modified Berger Cool Binary", "~Too Hot"])
 
     mcq = catin.read_McQuillan_catalog()
-    marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
-    detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
+    marginal_dwarf_periodpoints = au.join_by_id(
+        marginal_dwarfs, mcq, "kepid", "KIC")
+    marginal_binary_periodpoints = au.join_by_id(
+        marginal_binaries, mcq, "kepid", "KIC")
+    dwarf_detections_periodpoints = au.join_by_id(
+        dwarf_detections, mcq, "kepid", "KIC")
+    binary_detections_periodpoints = au.join_by_id(
+        binary_detections, mcq, "kepid", "KIC")
 
-    samp.generate_DSEP_radius_column_with_errors(marginal_periodpoints)
-    samp.generate_DSEP_radius_column_with_errors(detections_periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(marginal_dwarf_periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(marginal_binary_periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(dwarf_detections_periodpoints)
+    samp.generate_DSEP_radius_column_with_errors(binary_detections_periodpoints)
 
     subplot_tup = rot.plot_rotation_velocity_radius(
-        detections_periodpoints["VSINI"], detections_periodpoints["Prot"], 
-        detections_periodpoints["DSEP radius"],
-        raderr_below=detections_periodpoints["DSEP radius lower"],
-        raderr_above=detections_periodpoints["DSEP radius upper"],
+        dwarf_detections_periodpoints["VSINI"], 
+        dwarf_detections_periodpoints["Prot"], 
+        dwarf_detections_periodpoints["DSEP radius"],
+        raderr_below=dwarf_detections_periodpoints["DSEP radius lower"],
+        raderr_above=dwarf_detections_periodpoints["DSEP radius upper"],
         color=bc.blue, label="Cool dwarfs") 
 
     rot.plot_rotation_velocity_radius(
-        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"], 
-        marginal_periodpoints["DSEP radius"],
-        raderr_below=marginal_periodpoints["DSEP radius lower"],
-        raderr_above=marginal_periodpoints["DSEP radius upper"],
+        binary_detections_periodpoints["VSINI"], 
+        binary_detections_periodpoints["Prot"], 
+        binary_detections_periodpoints["DSEP radius"],
+        raderr_below=binary_detections_periodpoints["DSEP radius lower"],
+        raderr_above=binary_detections_periodpoints["DSEP radius upper"],
+        subplot_tup=subplot_tup, color=bc.blue, marker="8")
+        
+    rot.plot_rotation_velocity_radius(
+        marginal_dwarf_periodpoints["VSINI"], 
+        marginal_dwarf_periodpoints["Prot"], 
+        marginal_dwarf_periodpoints["DSEP radius"],
+        raderr_below=marginal_dwarf_periodpoints["DSEP radius lower"],
+        raderr_above=marginal_dwarf_periodpoints["DSEP radius upper"],
         subplot_tup=subplot_tup, color=bc.sky_blue)
+        
+    rot.plot_rotation_velocity_radius(
+        marginal_binary_periodpoints["VSINI"], 
+        marginal_binary_periodpoints["Prot"], 
+        marginal_binary_periodpoints["DSEP radius"],
+        raderr_below=marginal_binary_periodpoints["DSEP radius lower"],
+        raderr_above=marginal_binary_periodpoints["DSEP radius upper"],
+        subplot_tup=subplot_tup, color=bc.sky_blue, marker="8")
+
+@write_plot("binarity")
+def plot_binarity_diagram():
+    cool_dwarf = cool_data_splitter()
+    dwarfs = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot"]) 
+    binaries = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot"]) 
+
+
+    f = plt.figure(figsize=(10,10))
+    fulltable = vstack([dwarfs, binaries])
+
+    samp.plot_photometric_binary_excess(
+        fulltable["TEFF"], fulltable["FE_H"], "Ks", fulltable["M_K"])
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("Photometric excess")
+
         
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
