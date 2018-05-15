@@ -187,14 +187,12 @@ asteroseismic
 detections\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#AsteroseismicTargets}}. 
 They were part of a magnitude-limited sample
 selected according to 6500 K \(> \Teff > 5000\) K and \(\logg > 3.5\)
-according to parameters derived by \citet{Huber14} \citep{Zasowski17}.
-This sample is shown in the left panel of \cref{fig:sample}, which we denote as
-the hot sample. An additional 
-1000 stars, denoted as the cool dwarf sequence, with \(\Teff < 5500\) K and 
+according to parameters derived by \citet{Huber14} \citep{Zasowski17}
+which we call the hot sample. An additional 
+1000 stars, which we call the cool dwarf sample, with \(\Teff < 5500\) K and 
 \(\logg > 4.0\) as determined by \citet{Pinsonneault12} and \citet{Brown11},
 and \(7 \textrm{ mag } < H < 11 \textrm{ mag}\) were also 
-observed\footnote{\url{http://www.sdss.org/dr14/algorithms/ancillary/apogee/kepler_dwarfs/}}, 
-with the full sample shown in the left panel of \cref{fig:sample}. 
+observed\footnote{\url{http://www.sdss.org/dr14/algorithms/ancillary/apogee/kepler_dwarfs/}}. 
 Eclipsing
 binaries\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#EclipsingBinaries}} 
 and transiting planet host 
@@ -202,6 +200,20 @@ candidates\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#KeplerObjects
 were also observed 
 by APOGEE in the \Kepler{} field, but with more complex selection functions, 
 so we exclude them from this analysis.
+
+\subsection{Stellar Parameters}
+
+All objects observed by APOGEE have stellar parameters \Teff{} and
+[Fe/H] determined by ASPCAP, which fits synthetic stellar atmosphere
+models to the observed H-band spectra on a 6-dimensional grid. The
+effective temperatures outputted from ASPCAP are then calibrated to the
+\citep{GonzalezHernandez09} photometric temperature scale using a
+metallicity-dependent correction \citep{Holtzmann18}. After the
+calibration, comparisons to observations in open clusters yield a
+typical RMS of 100 K around solar-metallicity. While the calibration
+relations are significantly less constrained at \([M/H] < -1\), the
+finding that the metallicity of the \Kepler{} field is on-average solar
+makes these systematic uncertainties largely irrelevant.
 
 As is apparent in the right panel of \cref{fig:sample}, the hot 
 (\(\Teff > 5500 K\)) star regime is difficult to characterize due to 
