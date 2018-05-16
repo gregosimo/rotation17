@@ -196,7 +196,8 @@ def Pleiades_vsini_comparison():
     '''Create figure comparing vsini for Pleiades targets.'''
     f, ax = plt.subplots(1,1, figsize=(10,10))
     targets = catin.Stauffer_APOGEE_overlap()
-    non_dlsbs = targets[npstr.find(targets["Notes"], "5") < 0]
+    notestr = au.byte_to_unicode_cast(targets["Notes"])
+    non_dlsbs = targets[npstr.find(notestr, "5") < 0]
     good_targets = catalog.apogee_filter_quality(non_dlsbs, quality="bad")
     nondetections = good_targets["vsini lim"] == stat.UPPER
     detected_targets = good_targets[~nondetections]
@@ -1233,11 +1234,12 @@ looking for tidally-synchronized binaries in the Kepler field."""
     figlist = {
         "Bruntt": Bruntt_vsini_comparison,
         "SH": Pleiades_vsini_comparison,
-        "asterosamp": asteroseismic_sample_loggs,
-        "coolsamp": cool_dwarf_hr,
+        "asterosamp": asteroseismic_sample_MK,
+        "coolsamp": cool_dwarf_mk,
         "asterorot": asteroseismic_rotation_analysis,
         "coolrot": cool_dwarf_rotation_analysis,
-        "rrfracs": plot_rr_fractions
+        "rrfracs": plot_rr_fractions,
+        "binarity": plot_binarity_diagram
     }
 
     genfigs = args.figs
