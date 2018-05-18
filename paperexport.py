@@ -293,11 +293,11 @@ def asteroseismic_sample_MK():
     apokasc.split_targeting("APOGEE2_APOKASC_DWARF")
     fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
     astero = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs"])
-    spec_rapid = apokasc.subsample([
-        "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini det", "~DLSB"])
-    spec_marginal = apokasc.subsample([
-        "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini marginal", "~DLSB"])
-    dlsbs = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "DLSB"])
+#   spec_rapid = apokasc.subsample([
+#       "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini det", "~DLSB"])
+#   spec_marginal = apokasc.subsample([
+#       "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini marginal", "~DLSB"])
+#   dlsbs = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "DLSB"])
 
     hr.absmag_teff_plot(
         fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
@@ -305,15 +305,15 @@ def asteroseismic_sample_MK():
     hr.absmag_teff_plot(
         astero["TEFF_COR"], astero["M_K"], color=bc.green, marker="s", ms=8, 
         label="Asteroseismic sample", ls="", axis=ax)
-    hr.absmag_teff_plot(
-        spec_rapid["TEFF_COR"], spec_rapid["M_K"], color=bc.blue, marker="o", 
-        label="Rapid Rotators", ls="", ms=7, axis=ax)
-    hr.absmag_teff_plot(
-        spec_marginal["TEFF_COR"], spec_marginal["M_K"], color=bc.sky_blue, 
-        marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
-    hr.absmag_teff_plot(
-        dlsbs["TEFF_COR"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
-        label="SB2", ls="", axis=ax, ms=7)
+#   hr.absmag_teff_plot(
+#       spec_rapid["TEFF_COR"], spec_rapid["M_K"], color=bc.blue, marker="o", 
+#       label="Rapid Rotators", ls="", ms=7, axis=ax)
+#   hr.absmag_teff_plot(
+#       spec_marginal["TEFF_COR"], spec_marginal["M_K"], color=bc.sky_blue, 
+#       marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
+#   hr.absmag_teff_plot(
+#       dlsbs["TEFF_COR"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
+#       label="SB2", ls="", axis=ax, ms=7)
 
     plt.xlim([6750, 4750])
     plt.ylim([6, -3])
@@ -381,10 +381,10 @@ def cool_dwarf_mk():
         "~Bad", "APOGEE Dwarf", "Berger Subgiant"])
     dlsbs = cool.subsample([ "~Bad", "DLSB", "~Berger Giant"])
 
-    cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
-    mcq = catin.read_McQuillan_catalog()
-    mcq_joined = au.join_by_id(cool_mcq, mcq, "kepid", "KIC")
-    rapid_rotators = mcq_joined[mcq_joined["Prot"] < 3]
+#   cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
+#   mcq = catin.read_McQuillan_catalog()
+#   mcq_joined = au.join_by_id(cool_mcq, mcq, "kepid", "KIC")
+#   rapid_rotators = mcq_joined[mcq_joined["Prot"] < 3]
 
     hr.absmag_teff_plot(
         cool_giants["TEFF"], cool_giants["M_K"], color=bc.orange, marker=".", 
@@ -398,25 +398,25 @@ def cool_dwarf_mk():
     hr.absmag_teff_plot(
         cool_binaries["TEFF"], cool_binaries["M_K"], color=bc.green, 
         marker=".", label="Binaries", ls="", axis=ax)
-    hr.absmag_teff_plot(
-        cool_rapid["TEFF"], cool_rapid["M_K"], color=bc.blue, marker="o", 
-        label="Rapid Rotators", ls="", ms=7, axis=ax)
-    hr.absmag_teff_plot(
-        cool_marginal["TEFF"], cool_marginal["M_K"], color=bc.sky_blue, 
-        marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
-    hr.absmag_teff_plot(
-        rapid_rotators["TEFF"], rapid_rotators["M_K"], color=bc.violet, 
-        marker="d", label="P < 3 day", ls="", axis=ax)
-    hr.absmag_teff_plot(
-        dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
-        label="SB2", ls="", axis=ax, ms=7)
-    hr.absmag_teff_plot(
-        apogee_misclassified_subgiants["TEFF"], 
-        apogee_misclassified_subgiants["M_K"], color=bc.red, marker="x", 
-        label="Mismatched Spec. Ev. State", ls="", ms=7, axis=ax)
-    hr.absmag_teff_plot(
-        apogee_misclassified_dwarfs["TEFF"], apogee_misclassified_dwarfs["M_K"], 
-        color=bc.red, marker="x", ls="", label="", ms=7)
+#   hr.absmag_teff_plot(
+#       cool_rapid["TEFF"], cool_rapid["M_K"], color=bc.blue, marker="o", 
+#       label="Rapid Rotators", ls="", ms=7, axis=ax)
+#   hr.absmag_teff_plot(
+#       cool_marginal["TEFF"], cool_marginal["M_K"], color=bc.sky_blue, 
+#       marker="o", label="Marginal Rotators", ls="", ms=7, axis=ax)
+#   hr.absmag_teff_plot(
+#       rapid_rotators["TEFF"], rapid_rotators["M_K"], color=bc.violet, 
+#       marker="d", label="P < 3 day", ls="", axis=ax)
+#   hr.absmag_teff_plot(
+#       dlsbs["TEFF"], dlsbs["M_K"], color=bc.light_pink, marker="*", 
+#       label="SB2", ls="", axis=ax, ms=7)
+#   hr.absmag_teff_plot(
+#       apogee_misclassified_subgiants["TEFF"], 
+#       apogee_misclassified_subgiants["M_K"], color=bc.red, marker="x", 
+#       label="Mismatched Spec. Ev. State", ls="", ms=7, axis=ax)
+#   hr.absmag_teff_plot(
+#       apogee_misclassified_dwarfs["TEFF"], apogee_misclassified_dwarfs["M_K"], 
+#       color=bc.red, marker="x", ls="", label="", ms=7)
 
     plt.plot([5450, 5450], [6, -8], 'k:')
     plt.xlim(5750, 3500)
@@ -425,14 +425,14 @@ def cool_dwarf_mk():
     plt.ylabel(r"$M_K$")
     plt.legend(loc="upper left")
 
-    print("APOGEE-classified dwarfs: {0:d}".format(cool.subsample_len(
-        ["~Bad", "Subgiant", "APOGEE Dwarf"])))
-    print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
-        ["~Bad", "Subgiant", "APOGEE Dwarf", "Vsini det", "~DLSB"])))
-    print("APOGEE-classified subgiants: {0:d}".format(cool.subsample_len(
-        ["~Bad", "Dwarf", "APOGEE Subgiant", "~DLSB"])))
-    print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
-        ["~Bad", "Dwarf", "APOGEE Subgiant", "Vsini det", "~DLSB"])))
+#   print("APOGEE-classified dwarfs: {0:d}".format(cool.subsample_len(
+#       ["~Bad", "Subgiant", "APOGEE Dwarf"])))
+#   print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
+#       ["~Bad", "Subgiant", "APOGEE Dwarf", "Vsini det", "~DLSB"])))
+#   print("APOGEE-classified subgiants: {0:d}".format(cool.subsample_len(
+#       ["~Bad", "Dwarf", "APOGEE Subgiant", "~DLSB"])))
+#   print("Misclassified Rapid Rotators: {0:d}".format(cool.subsample_len(
+#       ["~Bad", "Dwarf", "APOGEE Subgiant", "Vsini det", "~DLSB"])))
 
 def cool_dwarf_logg():
     '''Plot the cool dwarf sample on an HR diagram using log(g).
@@ -787,10 +787,39 @@ def plot_binarity_diagram():
     binaries = cool_dwarf.subsample([
             "~Bad", "Modified Berger Cool Binary", "~Too Hot"]) 
 
+    oldsoliso = sed.DSEPInterpolator(age=14.0, feh=0.0, minlogG=3.5, lowT=3700)
+    oldsoldata = oldsoliso._get_isochrone_data("Ks")
+    oldsolteff = 10**oldsoldata["LogTeff"]
+    oldsolMK = oldsoldata["Ks"]
+    oldsolmagdiff = samp.calc_photometric_excess(
+        oldsolteff, np.zeros(len(oldsolteff)), "Ks", oldsolMK)
+
+    oldlowiso = sed.DSEPInterpolator(age=14.0, feh=-0.5, minlogG=3.5, lowT=3700)
+    oldlowdata = oldlowiso._get_isochrone_data("Ks")
+    oldlowteff = 10**oldlowdata["LogTeff"]
+    oldlowMK = oldlowdata["Ks"]
+    oldlowmagdiff = samp.calc_photometric_excess(
+        oldlowteff, np.zeros(len(oldlowteff))-0.5, "Ks", oldlowMK)
+
+    oldhighiso = sed.DSEPInterpolator(age=14.0, feh=0.5, minlogG=3.5, lowT=3700)
+    oldhighdata = oldhighiso._get_isochrone_data("Ks")
+    oldhighteff = 10**oldhighdata["LogTeff"]
+    oldhighMK = oldhighdata["Ks"]
+    oldhighmagdiff = samp.calc_photometric_excess(
+        oldhighteff, np.zeros(len(oldhighteff))+0.5, "Ks", oldhighMK)
 
     f = plt.figure(figsize=(10,10))
     fulltable = vstack([dwarfs, binaries])
 
+    hr.absmag_teff_plot(
+        oldsolteff, oldsolmagdiff, ls="-", color=bc.black, 
+        label="[Fe/H] = 0.0")
+    hr.absmag_teff_plot(
+        oldlowteff, oldlowmagdiff, ls="-", color=bc.blue, 
+        label="[Fe/H] = -0.5")
+    hr.absmag_teff_plot(
+        oldhighteff, oldhighmagdiff, ls="-", color=bc.red, 
+        label="[Fe/H] = 0.0")
     samp.plot_photometric_binary_excess(
         fulltable["TEFF"], fulltable["FE_H"], "Ks", fulltable["M_K"])
     plt.xlabel("APOGEE Teff (K)")
