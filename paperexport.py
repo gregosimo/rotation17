@@ -291,8 +291,10 @@ def asteroseismic_sample_MK():
     f, ax = plt.subplots(1,1, figsize=(12,12))
     apokasc = asteroseismic_data_splitter()
     apokasc.split_targeting("APOGEE2_APOKASC_DWARF")
-    fulldata = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF"])
-    astero = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs"])
+    fulldata_k = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "Good K"])
+    fulldata_b = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "Blend"])
+    astero_k = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs", "Good K"])
+    astero_b = apokasc.subsample(["~Bad", "Asteroseismic Dwarfs", "Blend"])
 #   spec_rapid = apokasc.subsample([
 #       "~Bad", "APOGEE2_APOKASC_DWARF", "Vsini det", "~DLSB"])
 #   spec_marginal = apokasc.subsample([
@@ -300,11 +302,19 @@ def asteroseismic_sample_MK():
 #   dlsbs = apokasc.subsample(["~Bad", "APOGEE2_APOKASC_DWARF", "DLSB"])
 
     hr.absmag_teff_plot(
-        fulldata["TEFF_COR"], fulldata["M_K"], color=bc.black, marker=".",
-        label="APOGEE Hot Sample", ls="", axis=ax)
+        fulldata_k["TEFF_COR"], fulldata_k["M_K"], color=bc.black, marker=".",
+        label="APOGEE Hot Sample", ls="", axis=ax,
+        yerr=[fulldata_k["M_K_err2"], fulldata_k["M_K_err1"]])
     hr.absmag_teff_plot(
-        astero["TEFF_COR"], astero["M_K"], color=bc.green, marker="s", ms=8, 
-        label="Asteroseismic sample", ls="", axis=ax)
+        fulldata_b["TEFF_COR"], fulldata_b["M_K"], color=bc.black, marker="v",
+        ls="", axis=ax, label="")
+    hr.absmag_teff_plot(
+        astero_k["TEFF_COR"], astero_k["M_K"], color=bc.green, marker="s", ms=8, 
+        label="Asteroseismic sample", ls="", axis=ax, 
+        yerr=[astero_k["M_K_err2"], astero_k["M_K_err1"]])
+    hr.absmag_teff_plot(
+        astero_b["TEFF_COR"], astero_b["M_K"], color=bc.green, marker="s", ms=8, 
+        ls="", axis=ax, label="")
 #   hr.absmag_teff_plot(
 #       spec_rapid["TEFF_COR"], spec_rapid["M_K"], color=bc.blue, marker="o", 
 #       label="Rapid Rotators", ls="", ms=7, axis=ax)
@@ -364,10 +374,18 @@ def cool_dwarf_mk():
     f, ax = plt.subplots(1,1, figsize=(12,12))
     cool = cool_data_splitter()
     cool_full = cool.subsample(["~Bad"])
-    cool_subgiants = cool.subsample(["~Bad", "Berger Subgiant"])
-    cool_dwarfs = cool.subsample(["~Bad", "Modified Berger Main Sequence"])
-    cool_giants = cool.subsample(["~Bad", "Berger Giant"])
-    cool_binaries = cool.subsample(["~Bad", "Modified Berger Cool Binary"])
+    cool_subgiants_k = cool.subsample(["~Bad", "Berger Subgiant", "Good K"])
+    cool_subgiants_b = cool.subsample(["~Bad", "Berger Subgiant", "Blend"])
+    cool_dwarfs_k = cool.subsample([
+        "~Bad", "Modified Berger Main Sequence", "Good K"])
+    cool_dwarfs_b = cool.subsample([
+        "~Bad", "Modified Berger Main Sequence", "Blend"])
+    cool_giants_k = cool.subsample(["~Bad", "Berger Giant", "Good K"])
+    cool_giants_b = cool.subsample(["~Bad", "Berger Giant", "Blend"])
+    cool_binaries_k = cool.subsample([
+        "~Bad", "Modified Berger Cool Binary", "Good K"])
+    cool_binaries_b = cool.subsample([
+        "~Bad", "Modified Berger Cool Binary", "Blend"])
     cool_rapid = cool.subsample([
         "~Bad", "Vsini det", "~DLSB"])
     cool_marginal = cool.subsample([
@@ -387,17 +405,33 @@ def cool_dwarf_mk():
 #   rapid_rotators = mcq_joined[mcq_joined["Prot"] < 3]
 
     hr.absmag_teff_plot(
-        cool_giants["TEFF"], cool_giants["M_K"], color=bc.orange, marker=".", 
-        label="Giants", ls="", axis=ax)
+        cool_giants_k["TEFF"], cool_giants_k["M_K"], color=bc.orange, marker=".", 
+        label="Giants", ls="", axis=ax, 
+        yerr=[cool_giants_k["M_K_err2"], cool_giants_k["M_K_err1"]])
     hr.absmag_teff_plot(
-        cool_subgiants["TEFF"], cool_subgiants["M_K"], color=bc.purple, 
-        marker=".", label="Subgiants", ls="", axis=ax)
+        cool_giants_b["TEFF"], cool_giants_b["M_K"], color=bc.orange, marker="v", 
+        ls="", axis=ax, label="")
     hr.absmag_teff_plot(
-        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.algae, marker=".", 
-        label="Dwarfs", ls="", axis=ax)
+        cool_subgiants_k["TEFF"], cool_subgiants_k["M_K"], color=bc.purple, 
+        marker=".", label="Subgiants", ls="", axis=ax,
+        yerr=[cool_subgiants_k["M_K_err2"], cool_subgiants_k["M_K_err1"]])
     hr.absmag_teff_plot(
-        cool_binaries["TEFF"], cool_binaries["M_K"], color=bc.green, 
-        marker=".", label="Binaries", ls="", axis=ax)
+        cool_subgiants_b["TEFF"], cool_subgiants_b["M_K"], color=bc.purple, 
+        marker="v", ls="", axis=ax, label="")
+    hr.absmag_teff_plot(
+        cool_dwarfs_k["TEFF"], cool_dwarfs_k["M_K"], color=bc.algae, marker=".", 
+        label="Dwarfs", ls="", axis=ax,
+        yerr=[cool_dwarfs_k["M_K_err2"], cool_dwarfs_k["M_K_err1"]])
+    hr.absmag_teff_plot(
+        cool_dwarfs_b["TEFF"], cool_dwarfs_b["M_K"], color=bc.algae, marker="v", 
+        ls="", axis=ax, label="")
+    hr.absmag_teff_plot(
+        cool_binaries_k["TEFF"], cool_binaries_k["M_K"], color=bc.green, 
+        marker=".", label="Binaries", ls="", axis=ax,
+        yerr=[cool_binaries_k["M_K_err2"], cool_binaries_k["M_K_err1"]])
+    hr.absmag_teff_plot(
+        cool_binaries_b["TEFF"], cool_binaries_b["M_K"], color=bc.green, 
+        marker="v", ls="", axis=ax, label="")
 #   hr.absmag_teff_plot(
 #       cool_rapid["TEFF"], cool_rapid["M_K"], color=bc.blue, marker="o", 
 #       label="Rapid Rotators", ls="", ms=7, axis=ax)
@@ -637,48 +671,46 @@ def period_teff_trend():
 def plot_rr_fractions():
     '''Plot spectroscopic and photometric rapid rotator fractions.'''
     cool_data = cool_data_splitter()
-    cool_dwarfs_mcq = cool_data.subsample([
-        "~Bad", "~DLSB", "Mcq", "Modified Berger Main Sequence", "~Too Hot"])
-    cool_binaries_mcq = cool_data.subsample([
-        "~Bad", "~DLSB", "Mcq", "Modified Berger Cool Binary", "~Too Hot"])
-    cool_dwarfs_nomcq = cool_data.subsample([
-        "~Bad", "~DLSB", "~Mcq", "Modified Berger Main Sequence", "~Too Hot"])
-    cool_binaries_nomcq = cool_data.subsample([
-        "~Bad", "~DLSB", "~Mcq", "Modified Berger Cool Binary", "~Too Hot"])
+    cool_dwarfs_mcq = vstack([
+        cool_data.subsample([
+            "~Bad", "~DLSB", "Mcq", "Modified Berger Main Sequence", 
+            "~Too Hot"]), 
+        cool_data.subsample([
+            "~Bad", "~DLSB", "Mcq", "Modified Berger Cool Binary", 
+            "~Too Hot"])])
+    cool_dwarfs_nomcq = vstack([
+        cool_data.subsample([
+            "~Bad", "~DLSB", "~Mcq", "Modified Berger Main Sequence", 
+            "~Too Hot"]), 
+        cool_data.subsample([
+            "~Bad", "~DLSB", "~Mcq", "Modified Berger Cool Binary", 
+            "~Too Hot"])])
 
     plt.figure(figsize=(10,10))
 
     mcq = catin.read_McQuillan_catalog()
-    dwarf_periods = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
-    binary_periods = au.join_by_id(cool_binaries_mcq, mcq, "kepid", "KIC")
+    periods = au.join_by_id(cool_dwarfs_mcq, mcq, "kepid", "KIC")
 
-    samp.generate_DSEP_radius_column_with_errors(dwarf_periods)
-    samp.generate_DSEP_radius_column_with_errors(binary_periods)
+    samp.generate_DSEP_radius_column_with_errors(periods)
 
     samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
-        dwarf_periods["VSINI"], dwarf_periods["Prot"], 
-        dwarf_periods["DSEP radius"], min_limit=6, max_limit=12,
-        color=bc.algae, label="Single")
+        periods["VSINI"], periods["Prot"], 
+        periods["DSEP radius"], min_limit=6, max_limit=12,
+        color=bc.black, label="")
     samp.plot_rapid_rotation_detection_limits(
-        cool_dwarfs_nomcq["VSINI"], label="Single Mcquillan Nondetections",
-        color=bc.algae, ls=":", min_limit=6, max_limit=12) 
-    samp.spectroscopic_photometric_rotation_fraction_comparison_plot(
-        binary_periods["VSINI"], binary_periods["Prot"], 
-        binary_periods["DSEP radius"], min_limit=6, max_limit=12,
-        color=bc.green, label="Binary")
-    samp.plot_rapid_rotation_detection_limits(
-        cool_binaries_nomcq["VSINI"], label="Binary Mcquillan Nondetections",
-        color=bc.green, ls=":", min_limit=6, max_limit=12) 
+        cool_dwarfs_nomcq["VSINI"], label="Mcquillan Nondetections",
+        color=bc.black, ls=":", min_limit=6, max_limit=12) 
     plt.legend(loc="lower right")
     plt.ylim(0.0, 1.0)
     ax1 = plt.gca()
     ax2 = ax1.twinx()
+    ax1.set_ylim(0.7, 1)
     ticks = ax1.get_yticks()
     print(ticks)
     fracticks = 1 - ticks
     print(fracticks)
-    ax2.set_yticks(ticks)
-    ax2.set_yticklabels(fracticks)
+    ax2.set_yticks(np.linspace(0, 1, len(fracticks), endpoint=True))
+    ax2.set_yticklabels(["{0:.2f}".format(f) for f in fracticks])
     ax1.set_xlim(5.5, 12.5)
     ax2.set_xlim(5.5, 12.5)
     ax1.set_ylabel(r"$N (< v \sin i) / N$")
@@ -779,13 +811,21 @@ def cool_dwarf_rotation_analysis():
         raderr_above=marginal_binary_periodpoints["DSEP radius upper"],
         subplot_tup=subplot_tup, color=bc.sky_blue, marker="8")
 
-@write_plot("binarity")
+@write_plot("binary_cut")
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()
-    dwarfs = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot"]) 
-    binaries = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot"]) 
+    dwarfs_k = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Good K"]) 
+    dwarfs_g = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Blend"]) 
+    binaries_k = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Good K"]) 
+    binaries_g = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Blend"]) 
+    subgiants_k = cool_dwarf.subsample([
+            "~Bad", "Berger Subgiant", "~Too Hot", "Good K"]) 
+    subgiants_g = cool_dwarf.subsample([
+            "~Bad", "Berger Subgiant", "~Too Hot", "Blend"]) 
 
     oldsoliso = sed.DSEPInterpolator(age=14.0, feh=0.0, minlogG=3.5, lowT=3700)
     oldsoldata = oldsoliso._get_isochrone_data("Ks")
@@ -808,6 +848,91 @@ def plot_binarity_diagram():
     oldhighmagdiff = samp.calc_photometric_excess(
         oldhighteff, np.zeros(len(oldhighteff))+0.5, "Ks", oldhighMK)
 
+    subgiantdiff = samp.calc_photometric_excess(
+        subgiants["TEFF"], subgiants["FE_H"], "Ks", subgiants["M_K"])
+
+    f = plt.figure(figsize=(10,10))
+    fulltable = vstack([dwarfs_k, dwarfs_b, binaries_k, binaries_b])
+
+    hr.absmag_teff_plot(
+        oldsolteff, oldsolmagdiff, ls="-", color=bc.black, 
+        label="[Fe/H] = 0.0")
+    hr.absmag_teff_plot(
+        oldlowteff, oldlowmagdiff, ls="-", color=bc.blue, 
+        label="[Fe/H] = -0.5")
+    hr.absmag_teff_plot(
+        oldhighteff, oldhighmagdiff, ls="-", color=bc.red, 
+        label="[Fe/H] = 0.5")
+    hr.absmag_teff_plot(
+        subgiants["TEFF"], subgiantdiff, ls="", color=bc.purple,
+        label="Subgiants", marker=".")
+    samp.plot_photometric_binary_excess(
+        fulltable["TEFF"], fulltable["FE_H"], "Ks", fulltable["M_K"])
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("Photometric excess")
+    plt.xlim(5500, 3700)
+    plt.ylim(0.3, -2.5)
+
+@write_plot("binarity")
+def rapid_rotator_binarity():
+    '''Show the binarity of rapid rotators by marking their luminosity excess.'''
+    cool_dwarf = cool_data_splitter()
+    dwarfs = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot"]) 
+    binaries = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot"]) 
+    rapid = vstack([
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Vsini det",
+            "~DLSB"]), 
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Vsini det",
+            "~DLSB"])])
+    marginal = vstack([
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot", 
+            "Vsini marginal", "~DLSB"]), 
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot", 
+            "Vsini marginal", "~DLSB"])])
+    dlsb  = vstack([
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "DLSB"]), 
+        cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "DLSB"])])
+
+    oldsoliso = sed.DSEPInterpolator(age=14.0, feh=0.0, minlogG=3.5, lowT=3700)
+    oldsoldata = oldsoliso._get_isochrone_data("Ks")
+    oldsolteff = 10**oldsoldata["LogTeff"]
+    oldsolMK = oldsoldata["Ks"]
+    oldsolmagdiff = samp.calc_photometric_excess(
+        oldsolteff, np.zeros(len(oldsolteff)), "Ks", oldsolMK)
+
+    oldlowiso = sed.DSEPInterpolator(age=14.0, feh=-0.5, minlogG=3.5, lowT=3700)
+    oldlowdata = oldlowiso._get_isochrone_data("Ks")
+    oldlowteff = 10**oldlowdata["LogTeff"]
+    oldlowMK = oldlowdata["Ks"]
+    oldlowmagdiff = samp.calc_photometric_excess(
+        oldlowteff, np.zeros(len(oldlowteff))-0.5, "Ks", oldlowMK)
+
+    oldhighiso = sed.DSEPInterpolator(age=14.0, feh=0.5, minlogG=3.5, lowT=3700)
+    oldhighdata = oldhighiso._get_isochrone_data("Ks")
+    oldhighteff = 10**oldhighdata["LogTeff"]
+    oldhighMK = oldhighdata["Ks"]
+    oldhighmagdiff = samp.calc_photometric_excess(
+        oldhighteff, np.zeros(len(oldhighteff))+0.5, "Ks", oldhighMK)
+
+    dwarfdiff = samp.calc_photometric_excess(
+        dwarfs["TEFF"], dwarfs["FE_H"], "Ks", dwarfs["M_K"])
+    binarydiff = samp.calc_photometric_excess(
+        binaries["TEFF"], binaries["FE_H"], "Ks", binaries["M_K"])
+    rapiddiff = samp.calc_photometric_excess(
+        rapid["TEFF"], rapid["FE_H"], "Ks", rapid["M_K"])
+    marginaldiff = samp.calc_photometric_excess(
+        marginal["TEFF"], marginal["FE_H"], "Ks", marginal["M_K"])
+    dlsbdiff = samp.calc_photometric_excess(
+        dlsb["TEFF"], dlsb["FE_H"], "Ks", dlsb["M_K"])
+
     f = plt.figure(figsize=(10,10))
     fulltable = vstack([dwarfs, binaries])
 
@@ -819,12 +944,56 @@ def plot_binarity_diagram():
         label="[Fe/H] = -0.5")
     hr.absmag_teff_plot(
         oldhighteff, oldhighmagdiff, ls="-", color=bc.red, 
-        label="[Fe/H] = 0.0")
-    samp.plot_photometric_binary_excess(
-        fulltable["TEFF"], fulltable["FE_H"], "Ks", fulltable["M_K"])
+        label="[Fe/H] = 0.5")
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"], dwarfdiff, ls="", color=bc.algae,
+        label="Dwarf", marker=".")
+    hr.absmag_teff_plot(
+        binaries["TEFF"], binarydiff, ls="", color=bc.green,
+        label="Binary", marker=".")
+    hr.absmag_teff_plot(
+        rapid["TEFF"], rapiddiff, ls="", color=bc.blue,
+        label="Rapid Rotator", marker="o")
+    hr.absmag_teff_plot(
+        marginal["TEFF"], marginaldiff, ls="", color=bc.sky_blue,
+        label="Marginal Rotator", marker="o")
+    hr.absmag_teff_plot(
+        dlsb["TEFF"], dlsbdiff, ls="", color=bc.light_pink,
+        label="SB2", marker="*")
     plt.xlabel("APOGEE Teff (K)")
     plt.ylabel("Photometric excess")
+    plt.legend(loc="upper right")
+    plt.xlim(5500, 3700)
+    plt.ylim(0.3, -2.5)
 
+@write_plot("mcq_binarity")
+def plot_mcq_binarity_histogram():
+    '''Compare magnitude excess of rapid rotators to regular targets.'''
+    mcq = split.McQuillanSplitter()
+    split.initialize_mcquillan_sample(mcq)
+
+    fullsamp = vstack([
+        mcq.subsample(["Right Teff", "Berger Main Sequence"]), 
+        mcq.subsample(["Right Teff", "Berger Cool Binary"])])
+    rapid = vstack([
+        mcq.subsample(["Right Teff", "Berger Main Sequence", "~Slow"]), 
+        mcq.subsample(["Right Teff", "Berger Cool Binary", "~Slow"])])
+
+    full_magdiff = samp.calc_photometric_excess(
+        fullsamp["teff"], 0.0, "Ks", fullsamp["M_K"])
+    rapid_magdiff = samp.calc_photometric_excess(
+        rapid["teff"], 0.0, "Ks", rapid["M_K"])
+
+    f = plt.figure(figsize=(10,10))
+    bins = np.linspace(-4.5, 3.5, 76, endpoint=True)
+    plt.hist(full_magdiff, normed=True, bins=bins, histtype="step",
+             cumulative=True, label="Full Mcquillan", color=bc.black)
+    plt.hist(rapid_magdiff, normed=True, bins=bins, histtype="step",
+             cumulative=True, label="Rapid Rotators", color=bc.blue)
+    plt.xlabel("Mag excess")
+    plt.ylabel("N(< Mag excess)/N")
+    plt.legend(loc="upper left")
+    plt.xlim(-4.5, 3.5)
         
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
