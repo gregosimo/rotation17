@@ -71,7 +71,7 @@ def asteroseismic_data_splitter():
     return astero
 
 @au.memoized
-def dwarf_data_splitter():
+def full_apogee_splitter():
     '''A persistent DataSplitter for the cool dwarf sample.'''
     apogee = split.APOGEESplitter()
     split.initialize_general_APOGEE(apogee)
