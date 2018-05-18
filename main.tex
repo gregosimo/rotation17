@@ -134,19 +134,23 @@ rotation on the subgiant branch \citep{vanSaders13}.
 
 In this paper, we study the rotation distribution of \Kepler{} targets as
 seen from APOGEE \vsini{}s and compare to published periods. In 
-Section~\ref{sec:sample} we describe the
-selection of cool dwarfs to ensure a reliable comparison between
-\vsini{} and period. In Section~\ref{sec:analysis}, we describe the reliability
-of the quantities we need in order to compare rotation via \vsini{} and
-photometric modulation. We also demonstrate our methodology works with the 
-APOKASC asteroseismic sample. In Section~\ref{sec:fraction}, we compare the 
-rapid rotator fraction from photometric studies to that found using APOGEE 
-spectra. In Section~\ref{sec:results}, we compare the two measures of 
+Section~\ref{sec:data} we describe the various catalogs we synthesize to
+successfully determine binarity and rapid rotation.
+In Section~\ref{sec:analysis}, we show how we obtain a well-characterized
+sample of cool dwarfs with rotation information. In
+Section~\ref{sec:vsini_check} we validate the quality of the APOGEE \vsini{}
+measurements as well as demonstrate that spectroscopic and photometric rotation
+measures agree in the 
+APOKASC asteroseismic sample. In Section~\ref{sec:results}, we demonstrate that
+rapid rotation is primarily seen in photometric binaries, and that there is
+disagreement between photometric and spectroscopic rotation measures in the
+cool dwarfs. In Section~\ref{sec:discussion}, we compare the two measures of 
 rotation on a point-by-point basis and postulate reasons for disagreement. 
 Lastly, we summarize our findings and discuss future efforts in 
 Section~\ref{sec:conclusions}.
 
 \section{Catalog Data}
+\label{sec:data}
 
 \subsection{APOGEE}
 
@@ -344,31 +348,28 @@ largely verify that APOGEE \vsini{} measurements do not experience severe
 systematics for cool dwarfs.
 
 \section{Data Analysis}
-\label{sec:sample}
+\label{sec:analysis}
 
 \begin{figure*}
     \gridline{\fig{astero}{0.3\textwidth}{(a)}
               \fig{cool_mk_sample}{0.3\textwidth}{(b)}
-              \fig{binarity}{0.3\textwidth}{(c)}}
+              \fig{binary_cut}{0.3\textwidth}{(c)}}
     \caption{\emph{Left:} Stellar properties of the full APOKASC 
     asteroseismic dwarf/subgiant control sample. The black points mark
-    K-band absolute magnitudes for the full control sample. Green stars mark
-    the subsample showing oscillations. Rapid rotators with 
-    \(\vsini > 10 \kms\) are denoted as dark blue circles, while stars with 
-    marginally detected rotation \(7 \kms < \vsini < 10 \kms\) are denoted 
-    with light blue circles. Objects classified as showing double-lines in 
-    their APOGEE spectra are labeled as salmon stars.
+    K-band absolute magnitudes for the full control sample. Green squares mark
+    the subsample showing oscillations. 
     \emph{Middle:} The full cool dwarf sample as measured with APOGEE stellar 
-    parameters. The stellar classifications follow that in \citet{Berger18b},
-    with dwarfs, subgiants, and giants marked as teal, purple, and mustard
-    dots. Rapid rotators are classified similarly to the previous figure. 
-    Objects showing rapid (\(P_{rot} < 3 \) day) photometric rotation are 
-    indicated with purple diamonds. Objects showing double-lined APOGEE 
-    spectra are indicated as salmon stars. The dotted vertical 
-    line indicates the \(\Teff = 5450\) K boundary.
-    \emph{Right:} Magnitude excess of targets observed in the full dwarf sample
-    above DSEP models at matching model \Teff{} and [Fe/H]. The solid line
-denotes the cut between single stars on the bottom and photometric binaries
+    parameters. The stellar classifications of dwarfs, photometric binaries, 
+    subgiants, and giants marked as teal, purple, and mustard
+    dots. Photometric binaries which could also be considered subgiants are
+    marked with a pentagon.  The dotted vertical line indicates the 
+    \(\Teff = 5450\) K boundary.
+    \emph{Right:} Magnitude excess of targets observed in the cool 
+    sample above 3 Gyr DSEP models at matching \Teff{} and 
+    [Fe/H]. Photometric binaries are shown in green, single stars in teal, and
+    subgiants are in purple. The blue, black, and red lines denote the location of 14 Gyr
+    isochrones at [Fe/H] = 0.5, 0.0, -0.5. The solid straight line denotes the 
+    cut between single stars on the bottom and photometric binaries
 above. The larger cutoff at higher temperature results from the faster age
 evolution for hotter stars.\label{fig:sample}}
 \end{figure*}
@@ -594,7 +595,8 @@ star would explain the mismatch in \vsini{} and rotation period.
   \includegraphics[width=0.8\textwidth]{binarity}
   \caption{The absolute K-band magnitude of rapid rotators compared to a 
   fiducial 3 Gyr isochrone. Rapid rotators are shown as dark blue points
-while marginal rotators are shown as light blue points. Objects with
+while marginal rotators are shown as light blue points. Objects showing
+double-lined spectra are denoted with salmon stars. Objects with
 ambiguous stellar classification are shown as pentagons. The range of
 possible K-band magnitudes achievable on the main sequence are given as
 solid lines. The red, black, and blue lines correspond to [Fe/H]=0.5,
@@ -604,11 +606,12 @@ solid lines. The red, black, and blue lines correspond to [Fe/H]=0.5,
 
 \begin{figure}[htb]
   \centering
-  \includegraphics[width=0.8\textwidth]{mcqbinarity}
-  \caption{Histograms of the displacement off of a fiducial 3 Gyr solar
-    metallicity isochrone for the \citet{McQuillan14} cool dwarfs
-  (black), and the rapid rotator sample (red). }
-  \label{fig:mcqbinarity}
+  \includegraphics[width=0.8\textwidth]{mcq_binarity}
+  \caption{Cumulative histograms of the K-band magnitude excess with respect to
+      a 3 Gyr solar metallicity isochrone for all cool dwarfs with 
+      \citet{McQuillan14} periods. The black line is the magnitude excess
+      distribution for the full sample while the blue light is just the rapid
+  (\(P_{rot} < 3\) day) rotator sample.\label{fig:mcqbinarity}}
 \end{figure}
 
 
@@ -633,18 +636,20 @@ The tendency for rapid rotators to be in multiple star systems is also
 seen in the \citet{McQuillan14} cool dwarfs. To select this sample, we
 use the same absolute K-band magnitude and temperature cuts as with the
 APOGEE sample. Instead of spectroscopic temperatures, we use photometric 
-temperature calculated in \citet{Mathur17}. As before, we calculate the 
-photometric excess above
-a fiducial 3 Gyr isochrone. Because the full \citep{McQuillan14} sample does 
-not have metallicity information, use use a single solar-metallicity
-isochrone. As a result, there will be greater scatter between the main and 
-multiple-star sequences. Nonetheless, it is clear that rapid rotators 
-overwhelmingly cluster above the main sequence than the full sample.
+temperature calculated in \citet{Mathur17}. Because the full \citet{McQuillan14} 
+sample does not have metallicity information, we cannot glean a sharp
+photometric binary sequence as was seen with the APOGEE sample. Nonetheless,
+we can note general trends just by removing the overall \Teff dependence of
+\(M_K\) by subtracting off  a single 3 Gyr solar-metallicity
+isochrone. Plotted in \cref{fig:mcqbinarity} is the cumulative distribution
+function of \citet{McQuillan14} targets with \(P < 3\) day compared to the bulk
+sample. It is clear from the figure that rapid rotators tend to be found at
+larger magnitude excesses than the bulk sample.
 
 \begin{figure}[htb]
     \plotone{detection_fraction}
-    \caption{Cumulative distribution function of \vsini{} for the single and
-        binary samples for spectroscopic and photometric rotation data. The 
+    \caption{Cumulative distribution function of \vsini{} for the combined
+        dwarf sample for spectroscopic and photometric rotation data. The 
         rapid rotator fraction at a given \vsini{} threshold
     would be one minus the value of the cumulative distribution function
     at that \vsini{} value. Solid lines denote the cumulative
@@ -653,8 +658,7 @@ overwhelmingly cluster above the main sequence than the full sample.
     the cumulative distribution function of \(v_{eq}\) derived from the
     rotation periods and stellar radii. Dotted lines denote the
     cumulative distribution function of \vsini{} for the subsample without
-    rotation periods. The teal and green colors denote rapid rotator fractions
-in the single-star and photometric binary sequences. Error bars represent 
+    rotation periods. Error bars represent 
     1-\(\sigma\) binomial confidence levels.\label{fig:detection_fraction}}
 \end{figure}
 
@@ -673,7 +677,7 @@ given by the relation
     v_{eq} = \frac{2 \pi R}{P} 
 \end{displaymath}
 where \(R\) is the equatorial radius and \(P\) is the rotation period. As we
-noted in Section~\ref{sec:radii}, there is a relatively clean and narrow
+noted in Section~\ref{sec:data}, there is a relatively clean and narrow
 relationship between radius and \Teff{} on the main sequence. We used the 
 DSEP-derived radius for each individual object to transform  between
 velocity and period coordinates. The fraction of objects with period
@@ -749,15 +753,16 @@ To further investigate the discrepancy in rapid rotation rates, we
 performed a point-by-point comparison of rotation measures for these 
 targets is shown in the bottom panels of
 \cref{fig:rot}. The comparison between \vsini{} and equatorial velocity shows
-that the discrepancy found in Section~\ref{sec:fraction} is not due to slight
+that the discrepancy between \vsini{} and photometric period is not due to slight
 but coherent model errors, or a few discrepant points. Unlike with the
-asteroseismic sample in Section~\ref{sec:astero}, all but one of the targets
+asteroseismic sample, all but one of the targets
 lie in the forbidden \(\sin i > 1\) region with both the confident and
 marginal detections affected. This is indicative of a systematic
 bias where periods are consistently (and sometimes drastically) too slow to be
 consistent with \vsini{}.
 
 \section{Discussion}
+\label{sec:discussion}
 
 Our analysis by combining APOGEE and \Gaia{} data shows that rapid
 rotation is not a single-star phenomenon. This is an indication that
@@ -781,7 +786,7 @@ binary sequence, which may be thermally unstable.
 
 Our result that rapid rotators tend to be binaries supports the
 predictions of efforts attempting to detect stellar multiplicity from
-spectra \citep{Badry18}. \citet{Badry18} analyzed all APOGEE spectra
+spectra \citep{ElBadry18}. \citet{ElBadry18} analyzed all APOGEE spectra
 from DR13 before \Gaia{} parallaxes were available, including a
 significant fraction of this sample. They
 reported that 18/19 rapid rotators on the photometric sequence and 2/2 on 
@@ -835,7 +840,7 @@ contributing the photometric modulation in the
 stars cooler than the Kraft break, rotation and activity are highly 
 correlated, we check for bright companions
 within the \Kepler{} pixel using the \Kepler{} field high-resolution UKIRT
-J-band images introduced in Section~\ref{sec:astero}. We did not find a 
+J-band images introduced in Section~\ref{sec:vsini_check}. We did not find a 
 correlation between that the presence of a bright companion and the magnitude 
 of the offset, indicating that confusion is likely not the main source of the 
 problem.
@@ -885,7 +890,7 @@ While we have two potential explanations for the discrepancy between the
 photometric and spectroscopic rapid rotator rate, our currently
 available data is unable to distinguish between the two. The most
 effective way to break the degeneracy will be to follow-up the high
-\vzini{} objects with spectroscopy at higher resolution than APOGEE. If
+\vsini{} objects with spectroscopy at higher resolution than APOGEE. If
 the line broadening is truly due to blending, the the two components
 should easily separate out. If not, then we can conclude that the
 spectroscopic rapid rotation is real, and the line is intrisically
