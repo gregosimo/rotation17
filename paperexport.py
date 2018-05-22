@@ -74,23 +74,29 @@ def asteroseismic_data_splitter():
 def full_apogee_splitter():
     '''A persistent DataSplitter for the cool dwarf sample.'''
     apogee = split.APOGEESplitter()
-    split.initialize_general_APOGEE(apogee)
-    return apogee
+    apogee.data["SDSS-Teff"] = apogee.data["SDSS-Teff"].filled(-9999.99)
+    apogee.data["K-Teff"] = apogee.data["K-Teff"].filled(-9999.99)
+    apogee.data["log(g)"] = apogee.data["log(g)"].filled(-9999.99)
+    # No need to split off objects w/ and w/o Gaia detections
+    split.initialize_full_APOGEE(apogee)
+    targeted_splitted = apogee.split_subsample(["Targeted"])
+    return targeted_splitted
 
 @au.memoized
 def cool_data_splitter():
-    '''A persistent Datasplitter for Jen's cool sample.'''
-    dwarfs = dwarf_data_splitter()
-    cool_dwarfs = split.general_to_cool_sample(dwarfs)
-    split.initialize_cool_KICs(cool_dwarfs)
-    return cool_dwarfs
+    '''A persistent Datasplitter for the cool sample.'''
+    full = full_apogee_splitter()
+    cool = full.split_subsample(["Cool"])
+    split.initialize_cool_KICs(cool)
+    return cool
 
 @au.memoized
 def hot_dwarf_splitter():
     '''A persistent Datasplitter for the hot dwarf sample.'''
-    dwarfs = dwarf_data_splitter()
-    hot_dwarfs = dwarfs.split_subsample(["APOGEE2_APOKASC_DWARF"])
-    return hot_dwarfs
+    full = full_apogee_splitter()
+    hot = full.split_subsample(["Hot"])
+    return hot
+
 
 @write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
@@ -281,6 +287,39 @@ def plot_lower_limit_Pleiades_test():
     plt.plot(sh_vsinis[sort_indices], ad_values[sort_indices], 'k-')
     plt.xlabel("Stauffer-Hartmann vsini (km/s)")
     plt.ylabel("Probability that high and low distributions are the same")
+
+@write_plot("selection")
+def selection_coordinates():
+    '''Show the APOKASC and Ancillary samples in selection coordinates.'''
+    fullsamp = catin.stelparms_with_original_KIC()
+    aposamp = full_apogee_splitter()
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    apokasc = aposamp.subsample(["APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+    jen = aposamp.subsample(["Cool Sample"])
+
+    hr.logg_teff_plot(
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker="o", ls="")
+    hr.logg_teff_plot(apokasc["teff"], apokasc["logg"], color=bc.blue,
+                      marker=".", ls="")
+    hr.logg_teff_plot(jen["teff"], jen["logg"], color=bc.red, marker=".",
+                      ls="")
+    plt.xlim(7000, 3000)
+    plt.xlabel("Huber Teff (K)")
+    plt.ylabel("Huber log(g) (cm/s/s)")
+
+@write_plot("metallicity")
+def dwarf_metallicity():
+    '''Show the metallicity distribution of the cool dwarfs.'''
+    cool = cool_data_splitter()
+    cool_data = cool.subsample(["~Bad", "Dwarf"])
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    ax.hist(cool_data["M_H"], cumulative=True, normed=True, bins=100)
+    ax.set_xlabel("APOGEE [M/H]")
+    ax.set_ylabel("Cumulative distribution")
+    ax.set_xlim(-1.5, 0.46)
+
 
 @write_plot("astero")
 def asteroseismic_sample_MK():
