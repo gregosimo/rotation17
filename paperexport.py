@@ -6,6 +6,7 @@ import numpy as np
 import numpy.core.defchararray as npstr
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.ticker import AutoMinorLocator
 from astropy.table import Table, vstack
 from astropy.io import ascii
 import statop as stat
@@ -74,9 +75,6 @@ def asteroseismic_data_splitter():
 def full_apogee_splitter():
     '''A persistent DataSplitter for the cool dwarf sample.'''
     apogee = split.APOGEESplitter()
-    apogee.data["SDSS-Teff"] = apogee.data["SDSS-Teff"].filled(-9999.99)
-    apogee.data["K-Teff"] = apogee.data["K-Teff"].filled(-9999.99)
-    apogee.data["log(g)"] = apogee.data["log(g)"].filled(-9999.99)
     # No need to split off objects w/ and w/o Gaia detections
     split.initialize_full_APOGEE(apogee)
     targeted_splitted = apogee.split_subsample(["Targeted"])
@@ -96,6 +94,19 @@ def hot_dwarf_splitter():
     full = full_apogee_splitter()
     hot = full.split_subsample(["Hot"])
     return hot
+
+def missing_gaia_targets():
+    '''Plot properties of targets missing Gaia observations.'''
+    full = full_apogee_splitter()
+    full_data = full.subsample(["~Bad"])
+    missing_gaia = full_data[full_data["dis"].mask]
+
+    hr.logg_teff_plot(full_data["teff"], full_data["logg"], marker=".",
+                        color=bc.black, ls="")
+    hr.logg_teff_plot(missing_gaia["teff"], missing_gaia["logg"], marker=".",
+                        color=bc.green, ls="")
+
+
 
 
 @write_plot("Bruntt_comp")
@@ -295,18 +306,27 @@ def selection_coordinates():
     aposamp = full_apogee_splitter()
 
     f, ax = plt.subplots(1,1, figsize=(12,12))
-    apokasc = aposamp.subsample(["APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+    apokasc_giant = aposamp.subsample([
+        "APOGEE2_APOKASC", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+    apokasc_dwarf = aposamp.subsample(["APOGEE2_APOKASC_DWARF", "~Cool Sample"])
     jen = aposamp.subsample(["Cool Sample"])
 
     hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker="o", ls="")
-    hr.logg_teff_plot(apokasc["teff"], apokasc["logg"], color=bc.blue,
-                      marker=".", ls="")
-    hr.logg_teff_plot(jen["teff"], jen["logg"], color=bc.red, marker=".",
-                      ls="")
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker="o", ls="",
+    label="Full Kepler")
+    hr.logg_teff_plot(
+        apokasc_giant["teff"], apokasc_giant["logg"], color=bc.green, 
+        marker=".", ls="", label="APOKASC Giant")
+    hr.logg_teff_plot(
+        apokasc_dwarf["teff"], apokasc_dwarf["logg"], color=bc.blue, marker=".", 
+        ls="", label="APOKASC Dwarf")
+    hr.logg_teff_plot(
+        jen["teff"], jen["logg"], color=bc.red, marker=".", ls="", 
+        label="Cool Dwarf")
     plt.xlim(7000, 3000)
     plt.xlabel("Huber Teff (K)")
     plt.ylabel("Huber log(g) (cm/s/s)")
+    plt.legend(loc="upper left")
 
 @write_plot("metallicity")
 def dwarf_metallicity():
@@ -405,6 +425,15 @@ def asteroseismic_logg_Gaia_comparison():
     plt.ylabel("M_K")
     plt.legend(loc="upper left")
 
+def full_sample_mk():
+    '''Plot the full sample on an HR diagram with M_K'''
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    full = full_apogee_splitter()
+    full_data = full.subsample(["In Gaia", "K Detection"])
+
+    hr.absmag_teff_plot(full_data["TEFF"], full_data["M_K"], color=bc.black,
+                        marker=".", ls="")
+
 @write_plot("cool_mk_sample")
 def cool_dwarf_mk():
     '''Plot the cool dwarf sample on an HR diagram with M_K.
@@ -429,13 +458,6 @@ def cool_dwarf_mk():
         "~Bad", "Vsini det", "~DLSB"])
     cool_marginal = cool.subsample([
         "~Bad", "Vsini marginal", "~DLSB"])
-    apogee_misclassified_subgiants = vstack([
-        cool.subsample([
-            "~Bad", "APOGEE Subgiant", "Modified Berger Main Sequence"]),
-        cool.subsample([
-            "~Bad", "APOGEE Subgiant", "Modified Berger Cool Binary"])])
-    apogee_misclassified_dwarfs = cool.subsample([
-        "~Bad", "APOGEE Dwarf", "Berger Subgiant"])
     dlsbs = cool.subsample([ "~Bad", "DLSB", "~Berger Giant"])
 
 #   cool_mcq = cool.subsample(["~Bad", "Mcq"]) 
@@ -792,16 +814,16 @@ def cool_dwarf_rotation_analysis():
     cool_dwarf = cool_data_splitter()
     marginal_dwarfs = cool_dwarf.subsample([
             "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
-            "Modified Berger Main Sequence", "~Too Hot"]) 
+            "Modified Berger Main Sequence"]) 
     marginal_binaries = cool_dwarf.subsample([
             "~Bad", "Vsini marginal", "~DLSB", "Mcq", 
-            "Modified Berger Cool Binary", "~Too Hot"])
+            "Modified Berger Cool Binary"])
     dwarf_detections = cool_dwarf.subsample([
             "~Bad", "Vsini det", "~DLSB", "Mcq", 
-            "Modified Berger Main Sequence", "~Too Hot"])
+            "Modified Berger Main Sequence"])
     binary_detections = cool_dwarf.subsample([
             "~Bad", "Vsini det", "~DLSB", "Mcq", 
-            "Modified Berger Cool Binary", "~Too Hot"])
+            "Modified Berger Cool Binary"])
 
     mcq = catin.read_McQuillan_catalog()
     marginal_dwarf_periodpoints = au.join_by_id(
@@ -854,33 +876,33 @@ def cool_dwarf_rotation_analysis():
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()
     dwarfs_k = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Good K"]) 
-    dwarfs_g = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Blend"]) 
+            "~Bad", "Modified Berger Main Sequence", "Good K"]) 
+    dwarfs_b = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Main Sequence", "Blend"]) 
     binaries_k = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Good K"]) 
-    binaries_g = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Blend"]) 
+            "~Bad", "Modified Berger Cool Binary", "Good K"]) 
+    binaries_b = cool_dwarf.subsample([
+            "~Bad", "Modified Berger Cool Binary", "Blend"]) 
     subgiants_k = cool_dwarf.subsample([
-            "~Bad", "Berger Subgiant", "~Too Hot", "Good K"]) 
-    subgiants_g = cool_dwarf.subsample([
-            "~Bad", "Berger Subgiant", "~Too Hot", "Blend"]) 
+            "~Bad", "Berger Subgiant", "Good K"]) 
+    subgiants_b = cool_dwarf.subsample([
+            "~Bad", "Berger Subgiant", "Blend"]) 
 
-    oldsoliso = sed.DSEPInterpolator(age=14.0, feh=0.0, minlogG=3.5, lowT=3700)
+    oldsoliso = sed.DSEPInterpolator(age=10.0, feh=0.0, minlogG=3.5, lowT=3700)
     oldsoldata = oldsoliso._get_isochrone_data("Ks")
     oldsolteff = 10**oldsoldata["LogTeff"]
     oldsolMK = oldsoldata["Ks"]
     oldsolmagdiff = samp.calc_photometric_excess(
         oldsolteff, np.zeros(len(oldsolteff)), "Ks", oldsolMK)
 
-    oldlowiso = sed.DSEPInterpolator(age=14.0, feh=-0.5, minlogG=3.5, lowT=3700)
+    oldlowiso = sed.DSEPInterpolator(age=10.0, feh=-0.5, minlogG=3.5, lowT=3700)
     oldlowdata = oldlowiso._get_isochrone_data("Ks")
     oldlowteff = 10**oldlowdata["LogTeff"]
     oldlowMK = oldlowdata["Ks"]
     oldlowmagdiff = samp.calc_photometric_excess(
         oldlowteff, np.zeros(len(oldlowteff))-0.5, "Ks", oldlowMK)
 
-    oldhighiso = sed.DSEPInterpolator(age=14.0, feh=0.5, minlogG=3.5, lowT=3700)
+    oldhighiso = sed.DSEPInterpolator(age=10.0, feh=0.5, minlogG=3.5, lowT=3700)
     oldhighdata = oldhighiso._get_isochrone_data("Ks")
     oldhighteff = 10**oldhighdata["LogTeff"]
     oldhighMK = oldhighdata["Ks"]
@@ -888,7 +910,7 @@ def plot_binarity_diagram():
         oldhighteff, np.zeros(len(oldhighteff))+0.5, "Ks", oldhighMK)
 
     subgiantdiff = samp.calc_photometric_excess(
-        subgiants["TEFF"], subgiants["FE_H"], "Ks", subgiants["M_K"])
+        subgiants_k["TEFF"], subgiants_k["FE_H"], "Ks", subgiants_k["M_K"])
 
     f = plt.figure(figsize=(10,10))
     fulltable = vstack([dwarfs_k, dwarfs_b, binaries_k, binaries_b])
@@ -903,7 +925,7 @@ def plot_binarity_diagram():
         oldhighteff, oldhighmagdiff, ls="-", color=bc.red, 
         label="[Fe/H] = 0.5")
     hr.absmag_teff_plot(
-        subgiants["TEFF"], subgiantdiff, ls="", color=bc.purple,
+        subgiants_k["TEFF"], subgiantdiff, ls="", color=bc.purple,
         label="Subgiants", marker=".")
     samp.plot_photometric_binary_excess(
         fulltable["TEFF"], fulltable["FE_H"], "Ks", fulltable["M_K"])
@@ -917,28 +939,37 @@ def rapid_rotator_binarity():
     '''Show the binarity of rapid rotators by marking their luminosity excess.'''
     cool_dwarf = cool_data_splitter()
     dwarfs = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot"]) 
+            "~Bad", "Modified Berger Main Sequence"]) 
     binaries = cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot"]) 
+            "~Bad", "Modified Berger Cool Binary"]) 
     rapid = vstack([
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "Vsini det",
+            "~Bad", "Modified Berger Main Sequence", "Vsini det",
             "~DLSB"]), 
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "Vsini det",
+            "~Bad", "Modified Berger Cool Binary", "Vsini det",
             "~DLSB"])])
     marginal = vstack([
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot", 
+            "~Bad", "Modified Berger Main Sequence", 
             "Vsini marginal", "~DLSB"]), 
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot", 
+            "~Bad", "Modified Berger Cool Binary", 
             "Vsini marginal", "~DLSB"])])
     dlsb  = vstack([
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Main Sequence", "~Too Hot", "DLSB"]), 
+            "~Bad", "Modified Berger Main Sequence", "DLSB"]), 
         cool_dwarf.subsample([
-            "~Bad", "Modified Berger Cool Binary", "~Too Hot", "DLSB"])])
+            "~Bad", "Modified Berger Cool Binary", "DLSB"])])
+
+    mcq = catin.read_McQuillan_catalog()
+    mcq_dwarfs = au.join_by_id(dwarfs, mcq, "kepid", "KIC", join_type="inner")
+    mcq_binaries = au.join_by_id(binaries, mcq, "kepid", "KIC",
+                                 join_type="inner")
+
+    phot_rapid_dwarf = mcq_dwarfs[mcq_dwarfs["Prot"] < 3]
+    phot_rapid_binary = mcq_binaries[mcq_binaries["Prot"] < 3]
+    phot_rapid = vstack([phot_rapid_dwarf, phot_rapid_binary])
 
     oldsoliso = sed.DSEPInterpolator(age=14.0, feh=0.0, minlogG=3.5, lowT=3700)
     oldsoldata = oldsoliso._get_isochrone_data("Ks")
@@ -971,6 +1002,8 @@ def rapid_rotator_binarity():
         marginal["TEFF"], marginal["FE_H"], "Ks", marginal["M_K"])
     dlsbdiff = samp.calc_photometric_excess(
         dlsb["TEFF"], dlsb["FE_H"], "Ks", dlsb["M_K"])
+    photdiff = samp.calc_photometric_excess(
+        phot_rapid["TEFF"], phot_rapid["FE_H"], "Ks", phot_rapid["M_K"])
 
     f = plt.figure(figsize=(10,10))
     fulltable = vstack([dwarfs, binaries])
@@ -999,6 +1032,9 @@ def rapid_rotator_binarity():
     hr.absmag_teff_plot(
         dlsb["TEFF"], dlsbdiff, ls="", color=bc.light_pink,
         label="SB2", marker="*")
+    hr.absmag_teff_plot(
+        phot_rapid["TEFF"], photdiff, ls="", color=bc.pink,
+        label="Phot Rapid Rotator", marker="d")
     plt.xlabel("APOGEE Teff (K)")
     plt.ylabel("Photometric excess")
     plt.legend(loc="upper right")
@@ -1119,6 +1155,85 @@ def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     axarr[1][1].set_title("Cool Dwarf")
 
     plt.savefig(str(dest))
+
+def APOGEE_metallicity_agreement():
+    '''Compare predicted MK to DSEP isochrones.'''
+    cools = cool_data_splitter()
+    cools_mk = cools.split_subsample(["In Gaia", "K Detection"])
+    cools_mk.split_teff("TEFF", [3500, 5500], ("Low MS", "MS", "High MS"), 
+                     teff_crit="MS Split")
+    cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
+                    mag_crit="M_K split")
+    cool_data = cools_mk.subsample(["~Bad", "MS", "Low"])
+
+    teffbins = np.linspace(3500, 5500, 5, endpoint=True)
+    bin_indices = np.digitize(cool_data["TEFF"], teffbins)
+    colors = [bc.red, bc.orange, bc.green, bc.blue]
+
+    dsepmag = samp.calc_DSEP_model_mags(
+        cool_data["TEFF"], cool_data["FE_H"], cool_data["ALPHA_FE"], "Ks", 
+        age=1)
+
+    for i in range(1, len(teffbins)):
+        ind = bin_indices == i
+        plt.errorbar(
+            cool_data["FE_H"][ind], cool_data["M_K"][ind]-dsepmag[ind], 
+            marker=".", color=colors[i-1], ls="", label="{0}<T<{1}".format(
+            teffbins[i-1], teffbins[i]))
+    plt.plot([-1.4, 0.5], [0.0, 0.0], 'k--')
+    hr.invert_y_axis()
+    plt.ylim(0.5, -1.0)
+    plt.xlabel("APOGEE [Fe/H]")
+    plt.ylabel("M_K - DSEP M_K (1 Gyr)")
+    plt.legend(loc="upper left")
+
+def APOGEE_metallicity_slice():
+    '''Plot a slice of targets at a metallicity.'''
+    cools = cool_data_splitter()
+    cools_mk = cools.split_subsample(["In Gaia", "K Detection"])
+    cools_mk.split_teff("TEFF", 5400, ("Lower MS", "Higher MS"), 
+                     teff_crit="Lower MS Split")
+    cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
+                    mag_crit="M_K split")
+    cools_mk.split_metallicity([-0.1, 0.1], ["High met", "Sol met", "Low Met"],
+                               col="FE_H")
+    cool_data = cools_mk.subsample(["~Bad", "Lower MS", "Low", "Sol met"])
+
+    dsepmag = samp.calc_DSEP_model_mags(
+        cool_data["TEFF"], 0.0, "Ks", age=1)
+
+    tefflines = np.linspace(3600, 5400, 200)
+    highmet = samp.calc_DSEP_model_mags(
+        tefflines, 0.1, "Ks", age=1)
+    lowmet = samp.calc_DSEP_model_mags(
+        tefflines, -0.1, "Ks", age=1)
+    solmet = samp.calc_DSEP_model_mags(
+        tefflines, 0.0, "Ks", age=1)
+    older = samp.calc_DSEP_model_mags(
+        tefflines, 0.0, "Ks", age=3)
+
+    hr.absmag_teff_plot(
+        cool_data["TEFF"], cool_data["M_K"] - dsepmag, ls="", marker=".", 
+        color=bc.black, yerr=np.array([
+            cool_data["M_K_err2"], cool_data["M_K_err1"]]), label="APOGEE")
+    plt.plot([3500, 5500], [0.0, 0.0], 'k--')
+    hr.absmag_teff_plot(
+        tefflines, highmet-solmet, ls=":", marker="",
+        color=bc.black, label="[Fe/H] +/- 0.1")
+    hr.absmag_teff_plot(
+        tefflines, lowmet-solmet, ls=":", marker="",
+        color=bc.black, label="")
+    hr.absmag_teff_plot(
+        tefflines, older-solmet, ls="-", marker="",
+        color=bc.black, label="3 Gyr")
+
+    minorLocator = AutoMinorLocator()
+    ax = plt.gca()
+    ax.yaxis.set_minor_locator(minorLocator)
+    plt.legend(loc="upper right")
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("M_K - DSEP M_K ([Fe/H]=0, age=1 Gyr)")
+    plt.title("APOGEE -0.1 < [Fe/H] < 0.1")
 
 def DLSB_HR_Diagram(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf"),
