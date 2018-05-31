@@ -152,6 +152,16 @@ Section~\ref{sec:conclusions}.
 \section{Catalog Data}
 \label{sec:data}
 
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{selection}
+    \caption{Photometric stellar parameters of the APOGEE sample subsets. The
+    black points denote the photometric \Teff{} and \logg{} of the full
+\Kepler{} sample. Red points denote the cool dwarf sample observed in APOGEE-1.
+The blue and green points denote dwarfs and giants observed in APOGEE-2}
+    \label{fig:selection}
+\end{figure}
+
 \subsection{APOGEE}
 
 The central dataset for this analysis is from the Apache Point Observatory 
@@ -240,7 +250,9 @@ To estimate the absolute K-band magnitude, we make use of distances from
 \Gaia{} DR2 \citep{Gaia16,Gaia18}, derived from parallaxes using an
 exponentially-decreasing volume prior \citep{Berger18b}. Of the full probability
 distribution that is calculated, we make use of the mode as well as the
-1-\(\sigma\) upper and lower confidence intervals.
+1-\(\sigma\) upper and lower confidence intervals. Of the 8141 objects in our
+full sample, 494 did not have Gaia parallaxes. These targets with missing
+\Gaia{} parallaxes do not seem in lie in any particular part of the HR diagram.
 
 Since the full probability distribution functions for the distances are
 not available, we calculate the asymmetric uncertainty in absolute
