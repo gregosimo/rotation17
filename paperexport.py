@@ -84,7 +84,7 @@ def full_apogee_splitter():
 def cool_data_splitter():
     '''A persistent Datasplitter for the cool sample.'''
     full = full_apogee_splitter()
-    cool = full.split_subsample(["Cool"])
+    cool = full.split_subsample(["Cool", "H Jen"])
     split.initialize_cool_KICs(cool)
     return cool
 
@@ -1172,20 +1172,33 @@ def APOGEE_metallicity_agreement():
 
     dsepmag = samp.calc_DSEP_model_mags(
         cool_data["TEFF"], cool_data["FE_H"], cool_data["ALPHA_FE"], "Ks", 
-        age=1)
+        age=5.5)
 
+    metrange = np.array([0.3, 0.2, 0.0, -0.5, -1.0, -1.5])
     for i in range(1, len(teffbins)):
         ind = bin_indices == i
         plt.errorbar(
             cool_data["FE_H"][ind], cool_data["M_K"][ind]-dsepmag[ind], 
             marker=".", color=colors[i-1], ls="", label="{0}<T<{1}".format(
             teffbins[i-1], teffbins[i]))
-    plt.plot([-1.4, 0.5], [0.0, 0.0], 'k--')
+        youngs = samp.calc_DSEP_model_mags(
+            np.ones(len(metrange))*np.mean(teffbins[i-1:i]), metrange,
+            np.ones(len(metrange))*0.0, "Ks", age=3)
+        olds = samp.calc_DSEP_model_mags(
+            np.ones(len(metrange))*np.mean(teffbins[i-1:i]), metrange,
+            np.ones(len(metrange))*0.0, "Ks", age=8)
+        meds = samp.calc_DSEP_model_mags(
+            np.ones(len(metrange))*np.mean(teffbins[i-1:i]), metrange,
+            np.ones(len(metrange))*0.0, "Ks", age=5.5)
+        plt.plot(metrange, youngs-meds, color=colors[i-1], ls="--", marker="")
+        plt.plot(metrange, olds-meds, color=colors[i-1], ls="--", marker="")
+
+    plt.plot([-1.4, 0.5], [0.0, 0.0], 'k-', lw=3)
     hr.invert_y_axis()
     plt.ylim(0.5, -1.0)
     plt.xlabel("APOGEE [Fe/H]")
-    plt.ylabel("M_K - DSEP M_K (1 Gyr)")
-    plt.legend(loc="upper left")
+    plt.ylabel("M_K - DSEP M_K (5.5 Gyr)")
+    plt.legend(loc="lower left")
 
 def APOGEE_metallicity_slice():
     '''Plot a slice of targets at a metallicity.'''
@@ -1195,22 +1208,23 @@ def APOGEE_metallicity_slice():
                      teff_crit="Lower MS Split")
     cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
                     mag_crit="M_K split")
-    cools_mk.split_metallicity([-0.1, 0.1], ["High met", "Sol met", "Low Met"],
-                               col="FE_H")
+    cools_mk.split_metallicity(
+        [-0.1, 0.1], ["High met", "Sol met", "Low Met", "No met"], col="FE_H", 
+        null_value=np.ma.masked)
     cool_data = cools_mk.subsample(["~Bad", "Lower MS", "Low", "Sol met"])
 
     dsepmag = samp.calc_DSEP_model_mags(
-        cool_data["TEFF"], 0.0, "Ks", age=1)
+        cool_data["TEFF"], 0.0, 0.0, "Ks", age=1)
 
     tefflines = np.linspace(3600, 5400, 200)
     highmet = samp.calc_DSEP_model_mags(
-        tefflines, 0.1, "Ks", age=1)
+        tefflines, 0.1, 0.0, "Ks", age=1)
     lowmet = samp.calc_DSEP_model_mags(
-        tefflines, -0.1, "Ks", age=1)
+        tefflines, -0.1, 0.0, "Ks", age=1)
     solmet = samp.calc_DSEP_model_mags(
-        tefflines, 0.0, "Ks", age=1)
+        tefflines, 0.0, 0.0, "Ks", age=1)
     older = samp.calc_DSEP_model_mags(
-        tefflines, 0.0, "Ks", age=3)
+        tefflines, 0.0, 0.0, "Ks", age=3)
 
     hr.absmag_teff_plot(
         cool_data["TEFF"], cool_data["M_K"] - dsepmag, ls="", marker=".", 
