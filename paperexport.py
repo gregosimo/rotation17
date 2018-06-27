@@ -1174,7 +1174,7 @@ def APOGEE_metallicity_agreement():
         cool_data["TEFF"], cool_data["FE_H"], cool_data["ALPHA_FE"], "Ks", 
         age=5.5)
 
-    metrange = np.array([0.3, 0.2, 0.0, -0.5, -1.0, -1.5])
+    metrange = np.array([0.36, 0.21, 0.07, -0.5, -1.0, -1.5])
     for i in range(1, len(teffbins)):
         ind = bin_indices == i
         plt.errorbar(
@@ -1213,10 +1213,12 @@ def APOGEE_metallicity_slice():
         null_value=np.ma.masked)
     cool_data = cools_mk.subsample(["~Bad", "Lower MS", "Low", "Sol met"])
 
-    dsepmag = samp.calc_DSEP_model_mags(
-        cool_data["TEFF"], 0.0, 0.0, "Ks", age=1)
+    teff_unc = np.exp(4.58343 + 0.000289796 * (cool_data["TEFF"] - 4500))
+
 
     tefflines = np.linspace(3600, 5400, 200)
+    dsepmag = samp.calc_DSEP_model_mags(
+        tefflines, 0.0, 0.0, "Ks", age=5.5)
     highmet = samp.calc_DSEP_model_mags(
         tefflines, 0.1, 0.0, "Ks", age=1)
     lowmet = samp.calc_DSEP_model_mags(
@@ -1224,29 +1226,35 @@ def APOGEE_metallicity_slice():
     solmet = samp.calc_DSEP_model_mags(
         tefflines, 0.0, 0.0, "Ks", age=1)
     older = samp.calc_DSEP_model_mags(
+        tefflines, 0.0, 0.0, "Ks", age=8)
+    younger = samp.calc_DSEP_model_mags(
         tefflines, 0.0, 0.0, "Ks", age=3)
 
     hr.absmag_teff_plot(
-        cool_data["TEFF"], cool_data["M_K"] - dsepmag, ls="", marker=".", 
+        cool_data["TEFF"], cool_data["M_K"], ls="", marker=".", 
         color=bc.black, yerr=np.array([
-            cool_data["M_K_err2"], cool_data["M_K_err1"]]), label="APOGEE")
-    plt.plot([3500, 5500], [0.0, 0.0], 'k--')
+            cool_data["M_K_err2"], cool_data["M_K_err1"]]), xerr=teff_unc, label="APOGEE")
+    hr.absmag_teff_plot(tefflines, dsepmag, ls="-", marker="",
+                        color=bc.red, label="5 Gyr")
     hr.absmag_teff_plot(
-        tefflines, highmet-solmet, ls=":", marker="",
-        color=bc.black, label="[Fe/H] +/- 0.1")
+        tefflines, highmet, ls=":", marker="",
+        color=bc.red, label="[Fe/H] +/- 0.1")
     hr.absmag_teff_plot(
-        tefflines, lowmet-solmet, ls=":", marker="",
-        color=bc.black, label="")
+        tefflines, lowmet, ls=":", marker="",
+        color=bc.red, label="")
     hr.absmag_teff_plot(
-        tefflines, older-solmet, ls="-", marker="",
-        color=bc.black, label="3 Gyr")
+        tefflines, older, ls="--", marker="",
+        color=bc.red, label="8 Gyr")
+    hr.absmag_teff_plot(
+        tefflines, younger, ls="--", marker="",
+        color=bc.red, label="3 Gyr")
 
     minorLocator = AutoMinorLocator()
     ax = plt.gca()
     ax.yaxis.set_minor_locator(minorLocator)
     plt.legend(loc="upper right")
     plt.xlabel("APOGEE Teff (K)")
-    plt.ylabel("M_K - DSEP M_K ([Fe/H]=0, age=1 Gyr)")
+    plt.ylabel("M_K")
     plt.title("APOGEE -0.1 < [Fe/H] < 0.1")
 
 def DLSB_HR_Diagram(
