@@ -425,14 +425,6 @@ def asteroseismic_logg_Gaia_comparison():
     plt.ylabel("M_K")
     plt.legend(loc="upper left")
 
-def full_sample_mk():
-    '''Plot the full sample on an HR diagram with M_K'''
-    f, ax = plt.subplots(1, 1, figsize=(12, 12))
-    full = full_apogee_splitter()
-    full_data = full.subsample(["In Gaia", "K Detection"])
-
-    hr.absmag_teff_plot(full_data["TEFF"], full_data["M_K"], color=bc.black,
-                        marker=".", ls="")
 
 @write_plot("cool_mk_sample")
 def cool_dwarf_mk():
@@ -872,6 +864,149 @@ def cool_dwarf_rotation_analysis():
         raderr_above=marginal_binary_periodpoints["DSEP radius upper"],
         subplot_tup=subplot_tup, color=bc.sky_blue, marker="8")
 
+def full_sample_mk():
+    '''Plot the full sample on an HR diagram with M_K'''
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    full = full_apogee_splitter()
+    targets = full.subsample(["~Bad", "In Gaia", "K Detection"])
+
+    print("Excluding {0:d} not bad targets with bad Teffs".format(
+        np.ma.count_masked(targets["TEFF"])))
+    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+    dwarfs = targets[targets["M_K"] > 2.95]
+
+    hr.absmag_teff_plot(
+        targets["TEFF"], targets["M_K"], 
+        yerr=[targets["M_K_err2"], targets["M_K_err1"]], color=bc.black, 
+        linestyle="", marker=".", label="Full")
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"], dwarfs["M_K"], color=bc.yellow, linestyle="", 
+        marker=".", label="Dwarf")
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("M_K")
+    plt.legend(loc="lower left")
+
+def plot_solar_excess():
+    f, (a0, a1) = plt.subplots(2, 1, gridspec_kw = {"height_ratios": [2, 1]},
+                               sharex=True)
+    apo = full_apogee_splitter()
+    targets = apo.subsample(["~Bad", "In Gaia", "K Detection"])
+
+    print("Excluding {0:d} not bad targets with bad Teffs".format(
+        np.ma.count_masked(targets["TEFF"])))
+
+    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+    targets["DSEP K"] = samp.calc_solar_DSEP_model_mag(targets["TEFF"], "Ks")
+    targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
+    print(np.ma.count_masked(targets["K Excess"]))
+
+    # These are high and low metallicity isochrones.
+    testteffs = np.linspace(6500, 3500, 100)
+    highmet_k = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        testteffs, np.ones(len(testteffs))*0.1, "Ks")
+    solmet_k = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        testteffs, np.ones(len(testteffs))*0.0, "Ks")
+    lowmet_k = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        testteffs, np.ones(len(testteffs))*-0.1, "Ks")
+
+    dwarfs = targets[targets["M_K"] > 2.95]
+
+    hr.absmag_teff_plot(targets["TEFF"], targets["K Excess"], color=bc.black,
+                        linestyle="", marker=".", label="Full", axis=a0)
+    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["K Excess"], color=bc.yellow,
+                        linestyle="", marker=".", label="Dwarfs", axis=a0)
+    hr.absmag_teff_plot(targets["TEFF"], targets["K Excess"], color=bc.black,
+                        linestyle="", marker=".", axis=a1)
+    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["K Excess"], color=bc.yellow,
+                        linestyle="", marker=".", axis=a1)
+    a0.plot([8000, 3500], [0, 0], 'k-')
+    a1.plot([8000, 3500], [0, 0], 'k-')
+    a0.plot([8000, 3500], [-0.75, -0.75], 'k:', label="Equal mass")
+    a1.plot([8000, 3500], [-0.75, -0.75], 'k:')
+    a0.plot(testteffs, highmet_k-solmet_k, 'k--', label="[Fe/H] +- 0.1")
+    a0.plot(testteffs, lowmet_k-solmet_k, 'k--')
+    a1.plot(testteffs, highmet_k-solmet_k, 'k--')
+    a1.plot(testteffs, lowmet_k-solmet_k, 'k--')
+
+    a0.set_xlabel("")
+    a1.set_xlabel("APOGEE Teff (K)")
+    a0.set_ylabel("M_K - DSEP K (Age: 5.5; solar)")
+    a1.set_ylabel("M_K - DSEP K")
+    a1.set_ylim(1, -1.5)
+    a0.legend(loc="upper left")
+
+    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+def plot_k_excess_rotation_apogee():
+    '''Plot the K-band excess against rotation for McQuillan targets'''
+    apo = full_apogee_splitter()
+    good_phot = apo.split_subsample(["~Bad", "In Gaia", "K Detection"])
+    good_phot.split_mag(
+        "M_K", 2.95, ("Nondwarfs", "Dwarfs", "No mag"), 
+        mag_crit="K dwarf separation")
+    good_phot.split_teff(
+        "TEFF", 5200, ["Apo Cool", "Apo Hot",  "No APOGEE Teff"], 
+        teff_crit="Exclude hot", null_value=np.ma.masked)
+    targets = good_phot.subsample(["Dwarfs", "Apo Cool"])
+    dlsbs = good_phot.subsample(["Dwarfs", "Apo Cool", "DLSB"])
+
+    print("Excluding {0:d} not bad targets with bad Teffs".format(
+        good_phot.subsample_len(["No APOGEE Teff"])))
+
+    print("Excluding {0:d} further bad targets with bad [Fe/H]".format(
+        np.ma.count_masked(targets["FE_H"])))
+    targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
+
+    targets["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        targets["TEFF"], targets["FE_H"], "Ks", age=5.5)
+    dlsbs["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        dlsbs["TEFF"], dlsbs["FE_H"], "Ks", age=5.5)
+    targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
+    dlsbs["K Excess"] = dlsbs["M_K"] - dlsbs["DSEP K"]
+
+    plt.plot(targets["VSINI"], targets["K Excess"], marker=".", ls="",
+             color=bc.black, label="Dwarfs")
+    plt.plot(dlsbs["VSINI"], dlsbs["K Excess"], marker="*", ls="",
+             color=bc.light_pink, label="SB2 (unrel. vsini)")
+    hr.invert_y_axis()
+
+    plt.plot([0, 75], [0, 0], 'k-')
+    plt.plot([0, 75], [-0.75, -0.75], 'k--')
+    plt.plot([7, 7], [1.35, -1.65], 'k--')
+    plt.ylabel("M_K - DSEP K (5.5 Gyr; [Fe/H] adjusted) ")
+    plt.xlabel("vsini (km/s)")
+    plt.legend(loc="lower right")
+    plt.title("Teff < 5200 K")
+
+def plot_metallicity_excess():
+    apo = full_apogee_splitter()
+    targets = apo.subsample(["~Bad", "In Gaia", "K Detection"])
+    
+    print("Excluding {0:d} not bad targets with bad Teffs".format(
+        np.ma.count_masked(targets["TEFF"])))
+    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+
+    print("Excluding {0:d} further bad targets with bad [Fe/H]".format(
+        np.ma.count_masked(targets["FE_H"])))
+    targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
+
+    targets["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        targets["TEFF"], targets["FE_H"], "Ks")
+    targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
+    print(np.ma.count_masked(targets["K Excess"]))
+
+    dwarfs = targets[targets["M_K"] > 2.95]
+
+    hr.absmag_teff_plot(targets["TEFF"], targets["K Excess"], color=bc.black,
+                        linestyle="", marker=".", label="Full")
+    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["K Excess"], color=bc.yellow,
+                        linestyle="", marker=".", label="Dwarfs")
+    plt.plot([8000, 3500], [0, 0], 'k--')
+    plt.plot([8000, 3500], [-0.75, -0.75], 'k:')
+
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("M_K - DSEP K (Age: 5.5; [Fe/H] adjusted)")
+    plt.legend(loc="upper left")
+
 @write_plot("binary_cut")
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()
@@ -1046,29 +1181,39 @@ def plot_mcq_binarity_histogram():
     '''Compare magnitude excess of rapid rotators to regular targets.'''
     mcq = split.McQuillanSplitter()
     split.initialize_mcquillan_sample(mcq)
+    mcq.split_mag(
+        "M_K", 2.95, ("Nondwarfs", "Dwarfs", "No mag"), 
+        mag_crit="K dwarf separation")
+    mcq.split_teff("teff", 5200, ("Cool", "Subgiant regime"),
+                   teff_crit="Subgiant Confusion split")
 
-    fullsamp = vstack([
-        mcq.subsample(["Right Teff", "Berger Main Sequence"]), 
-        mcq.subsample(["Right Teff", "Berger Cool Binary"])])
-    rapid = vstack([
-        mcq.subsample(["Right Teff", "Berger Main Sequence", "~Slow"]), 
-        mcq.subsample(["Right Teff", "Berger Cool Binary", "~Slow"])])
+    fullsamp = mcq.subsample(["Dwarfs", "Cool"])
+    rapid = mcq.subsample(["Dwarfs", "Cool", "~Slow"])
 
-    full_magdiff = samp.calc_photometric_excess(
-        fullsamp["teff"], 0.0, "Ks", fullsamp["M_K"])
-    rapid_magdiff = samp.calc_photometric_excess(
-        rapid["teff"], 0.0, "Ks", rapid["M_K"])
+    fullsamp["DSEP K"] = samp.calc_solar_DSEP_model_mag(
+        fullsamp["teff"], "Ks")
+    rapid["DSEP K"] = samp.calc_solar_DSEP_model_mag(
+        rapid["teff"], "Ks") 
+    fullsamp["K Excess"] = fullsamp["M_K"] - fullsamp["DSEP K"]
+    rapid["K Excess"] = rapid["M_K"] - rapid["DSEP K"]
 
     f = plt.figure(figsize=(10,10))
     bins = np.linspace(-4.5, 3.5, 76, endpoint=True)
-    plt.hist(full_magdiff, normed=True, bins=bins, histtype="step",
+    plt.hist(fullsamp["K Excess"], normed=True, bins=bins, histtype="step",
              cumulative=True, label="Full Mcquillan", color=bc.black)
-    plt.hist(rapid_magdiff, normed=True, bins=bins, histtype="step",
-             cumulative=True, label="Rapid Rotators", color=bc.blue)
+    plt.hist(rapid["K Excess"], normed=True, bins=bins, histtype="step",
+             cumulative=True, label="P < 3 day", color=bc.blue)
     plt.xlabel("Mag excess")
     plt.ylabel("N(< Mag excess)/N")
     plt.legend(loc="upper left")
     plt.xlim(-4.5, 3.5)
+    plt.title("Mag Excess distribution for Teff < 5200 K")
+    
+    stat, crit, sig = scipy.stats.anderson_ksamp(
+        [fullsamp["K Excess"], rapid["K Excess"]])
+    print(stat)
+    print(crit)
+    print(sig)
         
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
