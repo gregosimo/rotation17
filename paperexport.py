@@ -1055,21 +1055,98 @@ def plot_mcq_binarity_histogram():
         mcq.subsample(["Right Teff", "Berger Cool Binary", "~Slow"])])
 
     full_magdiff = samp.calc_photometric_excess(
-        fullsamp["teff"], 0.0, "Ks", fullsamp["M_K"])
+        fullsamp["teff"], 0.0, 0.0, "Ks", fullsamp["M_K"])
     rapid_magdiff = samp.calc_photometric_excess(
-        rapid["teff"], 0.0, "Ks", rapid["M_K"])
+        rapid["teff"], 0.0, 0.0, "Ks", rapid["M_K"])
+    print(len(full_magdiff))
+    print(len(rapid_magdiff))
 
     f = plt.figure(figsize=(10,10))
     bins = np.linspace(-4.5, 3.5, 76, endpoint=True)
     plt.hist(full_magdiff, normed=True, bins=bins, histtype="step",
-             cumulative=True, label="Full Mcquillan", color=bc.black)
+             cumulative=-1, label="Full Mcquillan", color=bc.black)
     plt.hist(rapid_magdiff, normed=True, bins=bins, histtype="step",
-             cumulative=True, label="Rapid Rotators", color=bc.blue)
+             cumulative=-1, label="Rapid Rotators", color=bc.blue)
     plt.xlabel("Mag excess")
     plt.ylabel("N(< Mag excess)/N")
     plt.legend(loc="upper left")
     plt.xlim(-4.5, 3.5)
-        
+
+def plot_apogee_binarity_histogram():
+    '''Compare magnitude excess of APOGEE rapid rotators to regular targets.'''
+    cools = cool_data_splitter()
+    cools_mk = cools.split_subsample(["In Gaia", "K Detection"])
+    cools_mk.split_teff("TEFF", [3500, 5500], ("Low MS", "MS", "High MS"), 
+                     teff_crit="MS Split")
+    cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
+                    mag_crit="M_K split")
+    cool_data = cools_mk.subsample(["~Bad", "MS", "Low"])
+    
+    fullsamp = cools_mk.subsample(["~Bad", "MS", "Low"])
+    rapid = cools_mk.subsample(["~Bad", "MS", "Low", "Vsini det"])
+
+    full_magdiff = samp.calc_photometric_excess(
+        fullsamp["TEFF"], fullsamp["FE_H"], fullsamp["ALPHA_FE"], "Ks",
+        fullsamp["M_K"])
+    rapid_magdiff = samp.calc_photometric_excess(
+        rapid["TEFF"], rapid["FE_H"], rapid["ALPHA_FE"], "Ks", rapid["M_K"])
+    print(len(full_magdiff))
+    print(len(rapid_magdiff))
+
+    f = plt.figure(figsize=(10,10))
+    bins = np.linspace(-4.5, 3.5, 76, endpoint=True)
+    plt.hist(full_magdiff, normed=True, bins=bins, histtype="step",
+             cumulative=-1, label="Full APOGEE", color=bc.black)
+    plt.hist(rapid_magdiff, normed=True, bins=bins, histtype="step",
+             cumulative=-1, label="Rapid Rotators", color=bc.blue)
+    plt.xlabel("Mag excess")
+    plt.ylabel("N(< Mag excess)/N")
+    plt.legend(loc="upper left")
+    plt.xlim(-4.5, 3.5)
+
+def plot_k_excess_rotation():
+    '''Plot the K-band excess against rotation for McQuillan targets.'''
+    mcq = split.McQuillanSplitter()
+    split.initialize_mcquillan_sample(mcq)
+
+    fullsamp = vstack([
+        mcq.subsample(["Right Teff", "Berger Main Sequence"]), 
+        mcq.subsample(["Right Teff", "Berger Cool Binary"])])
+
+    full_magdiff = samp.calc_photometric_excess(
+        fullsamp["teff"], 0.0, 0.0, "Ks", fullsamp["M_K"])
+
+#    plt.plot(full_magdiff, fullsamp["Prot"], 'k.')
+    plt.plot(fullsamp["Prot"], full_magdiff, 'k.')
+    plt.plot([0.1, 69.9], [0, 0], 'k--')
+    plt.ylabel("Mag Excess")
+    plt.xlabel("Period (day)")
+    plt.title("McQuillan Rapid Rotator Excess")
+    hr.invert_y_axis()
+
+def plot_k_excess_rotation_apogee():
+    '''Plot the K-band excess against rotation for McQuillan targets.'''
+    cools = cool_data_splitter()
+    cools_mk = cools.split_subsample(["In Gaia", "K Detection"])
+    cools_mk.split_teff("TEFF", [3500, 5500], ("Low MS", "MS", "High MS"), 
+                     teff_crit="MS Split")
+    cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
+                    mag_crit="M_K split")
+    cool_data = cools_mk.subsample(["~Bad", "MS", "Low"])
+    
+    fullsamp = cools_mk.subsample(["~Bad", "MS", "Low"])
+
+    full_magdiff = samp.calc_photometric_excess(
+        fullsamp["TEFF"], fullsamp["FE_H"], fullsamp["ALPHA_FE"], "Ks",
+        fullsamp["M_K"])
+
+#    plt.plot(full_magdiff, fullsamp["Prot"], 'k.')
+    plt.plot(fullsamp["VSINI"], full_magdiff, 'k.')
+    plt.plot([0, 75], [0, 0], 'k--')
+    plt.ylabel("Mag Excess")
+    plt.xlabel("vsini (km/s)")
+    plt.title("APOGEE Rapid Rotator Excess")
+    hr.invert_y_axis()
 
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
