@@ -162,51 +162,58 @@ The blue and green points denote dwarfs and giants observed in APOGEE-2}
     \label{fig:selection}
 \end{figure}
 
-\subsection{APOGEE}
+The sample for this study was drawn from two observing programs by the APOGEE
+survey, both designed to be magnitude-limited and color-selected samples of
+\Kepler{} targets. The first program took observations in the first phase of
+APOGEE (APOGEE-1) \citep{Majewski15}, targeting around 1000  dwarfs
+with photometric temperatures cooler than 5500 K, and \logg greater than 4.0
+\citep{Brown11,Pinsonneault12}. A broader effort to completely observe
+\Kepler{} targets with \(7 \le H \le 11\) with photometric temperatures between
+5000--6500 K and photometric \(\logg > 3.5\), as well as targets with
+photometric \(\logg < 3.5\) and photometric temperature less than 5500 K  
+\citep{Pinsonneault12,Huber14} has added around 3,500 dwarfs and 3,500 giants 
+as of APOGEE Data Release 14 \citep{Zasowski17}. Observations for additional 
+objects such as Kepler Objects of Interest  and eclipsing binaries were also 
+obtained, but with more complex selection functions.
 
-The central dataset for this analysis is from the Apache Point Observatory 
-Galactic Evolution Experiment (APOGEE) \citep{Blanton17,Majewski17}. The
-APOGEE instrument is a high-resolution (\(R \sim 22,000\)) multi-fiber 
-near-infrared spectrograph \citep{Wilson10}, mounted on the SDSS 2.5-meter 
-telescope at Apache Point Observatory \citep{Gunn06}. Observations for each
-target are automatically reduced and combined as part of the APOGEE data 
-pipeline \citep{Nidever15}. Stellar parameters are then determined from the 
-combined spectra through the APOGEE Stellar Parameters and Chemical Abundance 
-Pipeline (ASPCAP), which outputs \Teff{}, \logg{}, \([M/H]\), \vsini{}, as 
-well as 15 additional chemical abundances \citep{GarciaPerez16}.
+The APOGEE-1 survey \citep{Majewski13} started operations as a bright-time
+survey as part of the third generation of the Sloan Digital Sky Survey
+\citep{Eisenstein11}. The workhorse behind the survey is the APOGEE instrument,
+a high-resolution (R \(\sim\) 22,000) multi-fiber near-infrared spectrograph
+\citep{Wilson10}, mounted on the SDSS 2.5-meter telescope at Apache Point
+Observatory \citep{Gunn06}. APOGEE-1 was then extended into the fourth stage of
+the Sloan Digital Sky Survey \citep{Blanton17} as APOGEE-2.
 
-Under several major observing programs, APOGEE systematically observed over 
-5,000 dwarfs and subgiants in the \Kepler{} field. Around half were
-observed as part of a program to determine false positives for
-asteroseismic
-detections\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#AsteroseismicTargets}}. 
-They were part of a magnitude-limited sample
-selected according to 6500 K \(> \Teff > 5000\) K and \(\logg > 3.5\)
-according to parameters derived by \citet{Huber14} \citep{Zasowski17}
-which we call the hot sample. An additional 
-1000 stars, which we call the cool dwarf sample, with \(\Teff < 5500\) K and 
-\(\logg > 4.0\) as determined by \citet{Pinsonneault12} and \citet{Brown11},
-and \(7 \textrm{ mag } < H < 11 \textrm{ mag}\) were also 
-observed\footnote{\url{http://www.sdss.org/dr14/algorithms/ancillary/apogee/kepler_dwarfs/}}. 
-Eclipsing
-binaries\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#EclipsingBinaries}} 
-and transiting planet host 
-candidates\footnote{\url{http://www.sdss.org/dr14/irspec/targets/\#KeplerObjectsofInterest}} 
-were also observed 
-by APOGEE in the \Kepler{} field, but with more complex selection functions, 
-so we exclude them from this analysis.
+% APOGEE Targeted sample APOKASC (APOKASC + Cool Dwarf - faint dwarfs) - 7642
+% Not bad APOGEE targeted sample - 7395
+% Good APOGEE with good K detection - 7373
+% Good APOGEE in Gaia - 6961
 
-All objects observed by APOGEE have stellar parameters \Teff{},
-[Fe/H] and \vsini{} determined by ASPCAP, which fits synthetic stellar atmosphere
-models to the observed H-band spectra on a 6-dimensional grid. The
-effective temperatures outputted from ASPCAP are then calibrated to the
-\citep{GonzalezHernandez09} photometric temperature scale using a
-metallicity-dependent correction (Holtzmann et al.\ in prep). After the
-calibration, comparisons to observations in open clusters yield a
-typical RMS of 100 K around solar-metallicity. While the calibration
-relations are significantly more uncertain for \([M/H] < -1\), the
-finding that the metallicity of the \Kepler{} field is mostly solar
-makes these systematic uncertainties largely irrelevant.
+\subsection{Spectroscopic Parameters}
+
+Reduction of the APOGEE data takes place in three main stages. First,
+individual visit spectra are reduced, including detector calibration, bad pixel
+masking, wavelength calibration, sky substraction, and determination of
+individual radial velocities through cross-correlation of template spectra.
+Second, the individual spectra are combined by correcting for radial velocity
+differences between the exposures, either by cross-correlating with each other,
+or with template spectra, whichever leads to a smaller scatter (Holtzman et
+al, in prep). The full process is detailed in \citet{Nidever15}.
+
+The final step is the extraction of stellar parameters and chemical abundances
+by the APOGEE Stellar Parameter and Chemical Abundances Pipeline (ASPCAP)
+\citep{GarciaPerez16}. ASPCAP measures stellar parameters by performing a
+chi-squared minimization \citep{AllendePrieto06} over a 6-dimensional space of
+\Teff, \logg, [M/H], [\(\alpha\)/M], \vsini, and microturbulent velocity.
+
+After determination of the stellar parameters, they are calibrated to the
+photometric system of \citet{GonzalezHernandez09} using a metallicity-dependent
+offset. After calibration, the scatter between the calibrated and photometric
+temperatures  were found to be a strong function of \Teff{}, ranging from 130 
+K at 5500 K down to 85 K at 4000 K (Holtzman et al.\ in prep) for solar
+metallicity objects observed at a signal-to-noise ratio of 100. We adopt the
+expression for the temperature scatter for dwarfs in Holtzman et al.\ (in prep) 
+as the uncertainty in \Teff).
 
 We used the iron-abundance as measured by APOGEE to act as a proxy for
 metallicity. Although APOGEE provides a weighted metallicity [M/H], the 
@@ -215,54 +222,154 @@ treated [Fe/H] as our metallicity measure for this purpose. For typical APOGEE
 dwarfs in our temperature range, the measured uncertainty is about 0.01
 dex (Holtzmann et al.\ in prep).
 
-Given the stellar parameters from APOGEE, we used isochrones from the Dartmouth
-Stellar Evolution Program (DSEP) \citep{Dotter07,Dotter08} to derive
-radii and predict absolute magnitudes for our samples. Individual
-isochrones are specified by an age,
-metallicity, and alpha abundance. For each individual target, we
-selected DSEP models using APOGEE iron abundances, assumed solar alpha 
-abundance, and used a fiducial age of 3 Gyr, with 1 and 14 Gyr
-isochrones determining the uncertainties. The decision to fix alpha
-abundance to solar was done to lower computational complexity, and is
-justified \gvs{Plot a histogram to check this}. Once a given isochrone
-was specified, we constructed a relation between \Teff{} and either radius
-or absolute magnitude. Because these relations are double-valued, and
-we're interested in the dwarf population, we split the isochrone into 
-dwarf and subgiant branches, and used linear interpolation between the
-points on the dwarf branch.
+The availability of published \vsini{} is relatively new to the ASPCAP pipeline, only
+being included since DR13. As a result, catalog \vsini{}s have not been 
+extensively vetted and verified. APOGEE does not provide a reasonable
+detection limit, or an estimate on the uncertainty of \vsini{}. 
+\citet{Tayar15} performed an analysis comparing APOGEE \vsini{} to literature
+\vsini{} for gargets studied with high-resolution optical spectroscopy to 
+determine the detection limit and
+uncertainty for \vsini{} for APOGEE DR12 attempting to detect rotation in red
+giants and found a detection threshold of about 7 \kms. We repeat their 
+analysis for DR14 spectra in the cool dwarf regime to ensure their results
+continue to hold in this new regime. 
 
-In order to classify the evolutionary state of our sample as well as
-binarity, we used absolute K-band magnitude as a proxy for bolometric
-luminosity. Bolometric luminosities in Gaia DR2 suffer from significant
-uncertainties due to their reliance on bolometric corrections, which
-depends sensitively on temperature, \logg{}, metallicity, and extinction. 
-K-band absolute magnitudes offer the advantage of being a relatively 
-well-behaved proxy for luminosity, because it measures flux far into the 
-Rayleigh-Jeans tail. Additionally, the extinction in the K-band
-is extemely low.
+As with \citep{Tayar15}, we use \vsini{} measured by \citet{Bruntt12} for a
+sample of asteroseismic targets overlap substantially with APOGEE. 
+\citet{Bruntt12} analyzed spectra of 93 solar-type asteroseismic targets using 
+two R=80,000 spectrographs 
+on the 3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
+Telescope. While uncertainties are not quoted in \citet{Bruntt12},
+previous analyses have determined \vsini{} uncertainties of about 0.6
+\kms \citep{Bruntt10a,Bruntt10b}.
 
-We use K-band photometry from the 2MASS survey \citep{Skrutskie06}, which has
-profile-fit photometry with errors available for nearly the full sample. A 
-small fraction of targets are only upper limits because of confusion from 
-blending. \gvs{Calculate fraction}
+In addition to the asteroseismic targets, which are largely subgiants with
+\(\Teff \sim 6000 K\), we also compare to APOGEE \vsini{} measurements of cool 
+dwarfs in the Pleiades \citep{Stauffer87}. Because Pleiades dwarfs are 
+significantly younger than those in the field,
+they rotate much more rapidly. This rapid rotation is advantageous
+because allows for validation over a wide range of \vsini{}. However, unlike 
+\citet{Bruntt12}, the \citet{Stauffer87} survey 
+reported a detection limit of 10 \kms, which is significantly below that in
+\citet{Bruntt12}. As a result, the \citet{Stauffer87} sample should
+largely verify that APOGEE \vsini{} measurements do not experience severe 
+systematics for cool dwarfs.
 
-To estimate the absolute K-band magnitude, we make use of distances from
-\Gaia{} DR2 \citep{Gaia16,Gaia18}, derived from parallaxes using an
-exponentially-decreasing volume prior \citep{Berger18b}. Of the full probability
-distribution that is calculated, we make use of the mode as well as the
-1-\(\sigma\) upper and lower confidence intervals. Of the 8141 objects in our
-full sample, 494 did not have Gaia parallaxes. These targets with missing
-\Gaia{} parallaxes do not seem in lie in any particular part of the HR diagram.
+\subsection{Astrometric Data}
 
-Since the full probability distribution functions for the distances are
-not available, we calculate the asymmetric uncertainty in absolute
-magnitude by adding in quadrature the K-band 1-\(\sigma\) uncertainty to
-the appropriately-scaled asymmetric upper and lower 1-\(\sigma\) confidence 
-intervals for the distance separately. Because most of our sample is
-either strongly dominated by photometric errors or distance errors, and
-our results do not depend sensitively on the behavior of the K-band
-absolute magnitude, this treatment does an appropriate job of
+The ability to distinguish between different evolutionary states of stars is
+enabled by parallaxes derived from the \Gaia{} mission's Data Release 2
+\citep{Gaia18}. The Gaia DR2 performed a fully consistent single-star
+5-parameter (\(\alpha\), \(\delta\), \(\mu_\alpha\), \(\mu_\delta\), \(\pi\))
+solution to 1.3 billion sources over 22 months of observations
+\citep{Lindegren18}. For targets which could not be adequately fit with a
+single-star 5-parameter solution, a 2-parameter (\(\alpha\), \(\delta\))
+solution is performed instead \citep{Michalik15}. The criteria for a
+2-parameter fall-back solution include targets with Gaia \(G > 21.0\), having
+fewer than 6 visibility periods of observations, and an error ellipse larger
+than a magnitude-dependent limit in its largest dimension \citep{Lindegren18}.
+
+We use distances derived from \Gaia{} parallaxes included in the cross-matched
+database of asterometric radii of \Kepler{} targets in \citet{Berger18}.
+\citet{Berger18} based their sample on the Kepler Stellar Parameter Pipeline
+DR25 \citep{Mathur17}, and cross-matched those sources against \Gaia{} DR2. Of
+the remaining targets, objects with fractional parallax errors greater than
+0.2, \(\Teff < 3000\) K, \(\logg < 0.1\), or missing JHK photometry were
+excluded. Parallaxes were converted to distance by using an
+exponentially-decreasing volume density prior with a 1.35 kpc length scale
+\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
+of 0.3 mas \citep{Lindegren18}. In addition to the most probable solutions, the
+1-\(\sigma\) asymmetric confidence intervals for distances were also reported
+by \citet{Berger18}.
+
+\subsection{Photometric Data}
+
+In order to characterize our stellar sample, we chose to use absolute K-band
+magnitude as a proxy for luminosity. Because the distance error and photometric
+errors are both expected to have small contributions to the absolute K-band
+magnitude, on the order of 0.01 mag, we chose to use K-band magnitudes to
+minimize the impact of extinction.
+
+K-band apparent magnitudes were collected from the 2MASS survey 
+\citep{Skrutskie06}, which has profile-fit photometry with uncertainties 
+available for nearly the full sample. A small fraction of targets have only 
+upper limits reported because of blending contamination.
+
+Since the full probability density functions for the distances are
+computationally intensive to compute, and unnecessary for our purposes, we
+approximate the confidence interval of \(M_K\) by adding in quadrature the 
+K-band 1-\(\sigma\) uncertainty to the appropriately-scaled asymmetric upper 
+and lower 1-\(\sigma\) confidence intervals for the distance separately. 
+Because most of our sample is either strongly dominated by photometric errors 
+or distance errors, and our results do not depend sensitively on the behavior 
+of the K-band absolute magnitude. This treatment does an appropriate job of
 approximating the uncertainties.
+
+\subsection{Time-Series Data}
+
+Precisely-characterized photometric variability measured by \Kepler{} forms the
+basis of our photometric rotation and asteroseismic sample. It has only been
+through the exquisite precision of \Kepler{} just below 1000 part per million for
+the general \Kepler{} sample, and 10 parts per mission for the bright
+asteroseismic targets.
+
+We use photometric rotational periods from \citet{McQuillan14}, which is
+to-date the largest homogeneous analysis of rotational variability in
+\Kepler{} stars. Stars in the \citep{McQuillan14} sample were chosen to be cool
+\(\Teff < 6500\) K, having photometric gravities consistent with dwarfs and
+subgiants \citet{Brown11}, and excluded known eclipsing binaries and plantary
+transit candidates. Rotational periods were measured using an
+autocorrelation-based method. The periods considered by their alogirhtm range
+between 0.2-7 days.
+
+The asteroseismic dwarf/subgiant sample was selected from the APOKASC catalog
+\citet{Serenelli17}. These are a set of 415 stars showing asteroseismic
+oscillations in \Kepler{} that have been observed by APOGEE\@. The frequency 
+of maximum power (\(\nu_{max}\)) and the large-scale frequency separation
+(\(\Delta\nu\)) are extracted from the light curve, which when combined with
+temperature and metallicity estimates from APOGEE, can yield radius estimates
+with a precision of \(\sim 2\)\%. 
+
+\subsection{Extinction}
+
+While extinction is low in the K-band, we still attempt to correct for it given
+the current best estimates. We use extinction values from the Kepler Stellar
+Parameter Catalog DR25 \citep{Mathur17}. These extinctions were derived by
+performing fits to broad- and intermediate-band photometry using the
+methodology described in \citet{Huber14}.
+
+We converted the estimated \(A_V\) from the catalog to \(A_K\) using the
+\(\frac{A_K}{E(B-V)}\) value in \citet{Fitzpatrick09}, and assuming the
+canonical Milky-Way \(\frac{A_V}{E(B-V)} = 3.1\). The uncertainties reported in
+the Keper Stellar Parameter Catalog were propagated to the unextincted absolute
+K-band magnitude uncertainty by adding the upper and lower confidence intervals
+to the absolute magnitude in quadrature.
+
+\subsection{Inferred Quantities}
+
+For stellar parameters that cannot be measured on the cool main-sequence, such
+as radius and intrinsic K-band magnitude, we infer them using isochrones from
+the Dartmouth Stellar Evolution Program (DSEP) \citep{Dotter08}. Previous
+comparisons to clusters have shown the DSEP isochrones to be successful at
+reproducing photometry at a wide range of metallicities \citep{Dotter09}, as
+well as in near infrared bands \citep{Sarajedini09}.
+
+In order to derive radii and K-band magnitudes, we constructed \Teff-radius and
+\Teff-K relations for each target's metallicity, alpha abundance, and a
+fiducial age of 5.5 Gyr. The desired quantity was then calculated by
+interpolating over the DSEP \Teff{} values.
+
+When calculating uncertainties for the derived radii and K-band magnitudes, we
+incorporate uncertainties caused by our ignorance of the age as well as
+propagate \Teff{} uncertainties. We charaterize the age uncertainty by treating
+the \Kepler{} field as a population similar to the thick disk with a uniform
+age distribution between 1--10 Gyr. Therefore, we quantify the uncertainty
+imparted to the desired quantity because of age by treating the variation
+between 3--8 Gyr as the 1-\(\sigma\) confidence interval. To quantify the
+impact of temperature uncertainties, we measure the partial derivative of the
+temperature relations and calculate the propagated uncertainty. We then add the
+uncertainties caused by age and \Teff{} in quadrature to get a full uncertainty
+in the predicted quantity.
 
 \subsection{Photometric Periods}
 
@@ -334,30 +441,11 @@ increases as stars evolve.
 
 We use the asteroseismic sample to validate our methodologies, making
 sure that they yield expected results when all stellar parameters are
-directly measured. In addition to APOGEE observations, the asteroseismic
-sample has also partially observed as part of a high-resolution
-spectroscopic survey, which measured \vsini{} for a significant number of
-\Kepler{} targets overlapping with APOGEE \citep{Bruntt12}. \citet{Bruntt12} analyzed 
-spectra of 93 solar-type asteroseismic targets using two R=80,000 spectrographs 
-on the 3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
-Telescope. While uncertainties are not quoted in \citet{Bruntt12},
-previous analyses have determined \vsini{} uncertainties of about 0.6
-\kms \citep{Bruntt10a,Bruntt10b}.
+directly measured. 
 
 \gvs{Do I want to include the \citep{Garcia14} sample? I used it to
 check the rapid rotator fractions.}
 
-In addition to the asteroseismic targets, which are largely subgiants with
-\(\Teff \sim 6000 K\), we also compare to APOGEE \vsini{} measurements of cool 
-dwarfs in the Pleiades \citep{Stauffer87}. Because Pleiades dwarfs are 
-significantly younger than those in the field,
-they rotate much more rapidly. This rapid rotation is advantageous
-because allows for validation over a wide range of \vsini{}. However, unlike 
-\citet{Bruntt12}, the \citet{Stauffer87} survey 
-reported a detection limit of 10 \kms, which is significantly below that in
-\citet{Bruntt12}. As a result, the \citet{Stauffer87} sample should
-largely verify that APOGEE \vsini{} measurements do not experience severe 
-systematics for cool dwarfs.
 
 \section{Data Analysis}
 \label{sec:analysis}
@@ -519,15 +607,6 @@ period nondetections, and 88 did not fall under the selection criteria in
 \end{figure*}
 
 
-The availability of published \vsini{} is relatively new to the ASPCAP pipeline, only
-being included since DR13. As a result, catalog \vsini{}s have not been 
-extensively vetted and verified. APOGEE does not provide a reasonable
-detection limit, or an estimate on the uncertainty of \vsini{}. We
-attempt to characterize the APOGEE \vsini{} measurements ourselves
-by comparing to literature \vsini{} for targets studied with high-resolution 
-optical spectroscopy. Our method of determining the detection limit and
-uncertainty for \vsini{} is similar to that performed in
-\citet{Tayar15}.
 
 
 A comparison between the APOGEE and \citet{Bruntt12} targets is shown in
