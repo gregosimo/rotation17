@@ -299,20 +299,21 @@ def plot_lower_limit_Pleiades_test():
     plt.xlabel("Stauffer-Hartmann vsini (km/s)")
     plt.ylabel("Probability that high and low distributions are the same")
 
-@write_plot("selection")
+@write_plot("apogee_selection")
 def selection_coordinates():
-    '''Show the APOKASC and Ancillary samples in selection coordinates.'''
+    '''Show the APOGEE and McQuillan samples in selection coordinates.'''
     fullsamp = catin.stelparms_with_original_KIC()
-    aposamp = full_apogee_splitter()
+    full_apogee = full_apogee_splitter()
 
     f, ax = plt.subplots(1,1, figsize=(12,12))
-    apokasc_giant = aposamp.subsample([
-        "APOGEE2_APOKASC", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
-    apokasc_dwarf = aposamp.subsample(["APOGEE2_APOKASC_DWARF", "~Cool Sample"])
-    jen = aposamp.subsample(["Cool Sample"])
+    cool_dwarfs = full_apogee.subsample(["Cool Sample"])
+    apokasc_dwarf = full_apogee.subsample([
+        "APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+    apokasc_giant = full_apogee.subsample([
+        "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
 
     hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker="o", ls="",
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
     label="Full Kepler")
     hr.logg_teff_plot(
         apokasc_giant["teff"], apokasc_giant["logg"], color=bc.green, 
@@ -321,8 +322,30 @@ def selection_coordinates():
         apokasc_dwarf["teff"], apokasc_dwarf["logg"], color=bc.blue, marker=".", 
         ls="", label="APOKASC Dwarf")
     hr.logg_teff_plot(
-        jen["teff"], jen["logg"], color=bc.red, marker=".", ls="", 
-        label="Cool Dwarf")
+        cool_dwarfs["teff"], cool_dwarfs["logg"], color=bc.red, marker=".", 
+        ls="", label="Cool Dwarf")
+    plt.xlim(7000, 3000)
+    plt.xlabel("Huber Teff (K)")
+    plt.ylabel("Huber log(g) (cm/s/s)")
+    plt.legend(loc="upper left")
+
+@write_plot("mcquillan_selection")
+def mcquillan_coordinates():
+    fullsamp = catin.stelparms_with_original_KIC()
+    mcq = catin.mcquillan_with_stelparms()
+    nomcq = catin.mcquillan_nondetections_with_stelparms()
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    hr.logg_teff_plot(
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
+    label="Full Kepler")
+    hr.logg_teff_plot(
+        nomcq["teff"], nomcq["logg"], color=bc.light_pink, 
+        marker=".", ls="", label="McQuillan Nondetections")
+    hr.logg_teff_plot(
+        mcq["teff"], mcq["logg"], color=bc.purple, 
+        marker=".", ls="", label="McQuillan Detections")
+
     plt.xlim(7000, 3000)
     plt.xlabel("Huber Teff (K)")
     plt.ylabel("Huber log(g) (cm/s/s)")
