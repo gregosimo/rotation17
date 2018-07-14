@@ -959,13 +959,15 @@ def plot_solar_excess():
     a0.legend(loc="upper left")
 
     targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+
+@write_plot("binary_cut")
 def plot_k_excess_rotation_apogee():
     '''Plot the K-band excess against rotation for McQuillan targets'''
     apo = full_apogee_splitter()
     good_phot = apo.split_subsample(["~Bad", "In Gaia", "K Detection"])
     good_phot.split_mag(
         "M_K", 2.95, ("Nondwarfs", "Dwarfs", "No mag"), 
-        mag_crit="K dwarf separation")
+        mag_crit="K dwarf separation", null_value=np.ma.masked)
     good_phot.split_teff(
         "TEFF", 5200, ["Apo Cool", "Apo Hot",  "No APOGEE Teff"], 
         teff_crit="Exclude hot", null_value=np.ma.masked)
@@ -1030,7 +1032,6 @@ def plot_metallicity_excess():
     plt.ylabel("M_K - DSEP K (Age: 5.5; [Fe/H] adjusted)")
     plt.legend(loc="upper left")
 
-@write_plot("binary_cut")
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()
     dwarfs_k = cool_dwarf.subsample([
@@ -1283,37 +1284,7 @@ def plot_k_excess_rotation():
     plt.title("McQuillan Rapid Rotator Excess")
     hr.invert_y_axis()
 
-def plot_k_excess_rotation_apogee():
-    '''Plot the K-band excess against rotation for McQuillan targets.'''
-    cools = cool_data_splitter()
-    cools_mk = cools.split_subsample(["In Gaia", "K Detection"])
-    cools_mk.split_teff("TEFF", [3500, 5500], ("Low MS", "MS", "High MS"), 
-                     teff_crit="MS Split")
-    cools_mk.split_mag("M_K", 2.95, splitnames=("High", "Low"), 
-                    mag_crit="M_K split")
-    cool_data = cools_mk.subsample(["~Bad", "MS", "Low"])
-    
-    fullsamp = cools_mk.subsample(["~Bad", "MS", "Low"])
 
-    full_magdiff = samp.calc_photometric_excess(
-        fullsamp["TEFF"], fullsamp["FE_H"], fullsamp["ALPHA_FE"], "Ks",
-        fullsamp["M_K"])
-
-#    plt.plot(full_magdiff, fullsamp["Prot"], 'k.')
-    plt.plot(fullsamp["VSINI"], full_magdiff, 'k.')
-    plt.plot([0, 75], [0, 0], 'k--')
-    plt.ylabel("Mag Excess")
-    plt.xlabel("vsini (km/s)")
-    plt.title("APOGEE Rapid Rotator Excess")
-    hr.invert_y_axis()
-    plt.title("Mag Excess distribution for Teff < 5200 K")
-    
-    stat, crit, sig = scipy.stats.anderson_ksamp(
-        [fullsamp["K Excess"], rapid["K Excess"]])
-    print(stat)
-    print(crit)
-    print(sig)
-        
 def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     '''Create figure showing where the two samples lie in the HR diagram.
 
