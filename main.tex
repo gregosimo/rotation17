@@ -236,6 +236,37 @@ metallicity objects observed at a signal-to-noise ratio of 100.
 
 
 
+\subsection{Time-Series Data}
+
+Data from the \Kepler{} satellite \citep{Borucki10, Koch10}, which took data
+over the same region of the sky for over four years, has revolutionized 
+the field of stellar rotation, and forms the
+basis of our photometric rotation sample. It has only been
+through the exquisite precision of \Kepler{} just below 1000 part per million for
+the general \Kepler{} sample and regular sampling that starspot variability 
+could be measured for tens of thousands of stars.
+
+We use photometric rotational periods from \citet{McQuillan14}, which is
+to-date the largest homogeneous analysis of rotational variability in
+\Kepler{} stars. \citet{McQuillan14} selected their sample to have photometric
+\(\Teff < 6500\) K \citep{Brown11,Dressing13}, and implemented a color-color
+and temperature-dependent \logg{} cut \citep{Brown11} advocated in
+\citet{Ciardi11}, which ranged from 3.5 at 6000 K to 4.0 at 4250 K. 
+In addition to the temperature and gravity cuts, \citet{McQuillan14} also 
+excluded known eclipsing binaries and plantary
+transit candidates. 
+
+Rotational periods in \citet{McQuillan14} were measured by calculating the 
+autocorrelation function and fitting the location of multiple peaks. In lieu of
+visual verification of the autocorrelation function, \citet{McQuillan14}
+performs two automated tests to distinguish physical periodicity from
+instrumental artifacts or other sources of variability. First, the 
+periodicity must be consistent in different segments of the light curve.
+Secondly, the height of the first peak must be larger than a temperature- and
+period-dependent threshold. In order to reduce contamination from pulsators, 
+only periods between between 0.2-70 days are considered.
+
+
 \subsection{Astrometric Data}
 
 The ability to distinguish between different evolutionary states of stars is
@@ -302,38 +333,14 @@ or distance errors, and our results do not depend sensitively on the behavior
 of the K-band absolute magnitude. This treatment does an appropriate job of
 approximating the uncertainties.
 
-\subsection{Time-Series Data}
-
-Precisely-characterized photometric variability measured by \Kepler{} forms the
-basis of our photometric rotation and asteroseismic sample. It has only been
-through the exquisite precision of \Kepler{} just below 1000 part per million for
-the general \Kepler{} sample, and 10 parts per mission for the bright
-asteroseismic targets.
-
-We use photometric rotational periods from \citet{McQuillan14}, which is
-to-date the largest homogeneous analysis of rotational variability in
-\Kepler{} stars. Stars in the \citep{McQuillan14} sample were chosen to be cool
-\(\Teff < 6500\) K, having photometric gravities consistent with dwarfs and
-subgiants \citet{Brown11}, and excluded known eclipsing binaries and plantary
-transit candidates. Rotational periods were measured using an
-autocorrelation-based method. The periods considered by their alogirhtm range
-between 0.2-7 days.
-
-The asteroseismic dwarf/subgiant sample was selected from the APOKASC catalog
-\citet{Serenelli17}. These are a set of 415 stars showing asteroseismic
-oscillations in \Kepler{} that have been observed by APOGEE\@. The frequency 
-of maximum power (\(\nu_{max}\)) and the large-scale frequency separation
-(\(\Delta\nu\)) are extracted from the light curve, which when combined with
-temperature and metallicity estimates from APOGEE, can yield radius estimates
-with a precision of \(\sim 2\)\%. 
-
 \subsection{Extinction}
 
 While extinction is low in the K-band, we still attempt to correct for it given
 the current best estimates. We use extinction values from the Kepler Stellar
 Parameter Catalog DR25 \citep{Mathur17}. These extinctions were derived by
 performing fits to broad- and intermediate-band photometry using the
-methodology described in \citet{Huber14}.
+methodology described in \citet{Huber14}. For our main-sequence targets,
+typical values of \(A_V\) are \gc{NUM} with a median uncertainty of \gc{NUM}.
 
 We converted the estimated \(A_V\) from the catalog to \(A_K\) using the
 \(\frac{A_K}{E(B-V)}\) value in \citet{Cardelli89}, and assuming the
@@ -419,6 +426,14 @@ the rapidly-rotating regime without the underlying data.
 
 
 \subsection{Validation Datasets}
+
+The asteroseismic dwarf/subgiant sample was selected from the APOKASC catalog
+\citet{Serenelli17}. These are a set of 415 stars showing asteroseismic
+oscillations in \Kepler{} that have been observed by APOGEE\@. The frequency 
+of maximum power (\(\nu_{max}\)) and the large-scale frequency separation
+(\(\Delta\nu\)) are extracted from the light curve, which when combined with
+temperature and metallicity estimates from APOGEE, can yield radius estimates
+with a precision of \(\sim 2\)\%. 
 
 An independent spectroscopic analysis which has significant overlap with APOGEE
 is that by \citet{Bruntt12} for a sample of asteroseismic targets.
