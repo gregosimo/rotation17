@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+import itertools
 
 import numpy as np
 import numpy.core.defchararray as npstr
@@ -25,6 +26,8 @@ import biovis_colors as bc
 import aspcap_corrections as aspcor
 import rotation_consistency as rot
 import sample_characterization as samp
+import mist
+import dsep
 
 PAPER_PATH = paths.HOME_DIR / "papers" / "rotletter18"
 TABLE_PATH = PAPER_PATH / "tables"
@@ -107,7 +110,178 @@ def missing_gaia_targets():
                         color=bc.green, ls="")
 
 
+@write_plot("apogee_selection")
+def selection_coordinates():
+    '''Show the APOGEE and McQuillan samples in selection coordinates.'''
+    fullsamp = catin.stelparms_with_original_KIC()
+    full_apogee = full_apogee_splitter()
 
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    cool_dwarfs = full_apogee.subsample(["Cool Sample"])
+    apokasc_dwarf = full_apogee.subsample([
+        "APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+    apokasc_giant = full_apogee.subsample([
+        "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+
+    hr.logg_teff_plot(
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
+    label="Full Kepler", axis=ax)
+    hr.logg_teff_plot(
+        apokasc_giant["teff"], apokasc_giant["logg"], color=bc.green, 
+        marker=".", ls="", label="APOKASC Giant", axis=ax)
+    hr.logg_teff_plot(
+        apokasc_dwarf["teff"], apokasc_dwarf["logg"], color=bc.blue, marker=".", 
+        ls="", label="APOKASC Dwarf", axis=ax)
+    hr.logg_teff_plot(
+        cool_dwarfs["teff"], cool_dwarfs["logg"], color=bc.red, marker=".", 
+        ls="", label="Cool Dwarf", axis=ax)
+    plt.xlim(7000, 3000)
+    plt.xlabel("Huber Teff (K)")
+    plt.ylabel("Huber log(g) (cm/s/s)")
+    plt.legend(loc="upper left")
+
+@write_plot("mcquillan_selection")
+def mcquillan_coordinates():
+    fullsamp = catin.stelparms_with_original_KIC()
+    mcq = catin.mcquillan_with_stelparms()
+    nomcq = catin.mcquillan_nondetections_with_stelparms()
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    hr.logg_teff_plot(
+        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", 
+        ls="", label="Full Kepler", axis=ax)
+    hr.logg_teff_plot(
+        nomcq["teff"], nomcq["logg"], color=bc.light_pink, 
+        marker=".", ls="", label="McQuillan Nondetections", axis=ax)
+    hr.logg_teff_plot(
+        mcq["teff"], mcq["logg"], color=bc.purple, 
+        marker=".", ls="", label="McQuillan Detections", axis=ax)
+
+    plt.xlim(7000, 3000)
+    plt.xlabel("Huber Teff (K)")
+    plt.ylabel("Huber log(g) (cm/s/s)")
+    plt.legend(loc="upper left")
+
+@write_plot("MIST_DSEP_age")
+def isochrone_difference_ages():
+    '''Plot the difference between DSEP and MIST isochrones at different ages.
+
+    This will plot the differences in K between DSEP and MIST isochrones as a
+    function of temperature for different ages.'''
+    mist_solar = mist.MISTIsochrone.isochrone_from_file(0.0)
+    dsep_solar = dsep.DSEPIsochrone.isochrone_from_file(0.0)
+
+    test_teff = np.linspace(3500, 6500, 1000)
+    mist_young_k = mist.interpolate_MIST_isochrone_cols(
+        mist_solar, 1.0, np.log10(test_teff), outcol="2MASS_Ks")
+    dsep_young_k = dsep.interpolate_DSEP_isochrone_cols(
+        dsep_solar, 1.0, np.log10(test_teff), outcol="Ks")
+    mist_medium_k = mist.interpolate_MIST_isochrone_cols(
+        mist_solar, 5.5, np.log10(test_teff))
+    dsep_medium_k = dsep.interpolate_DSEP_isochrone_cols(
+        dsep_solar, 5.5, np.log10(test_teff))
+    mist_old_k = mist.interpolate_MIST_isochrone_cols(
+        mist_solar, 10.0, np.log10(test_teff))
+    dsep_old_k = dsep.interpolate_DSEP_isochrone_cols(
+        dsep_solar, 10.0, np.log10(test_teff))
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+
+    hr.absmag_teff_plot(test_teff, mist_young_k-dsep_young_k, marker="",
+                        linestyle="-", color=bc.black, label="1 Gyr", axis=ax)
+    hr.absmag_teff_plot(test_teff, mist_medium_k-dsep_medium_k, marker="",
+                        linestyle="--", color=bc.black, label="5.5 Gyr",
+                        axis=ax)
+    hr.absmag_teff_plot(test_teff, mist_old_k-dsep_old_k, marker="",
+                        linestyle=":", color=bc.black, label="10 Gyr")
+    ax.set_xlabel("Teff")
+    ax.set_ylabel("MIST Ks - DSEP Ks (mag)")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(0.4, -0.4)
+    plt.legend(loc="upper right")
+
+@write_plot("MIST_DSEP_metallicity")
+def isochrone_difference_metallicity():
+    '''Plots the difference in isochrones over a large swath of metallicity.'''
+    teffpoints = np.linspace(6000, 3500, 6, endpoint=True)
+    fehpoints = np.linspace(-2.5, 0.5, 20)
+    plotcolors = ["#253494", "#2c7fb8", "#41b6c4", "#7fcdbb", "#c7e9b4", "#ffffcc"]
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    for teff, color in zip(teffpoints, plotcolors):
+        mist_ks = samp.calc_MIST_model_mag_fixed_age_alpha(
+            [teff], fehpoints, "Ks")
+        dsep_ks = samp.calc_DSEP_model_mag_fixed_age_alpha(
+            [teff], fehpoints, "Ks")
+        ax.plot(fehpoints, mist_ks-dsep_ks, color=color, linestyle="-",
+                marker="o", label="{0:d} K".format(int(teff)),
+                markerfacecolor=bc.black)
+    hr.invert_y_axis(ax)
+    ax.set_xlabel("[Fe/H]")
+    ax.set_ylabel("MIST Ks - DSEP Ks (mag)")
+    ax.legend(loc="upper left")
+
+@write_plot("metallicity")
+def dwarf_metallicity():
+    '''Show the metallicity distribution of the cool dwarfs.'''
+    full = full_apogee_splitter()
+    full_data = full.subsample(["~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
+    full_with_fe = full_data[~full_data["FE_H"].mask]
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    minorLocator = AutoMinorLocator()
+    ax.hist(full_with_fe["FE_H"], cumulative=True, normed=True, bins=200)
+    ax.yaxis.set_minor_locator(minorLocator)
+    ax.set_xlabel("APOGEE [Fe/H]")
+    ax.set_ylabel("Cumulative distribution")
+    ax.set_xlim(-2.0, 0.46)
+
+
+@write_plot("metallicity_bins")
+def metallicity_bins():
+    '''Make a 2x2 plot of models in each metallicity bin.'''
+    f, axes = plt.subplots(2,2, figsize=(12,12), sharex=True, sharey=True)
+    axeslist = itertools.chain(*axes)
+    full = full_apogee_splitter()
+    full_data = full.subsample([
+        "~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
+    metallicity_bin_edges = np.array([-2.0, -0.5, 0.0, 0.2, 0.5])
+    # Pre-calculate the isochrones.
+    test_teffs = np.linspace(3500, 6500, 1000)
+    # Remember this has size metallicity_bin_edges x test_teffs.
+    k_array = samp.calc_DSEP_model_mag_fixed_age_alpha(
+        test_teffs, metallicity_bin_edges, "Ks")
+    bin_indices = np.digitize(full_data["FE_H"], metallicity_bin_edges)
+    data_grouped = full_data.group_by(bin_indices)
+    for low_met_index, high_met_index, ax, in zip(
+            range(len(metallicity_bin_edges)-1), 
+            range(1, len(metallicity_bin_edges)), axeslist):
+        data_bin = data_grouped.groups[high_met_index]
+        # Plot the data.
+        hr.absmag_teff_plot(
+            data_bin["TEFF"], data_bin["M_K"], color=bc.black, marker=".", 
+            ls="", axis=ax)
+        # Low metallicity isochrone
+        hr.absmag_teff_plot(
+            test_teffs, k_array[low_met_index,:], linestyle="--",
+            color=bc.red, marker="", axis=ax, lw=3)
+        # High metallicity isochrone
+        hr.absmag_teff_plot(
+            test_teffs, k_array[high_met_index,:], linestyle="--",
+            color=bc.red, marker="", axis=ax, lw=3)
+        ax.set_title("{0:3.1f} < [Fe/H] <= {1:3.1f}".format(
+            metallicity_bin_edges[low_met_index],
+            metallicity_bin_edges[high_met_index]))
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(7, 2)
+    axes[0][0].set_ylabel("Ks")
+    axes[1][0].set_ylabel("Ks")
+    axes[1][0].set_xlabel("Teff (K)")
+    axes[1][1].set_xlabel("Teff (K)")
+
+
+    
 
 @write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
@@ -299,69 +473,7 @@ def plot_lower_limit_Pleiades_test():
     plt.xlabel("Stauffer-Hartmann vsini (km/s)")
     plt.ylabel("Probability that high and low distributions are the same")
 
-@write_plot("apogee_selection")
-def selection_coordinates():
-    '''Show the APOGEE and McQuillan samples in selection coordinates.'''
-    fullsamp = catin.stelparms_with_original_KIC()
-    full_apogee = full_apogee_splitter()
 
-    f, ax = plt.subplots(1,1, figsize=(12,12))
-    cool_dwarfs = full_apogee.subsample(["Cool Sample"])
-    apokasc_dwarf = full_apogee.subsample([
-        "APOGEE2_APOKASC_DWARF", "~Cool Sample"])
-    apokasc_giant = full_apogee.subsample([
-        "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
-
-    hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
-    label="Full Kepler")
-    hr.logg_teff_plot(
-        apokasc_giant["teff"], apokasc_giant["logg"], color=bc.green, 
-        marker=".", ls="", label="APOKASC Giant")
-    hr.logg_teff_plot(
-        apokasc_dwarf["teff"], apokasc_dwarf["logg"], color=bc.blue, marker=".", 
-        ls="", label="APOKASC Dwarf")
-    hr.logg_teff_plot(
-        cool_dwarfs["teff"], cool_dwarfs["logg"], color=bc.red, marker=".", 
-        ls="", label="Cool Dwarf")
-    plt.xlim(7000, 3000)
-    plt.xlabel("Huber Teff (K)")
-    plt.ylabel("Huber log(g) (cm/s/s)")
-    plt.legend(loc="upper left")
-
-@write_plot("mcquillan_selection")
-def mcquillan_coordinates():
-    fullsamp = catin.stelparms_with_original_KIC()
-    mcq = catin.mcquillan_with_stelparms()
-    nomcq = catin.mcquillan_nondetections_with_stelparms()
-
-    f, ax = plt.subplots(1,1, figsize=(12,12))
-    hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
-    label="Full Kepler")
-    hr.logg_teff_plot(
-        nomcq["teff"], nomcq["logg"], color=bc.light_pink, 
-        marker=".", ls="", label="McQuillan Nondetections")
-    hr.logg_teff_plot(
-        mcq["teff"], mcq["logg"], color=bc.purple, 
-        marker=".", ls="", label="McQuillan Detections")
-
-    plt.xlim(7000, 3000)
-    plt.xlabel("Huber Teff (K)")
-    plt.ylabel("Huber log(g) (cm/s/s)")
-    plt.legend(loc="upper left")
-
-@write_plot("metallicity")
-def dwarf_metallicity():
-    '''Show the metallicity distribution of the cool dwarfs.'''
-    cool = cool_data_splitter()
-    cool_data = cool.subsample(["~Bad", "Dwarf"])
-
-    f, ax = plt.subplots(1,1, figsize=(12,12))
-    ax.hist(cool_data["M_H"], cumulative=True, normed=True, bins=100)
-    ax.set_xlabel("APOGEE [M/H]")
-    ax.set_ylabel("Cumulative distribution")
-    ax.set_xlim(-1.5, 0.46)
 
 
 @write_plot("astero")
