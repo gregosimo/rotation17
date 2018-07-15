@@ -192,7 +192,7 @@ survey as part of the third generation of the Sloan Digital Sky Survey
 a high-resolution (R \(\sim\) 22,000) multi-fiber near-infrared spectrograph
 \citep{Wilson10}, mounted on the SDSS 2.5-meter telescope at Apache Point
 Observatory \citep{Gunn06}. APOGEE-1 was then extended into the fourth stage of
-the Sloan Digital Sky Survey \citep{Blanton17} as APOGEE-2. \gc{Fill in science
+the Sloan Digital Sky Survey \citep{Blanton17} as APOGEE-2. \gvs{Fill in science
 requirements of APOGEE-2 vs APOGEE-1}
 
 In the first phase of APOGEE (APOGEE-1) \citep{Majewski17}, around 1000 dwarfs
@@ -292,11 +292,11 @@ database of asterometric radii of \Kepler{} targets in \citet{Berger18b}.
 DR25 \citep{Mathur17}, and cross-matched those sources against \Gaia{} DR2. Of
 the cross-matched targets, objects with fractional parallax errors greater than
 0.2, \(\Teff < 3000\) K, \(\logg < 0.1\), or missing JHK photometry were
-excluded. \gc{Do I need a full accounting of why certain objects were not
+excluded. \gvs{Do I need a full accounting of why certain objects were not
 included?} Parallaxes were converted to distance by using an
 exponentially-decreasing volume density prior with a 1.35 kpc length scale
 \citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
-of 0.3 mas \citep{Lindegren18} \gc{Since I'm converting to distance modulus
+of 0.3 mas \citep{Lindegren18} \gvs{Since I'm converting to distance modulus
     anyway, would it be more appropriate to go directly from parallax to
     distance modulus correctly, as opposed to going from parallax to distance
 correctly, and then distance to distance modulus incorrectly?}. In addition to the most probable solutions, the
@@ -307,7 +307,7 @@ The analysis by \citep{Berger18b} also provided classifications of objects
 based on evolutionary state and binarity. Before settling on specialized
 evolutionary state classifications for our analysis, we use objects in their
 ``Main Sequence'' classification to roughly characterize the dwarf sample. For
-example, the median fractional uncertainty in the distance is \gc{NUM}.
+example, the median fractional uncertainty in the distance is \gvs{NUM}.
 
 \subsection{Photometric Data}
 
@@ -316,7 +316,7 @@ magnitude as a proxy for luminosity. K-band apparent magnitudes were collected
 from the 2MASS survey 
 \citep{Skrutskie06}, which has profile-fit photometry with uncertainties 
 available for nearly the full sample. A small fraction of targets have only 
-upper limits reported because of blending contamination. \gc{Typical K error} 
+upper limits reported because of blending contamination. \gvs{Typical K error} 
 Because the distance error and photometric
 errors are both expected to have small contributions to the absolute K-band
 magnitude, on the order of 0.01 mag, we chose to use K-band magnitudes to
@@ -340,7 +340,7 @@ the current best estimates. We use extinction values from the Kepler Stellar
 Parameter Catalog DR25 \citep{Mathur17}. These extinctions were derived by
 performing fits to broad- and intermediate-band photometry using the
 methodology described in \citet{Huber14}. For our main-sequence targets,
-typical values of \(A_V\) are \gc{NUM} with a median uncertainty of \gc{NUM}.
+typical values of \(A_V\) are \gvs{NUM} with a median uncertainty of \gvs{NUM}.
 
 We converted the estimated \(A_V\) from the catalog to \(A_K\) using the
 \(\frac{A_K}{E(B-V)}\) value in \citet{Cardelli89}, and assuming the
@@ -349,91 +349,12 @@ the Keper Stellar Parameter Catalog were propagated to the unextincted absolute
 K-band magnitude uncertainty by adding the upper and lower confidence intervals
 to the absolute magnitude in quadrature.
 
-\subsection{Inferred Quantities}
-
-For stellar parameters that cannot be measured on the cool main-sequence, such
-as radius and intrinsic K-band magnitude, we infer them using isochrones from
-the Dartmouth Stellar Evolution Program (DSEP) \citep{Dotter08}. Previous
-comparisons to clusters have shown the DSEP isochrones to be successful at
-reproducing photometry at a wide range of metallicities \citep{Dotter07}, as
-well as in near infrared bands \citep{Sarajedini09}.
-
-In order to derive radii and K-band magnitudes, we constructed \Teff-radius and
-\Teff-K relations for each target's metallicity, alpha abundance, and a
-fiducial age of 5.5 Gyr. The desired quantity was then calculated by
-interpolating over the DSEP \Teff{} values.
-
-When calculating uncertainties for the derived radii and K-band magnitudes, we
-incorporate uncertainties caused by our ignorance of the age as well as
-propagate \Teff{} uncertainties. We charaterize the age uncertainty by treating
-the \Kepler{} field as a population similar to the thick disk with a uniform
-age distribution between 1--10 Gyr. Therefore, we quantify the uncertainty
-imparted to the desired quantity because of age by treating the variation
-between 3--8 Gyr as the 1-\(\sigma\) confidence interval. To quantify the
-impact of temperature uncertainties, we measure the partial derivative of the
-temperature relations and calculate the propagated uncertainty. We then add the
-uncertainties caused by age and \Teff{} in quadrature to get a full uncertainty
-in the predicted quantity.
-
-\subsection{Photometric Periods}
-
-As an independent measure of rotation, we make use of photometric rotation
-periods of \Kepler{} targets measured in \citet{McQuillan14}.
-\citet{McQuillan14} measured rotation periods by calculating the 
-Autocorrelation Function of the light curve. The initial dataset 
-consisted of 133,030 targets following cuts in \Teff, \logg, and color to
-select dwarfs below the Kraft break, as advocated in 
-\citet{Ciardi11} based on original KIC parameters \citep{Brown11}. Of this
-initial dataset they detected periodic starspot modulations in 34,030 targets.
-
-\citet{McQuillan14} compared their periods to those of previous work
-\citep{Reinhold13,Nielsen13} to understand the uncertainties. The overlap 
-samples with \citet{Reinhold13} and \citet{Nielsen13} are 20,009 and 10,381,
-respectively. Within these overlaps, the different methods get
-consistent periods 65\% and 94\% of the time, respectively, and detect
-aliased periods 7\% and 2\% of the time. The large discrepancy with
-\citet{Reinhold13} is attributed to their only using data for one
-\Kepler{} quarter, in contrast to the 12 quarter required by 
-\citet{McQuillan14}.
-
-The completeness of \citet{McQuillan14}, on the other hand, is fairly
-good. For targets which had periods reported by \citet{Reinhold13},
-\citet{McQuillan14} reported missing 1503 of them, leading to a
-detection
-discrepancy of 7\%. The discrepancy with \citet{Nielsen13} is 2\%.
-
-A comprehensive, hounds-and-hares exercise analyzed the performance of
-several different periodograms on injected stellar rotation signals 
-\citep{Aigrain15}. The Autocorrelation Function method used in 
-\citet{McQuillan14} was found to have a 100\% detection rate on noisy
-data while still maintaining around 70 percent reliability in correctly
-identifying an injected signal. In contrast, \citet{Nielsen13} has a
-low
-detection fraction of 16\%, but 100\% reliability \citep{Aigrain15}.
-\citet{Aigrain15} identifies the most prominent failure modes:
-detection
-of the spot lifetime instead of the rotational period, and detection of
-the stellar cycle period for stars with short cycles.
-
-Despite the comprehensiveness of the hounds-and-hares exercise, it has
-several limitations. The light curves are idealized with a single
-stellar signal, and do not take into account blended signals with
-multiple potential periodicities. The injected signals also did not
-include highly active stars and stars with persistent spots, which are
-expected to be overrepresented among rapid rotators. It was also
-difficult to compare the performances of each algorithm specifically in
-the rapidly-rotating regime without the underlying data.
-
-
 \subsection{Validation Datasets}
 
-The asteroseismic dwarf/subgiant sample was selected from the APOKASC catalog
-\citet{Serenelli17}. These are a set of 415 stars showing asteroseismic
-oscillations in \Kepler{} that have been observed by APOGEE\@. The frequency 
-of maximum power (\(\nu_{max}\)) and the large-scale frequency separation
-(\(\Delta\nu\)) are extracted from the light curve, which when combined with
-temperature and metallicity estimates from APOGEE, can yield radius estimates
-with a precision of \(\sim 2\)\%. 
+We use several previously studied datasets to validate the APOGEE
+\vsini{} values, and to check the uncertainties inherent to APOGEE data.
+
+\subsubsection{Direct \vsini{} comparison}
 
 An independent spectroscopic analysis which has significant overlap with APOGEE
 is that by \citet{Bruntt12} for a sample of asteroseismic targets.
@@ -442,8 +363,8 @@ oscillations using two \(R \sim 80,000\) spectrographs
 on the 3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
 Telescope. While uncertainties are not quoted in \citet{Bruntt12},
 previous analyses have determined \vsini{} uncertainties of about 0.6
-\kms{} \citep{Bruntt10a,Bruntt10b}. \gc{Check this number more carefully.} The
-number of APOGEE targets overlapping with \citet{Bruntt12} is \gc{NUM}.
+\kms{} \citep{Bruntt10a,Bruntt10b}. \gvs{Check this number more carefully.} The
+number of APOGEE targets overlapping with \citet{Bruntt12} is \gvs{NUM}.
 
 Because the \citet{Bruntt12} asteroseismic targets, which are largely subgiants with
 \(\Teff \sim 6000 K\) lie in a different temperature regime than the cool
@@ -458,31 +379,148 @@ reported a detection limit of 10 \kms, which is significantly below that in
 verifies that APOGEE \vsini{} measurements are not severely different
 for cool dwarfs.
 
-We use several previously studied datasets to validate the APOGEE data, and
-to check the uncertainties inherent to APOGEE data. 
+\subsubsection{Comparison to asteroseismic periods}
 
-One of the most well-characterized subsets of the \Kepler{} field that we use 
-is the APOKASC asteroseismic sample \citep{Pinsonneault14}. The APOKASC 
-asteroseismic dwarf and subgiant 
+In addition to direct comparisons to literature \vsini{}, we validate the 
+APOGEE \vsini{} for a larger sample by comparing \vsini{} to velocities derived
+from rotation periods and asteroseismic radii. This validation can be performed
+on the significantly larger APOKASC catalog
+\citep{Pinsonneault14,Pinsonneault18} to further test the APOGEE \vsini. The 
+APOKASC asteroseismic dwarf and subgiant 
 sample consists of 426 targets which presented solar-type oscillations in 
 \Kepler{} short-cadence data \citep{Chaplin11}, and were observed in APOGEE DR13
 \citep{Majewski17}. Using asteroseismic scaling relations, the radii
 for these objects can be determined to an accuracy of around 3\%
-\citep{Serenelli17}. Because of their excellent parametrization, we treat the
-asteroseismic catalog as a control sample, where stellar properties are
-well-known. It should be noted that subgiants are overrepresented in
-the asteroseismic population because the amplitude of solar-type oscillations 
-increases as stars evolve. 
+\citep{Serenelli17}. 
 
-We use the asteroseismic sample to validate our methodologies, making
-sure that they yield expected results when all stellar parameters are
-directly measured. 
+Rotation periods for a subset of 310 asteroseismic dwarfs and subgiants have been reported 
+by \citet{Garcia14}. Contrary to \citet{McQuillan14}, the \citet{Garcia14}
+periods were derived using a wavelet analysis, and periods between 1--100 days
+were considered. The overlap of these targets with APOGEE is \gvs{NUM}.
 
-\gvs{Do I want to include the \citep{Garcia14} sample? I used it to
-check the rapid rotator fractions.}
+\section{Stellar Models}
 
+Our fiducial single-star model is the Dartmouth Stellar Evolution Program
+\citep[DSEP]{Dotter08}. The DSEP models incorporate gravitational settling of
+Helium and metals, standard convection including core overshooting, and PHOENIX
+model atmospheres to set the surface boundary condition \citep{Hauschildt99a,
+Hauschildt99b}. Stars containing a Helium flash are not continuously modeled,
+but are re-generated starting from the zero-age horizontal branch; however, as
+we are only interested in the main sequence, this should not be a
+concern\citep{Dotter08}.
 
-\section{Data Analysis}
+The DSEP models have proven successful at producing the optical color-magnitude
+diagram and luminosity functions of globular clusters at a wide range of
+metallicities \citep{Dotter07}. It has also been successful at predicting
+near-infrared isochrones in M67 \citep{Sarajedini09}. As such, we expect it to
+do well at predicting K-band magnitudes for \Kepler{} cool dwarfs.
+
+In order to derive K-band magnitudes, we interpolate over \Teff{} and [Fe/H]
+assuming solar alpha abundance and a fiducial age of 5.5 Gyr, representative
+of the typical age of the thick disk. For the sample drawn from
+\citet{McQuillan14}, without spectroscopic [Fe/H], we assume the mean
+metallicity of the overlap sample with APOGEE\@.
+
+\subsection{Comparison to other isochrones}
+
+To probe the systematic uncertainties of the DSEP isochrone, we compare them to
+the MIST isochrones \citep{Dotter16, Choi16}. The MIST isochrones are based on 
+the outputs of the MESA stellar evolutionary models \citep{Paxton11, Paxton13, 
+Paxton15}. The MIST isochrones adopt different physical prescriptions for their
+models, including atomic diffusion prescriptions, reaction rates, boundary
+conditions, mixing length, and overshooting prescriptions. We refer the reader
+to the source papers for further details on the internal physics of both
+models.
+
+We use version 1.1 of the non-rotating MIST isochrones with solar alpha
+abundance. The isochrones are interpolated over \Teff{} and [Fe/H] in an
+identical manner. 
+
+\begin{figure}[htb]
+    \centering
+    \plotone{MIST_DSEP_age}
+    \caption{Difference in predicted K-band magnitude between solar-metallicity 
+    MIST and DSEP isochrones for three ages: 1 Gyr (solid), 5.5 Gyr (dashed), 
+and 10 Gyr (dotted).}\label{fig:mist_dsep_age}
+\end{figure}
+
+The first test of the isochrones is of the age and \Teff{} dependence of the
+solar metallicity isochrones. At three given ages, we generate the
+solar-metallicity Teff-Ks relation, and subtract the two relations from each
+other. The residuals are shown in \cref{fig:mist_dsep_age}. For the 5.5 Gyr
+isochrone, the uncertainties are less than 0.05 mag between \(4500 K \le \Teff
+\le 5900 K\). At higher temperatures, the larger differences are driven by
+different behaviors near the turn-off. Because we are interested in measuring
+luminosity excesses above the main sequence that are not driven by age
+evolution, stars hot enough to have evolved significantly in their lifetime
+will be excluded from the analysis. The disagreement below 4500 K is more
+puzzling. Additional analysis will have to be done to ensure that the
+isochrones are not doing terribly here. \gvs{I note that in
+    \citet{Sarajedini09}, the region where the DSEP and MIST isochrones
+    disagree is the same region in M67 where J-K color becomes insensitive to
+    \Teff{}. So more work will have to be done to show that the DSEP isochrones
+aren't going crazy in this regime.}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{MIST_DSEP_metallicity}
+    \caption{Difference in predicted K-band magnitude between 5.5 Gyr 
+        MIST and DSEP isochrones for six temperatures: 6000 K (purple),
+        5500 K (turquoise), 5000 K (blue), 4500 K (aqua), 4000 K (green), and
+    3500 K (yellow).}\label{fig:mist_dsep_metallicity}
+\end{figure}
+
+After establishing the behavior of the isochrones at solar metallicity, we also
+trace their behavior at different metallicities.
+\cref{fig:mist_dsep_metallicity} shows the predicted K-band magnitudes between
+DSEP and MIST at given \Teff{}s over a wide range of metallicities. The
+isochrones generally behave well in the regime warmed than 4500 K, below which
+the isochrone behaviors diverge substantially. Particularly near solar, the
+uncertainties are on the order of 0.05 for \(\Teff > 4500 K\).
+
+Based on this comparison between isochrones, we conclude that the predicted 
+DSEP K-band magnitudes have a systematic uncertainty of 0.05 for when
+\(Teff > 4500 K\) and 0.15 when \(\Teff < 4500 K\).
+
+\subsection{Comparison to Data}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{metallicity_bins}
+    \caption{\Teff-K diagram of four metallicity bins of stars classified by 
+        \citet{Berger18b} as being on the main sequence. The red dashed lines
+    indicate DSEP isochrones with metallicity given by the bin 
+edges.}\label{fig:metallicity_bins}
+\end{figure}
+
+In addition to measuring the systematic uncertainty of the isochrone with
+respect to other isochrones, we also attempt to measure the error of the
+isochrone with respect to the data. To accomplish this, we split the data into
+four metallicity bins, and attempt to measure the scatter of the points with
+respect to the isochrones. The bins are shown in \cref{fig:metallicity_bins} 
+\gvs{I realize that this isn't actually a good
+strategy to quantify the uncertainty of the isochrone. Will need to discuss
+with Marc.} 
+
+\subsubsection{Low metallicity}
+
+Of all the bins, it's clear that the lowest metallicity bin does not match the
+theoretical isochrones at all. While it's possible that the isochrones predict
+the K-band magnitudes of metal-poor stars poorly, it's more plausible that
+metal-poor main-sequence stars are more likely to be excluded due to the
+magnitude-limited sample. Aside from being intrinsically less luminous at a
+given temperature, metal-poor stars are also rare in the thick disk, and would
+only be found at greater distances. Due to both of these effects, it's likely
+that only the brighest metal-poor stars, namely those in multiple star systems 
+or otherwise peculiar would be included in APOGEE's selection criteria.
+
+To test this, we take the distances of the observed metal-poor objects, predict
+a main-sequence H-band absolute magnitude based on the temperature, and check 
+to see if it would be fall under APOGEE's inclusion criteria. The distribution
+of predicted apparent H-band magnitudes are shown in \cref{fig:metal_poor}.
+\gvs{NOTE: Actually do this exercise.}
+
+\section{Data Validation}
 \label{sec:analysis}
 
 \begin{figure*}
@@ -509,7 +547,9 @@ above. The larger cutoff at higher temperature results from the faster age
 evolution for hotter stars.\label{fig:sample}}
 \end{figure*}
 
-The first step to obtaining a usable sample is to perform a 
+\subsection{Spectroscopic parameters}
+
+The first step to obtaining a usable spectroscopic sample is to perform a 
 quality cut for all targets with APOGEE observations.
 Depending on the reduced chi-square of the atmospheric model fit, or
 disagreement with photometric temperature relations, the ASPCAP pipeline
@@ -524,43 +564,18 @@ pipeline, or are due to poor model fits on the cool (\(\Teff < 4250\) K) end.
 \gvs{Calculate percentage} in the full sample have the \STARBAD{} quality 
 flag enabled, which have been excluded from the rest of the analysis. 
 Targets labeled as \STARWARN{} are a significantly larger fraction of the 
-sample. We found that the model fits reasonably resembled the target spectra. 
-For this reason, we retained targets with the \STARWARN{} flag enabled. The 
-same occured for targets with the \VSINIWARN{} flags.
+sample. We found that the model fits reasonably resembled the target spectra
+based on a visual analysis. 
+For this reason, we retained targets with the \STARWARN{} flag enabled. 
+Targets with the \VSINIWARN{} flags also had visually reasonable spectra.
 
-We selected the APOGEE hot dwarf sample simply by using the
-\textit{APOGEE2\_APOKASC\_DWARF} targeting flag. The temperatures and 
-absolute K-band magnitudes of the hot dwarf sample are shown in the left-hand panel of 
-\cref{fig:sample}.  As is apparent that the hot 
-(\(\Teff > 5500 K\)) star regime is difficult to characterize due to 
-significant confusion between main-sequence age evolution,
-photometric binaries, and subgiants crossing the Hertzsprung Gap.
-A proper analysis with detailed modeling of the complex radius uncertainties 
-due to classification errors will be necessary to interpret the rotation
-for these stars. We chose instead to study measures of
-stellar rotation in the cool dwarf regime, where
-slow stellar evolution allows the radii to be easily characterizable through
-stellar models, and the cool subgiants, photometric binaries, and main-sequence
-stars are more easily separated.
-
-In order to more easily characterize our sample, we instead used targets
-observed in the APOGEE cool
-dwarf ancillary targeting program.  Most of these objects were observed in 
-the first phase of APOGEE under the
-\textit{APOGEE\_KEPLER\_COOLDWARF} targeting flag. The remainder of
-the sample was targeted in APOGEE-2 under the \textit{APOGEE2\_SEISMO\_DWARF}
-flag. We applied the original selection criteria for the ancillary
-program to the new sample in order get
-the updated target list. As of the DR14, the program has been \(\sim 85\)\% 
-completed with 1028 objects having been observed. The full cool dwarf sample is
-shown in the right panel of \cref{fig:sample}.
-
-\gvs{Need to get classification straightened out}
-We use the classification in 
-in \citet{Berger18b} to separate objects into dwarfs, subgiants, and giants.
-Informed by solar models of solar metallicity, \citet{Berger18b} uses cuts in
-stellar radius at the terminal-age main sequence, and the base of the red giant
-branch. \gvs{Maybe do a custom subgiant classification too?}
+APOGEE \Teff{} and [Fe/H] uncertainties have largely been characterized.
+Holtzmann et al (in prep) calculated an expression for the temperature scatter
+for cool dwarfs, which ranges from 135 K at 5500 K to 85 K at 4000 K at solar
+metallicity. This is consistent with the scatter between photometric and
+spectroscopic \Teff{} measured for the APOKASC dwarfs \citep{Serenelli17}.
+Uncertainties in [Fe/H] have also been found to be on the order of 0.1 mag
+\citep{Serenelli17}. \gvs{Can also try cross-checking with CKS.}
 
 \gvs{How to distinguish multiple-star systems and subgiants}
 We distinguish between single and multiple-star systems by deriving K-band
@@ -648,7 +663,7 @@ metallicity. Although APOGEE provides a weighted metallicity [M/H], the
 stellar isochrones used in this work use iron abundance as inputs, so we 
 treated [Fe/H] as our metallicity measure for this purpose. For typical APOGEE 
 dwarfs in our temperature range, the claimed precision is about 0.01
-dex (Holtzmann et al.\ in prep). \gc{What did Serenelli et al (2017) say about
+dex (Holtzmann et al.\ in prep). \gvs{What did Serenelli et al (2017) say about
 metallicity uncertainties?}
 
 The availability of published \vsini{} is relatively new to the ASPCAP pipeline, only
@@ -1035,7 +1050,7 @@ While we have two potential explanations for the discrepancy between the
 photometric and spectroscopic rapid rotator rate, our currently
 available data is unable to distinguish between the two. The most
 effective way to break the degeneracy will be to follow-up the high
-\vsini{} objects with spectroscopy at higher resolution than APOGEE. If
+\vsini{} objects with spectroscopy at higher resolution than APOGEE\@. If
 the line broadening is truly due to blending, the the two components
 should easily separate out. If not, then we can conclude that the
 spectroscopic rapid rotation is real, and the line is intrisically
