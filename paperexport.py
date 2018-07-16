@@ -243,40 +243,54 @@ def metallicity_bins():
     axeslist = itertools.chain(*axes)
     full = full_apogee_splitter()
     full_data = full.subsample([
-        "~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
+        "~Bad", "H APOGEE", "In Gaia", "Berger Main Sequence"])
+    full_data = full_data[np.logical_not(np.logical_or(
+        np.ma.getmaskarray(full_data["TEFF"]), 
+        np.ma.getmaskarray(full_data["FE_H"])))]
     metallicity_bin_edges = np.array([-2.0, -0.5, 0.0, 0.2, 0.5])
-    # Pre-calculate the isochrones.
-    test_teffs = np.linspace(3500, 6500, 1000)
     # Remember this has size metallicity_bin_edges x test_teffs.
-    k_array = samp.calc_DSEP_model_mag_fixed_age_alpha(
-        test_teffs, metallicity_bin_edges, "Ks")
+    k_array = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
+        full_data["TEFF"], full_data["FE_H"], "Ks"))
+    full_data["DSEP K"] = k_array
+    full_data["K Excess"] = full_data["M_K"] - full_data["DSEP K"]
     bin_indices = np.digitize(full_data["FE_H"], metallicity_bin_edges)
-    data_grouped = full_data.group_by(bin_indices)
     for low_met_index, high_met_index, ax, in zip(
             range(len(metallicity_bin_edges)-1), 
             range(1, len(metallicity_bin_edges)), axeslist):
-        data_bin = data_grouped.groups[high_met_index]
+        data_bin = full_data[bin_indices == high_met_index]
         # Plot the data.
         hr.absmag_teff_plot(
-            data_bin["TEFF"], data_bin["M_K"], color=bc.black, marker=".", 
-            ls="", axis=ax)
-        # Low metallicity isochrone
-        hr.absmag_teff_plot(
-            test_teffs, k_array[low_met_index,:], linestyle="--",
-            color=bc.red, marker="", axis=ax, lw=3)
-        # High metallicity isochrone
-        hr.absmag_teff_plot(
-            test_teffs, k_array[high_met_index,:], linestyle="--",
-            color=bc.red, marker="", axis=ax, lw=3)
+            data_bin["TEFF"], data_bin["K Excess"], color=bc.black, marker=".", 
+            ls="", axis=ax, label="Spectroscopic Sample")
+        ax.plot([6500, 3500], [0, 0], color=bc.black, lw=3, ls="-", marker="")
+        # Now calculate the median and lower 1-sigma percentile.
+        teff_bins = np.linspace(5500, 4000, 7)
+        teff_indices = np.digitize(data_bin["TEFF"], teff_bins)
+        k_medians = np.zeros(len(teff_bins)-1)
+        k_1sigs = np.zeros(len(teff_bins)-1)
+        for i in range(1, len(teff_bins)):
+            teff_data_bin = data_bin[teff_indices == i]
+            if len(teff_data_bin) > 0:
+                k_medians[i-1] = np.percentile(teff_data_bin["K Excess"], 50)
+                k_1sigs[i-1] = np.percentile(teff_data_bin["K Excess"], 100-16.5)
+            else:
+                k_medians[i-1] = np.nan
+                k_1sigs[i-1] = np.nan
+        # Now plot the medians and lower 1-sigma percentiles
+        teff_means = (teff_bins[:-1]+teff_bins[1:])/2
+        hr.absmag_teff_plot(teff_means, k_medians, color=bc.red, marker="x",
+                            ls="--", ms=4, label="Median", axis=ax)
+        hr.absmag_teff_plot(teff_means, k_1sigs, color=bc.red, marker=".",
+                            ls="--", ms=4, label="1-sigma", axis=ax)
         ax.set_title("{0:3.1f} < [Fe/H] <= {1:3.1f}".format(
             metallicity_bin_edges[low_met_index],
             metallicity_bin_edges[high_met_index]))
         ax.set_xlabel("")
         ax.set_ylabel("")
     ax.set_xlim(6500, 3500)
-    ax.set_ylim(7, 2)
-    axes[0][0].set_ylabel("Ks")
-    axes[1][0].set_ylabel("Ks")
+    ax.set_ylim(0.2, -2)
+    axes[0][0].set_ylabel("M_K - DSEP K")
+    axes[1][0].set_ylabel("M_K - DSEP K")
     axes[1][0].set_xlabel("Teff (K)")
     axes[1][1].set_xlabel("Teff (K)")
 
@@ -1144,6 +1158,7 @@ def plot_metallicity_excess():
     plt.ylabel("M_K - DSEP K (Age: 5.5; [Fe/H] adjusted)")
     plt.legend(loc="upper left")
 
+
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()
     dwarfs_k = cool_dwarf.subsample([
@@ -1481,6 +1496,28 @@ def targeting_figure(dest=build_filepath(FIGURE_PATH, "targeting", "pdf")):
     axarr[1][1].set_title("Cool Dwarf")
 
     plt.savefig(str(dest))
+
+def low_metallicity_selection():
+    '''Determine whether low-metallicity targets should have been observed in
+    APOGEE'''
+
+    apo = full_apogee_splitter()
+    lowmet = apo.subsample(["~Bad", "In Gaia", "K Detection", "Low Met",
+                            "Berger Main Sequence", "H APOGEE"])
+    lowmet = lowmet[~lowmet["TEFF"].mask]
+
+    lowmet["DSEP H"] = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
+        lowmet["TEFF"], lowmet["FE_H"], "H"))
+    lowmet["DSEP H Apparent"] = (
+        lowmet["DSEP H"] + 5 * np.log10(lowmet["dis"]/10) + 0.190 *
+        lowmet["av"])
+
+    hr.absmag_teff_plot(lowmet["TEFF"], lowmet["H"], color=bc.black, ls="",
+                        marker="o", label="Original")
+    hr.absmag_teff_plot(lowmet["TEFF"], lowmet["DSEP H Apparent"],
+                        color=bc.red, ls="", marker="x", label="DSEP")
+    plt.plot([6500, 3500], [11, 11], 'k--')
+
 
 def APOGEE_metallicity_agreement():
     '''Compare predicted MK to DSEP isochrones.'''
