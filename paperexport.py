@@ -473,8 +473,105 @@ def plot_lower_limit_Pleiades_test():
     plt.xlabel("Stauffer-Hartmann vsini (km/s)")
     plt.ylabel("Probability that high and low distributions are the same")
 
+@write_plot("astero_rot")
+def asteroseismic_rotation_analysis():
+    '''Plot rotation comparison of asteroseismic sample.'''
+    astero = asteroseismic_data_splitter()
+    detections = astero.subsample([
+        "~Bad", "Asteroseismic Dwarfs", "Vsini det", "~DLSB"])
 
+    garcia = catin.read_Garcia_periods()
+    detections_periodpoints = au.join_by_id(detections, garcia, "kepid", "KIC")
 
+    f, ax = plt.subplots(1,1, figsize=(10,10))
+
+    rot.plot_vsini_velocity(
+        detections_periodpoints["VSINI"], detections_periodpoints["Prot"],
+        detections_periodpoints["radius"], 
+        raderr_below=detections_periodpoints["radius_err1"],
+        raderr_above=detections_periodpoints["radius_err2"], color=bc.blue,
+        ax=ax)
+
+@write_plot("turnoff")
+def old_turnoff():
+    '''Plot the turnoff for 10 Gyr populations at three metallicities.'''
+    f, ax = plt.subplots(1,1, figsize=(10,10))
+    massrange = np.linspace(0.5, 1.5, 500)
+    highmet = dsep.DSEPIsochrone.isochrone_from_file(0.5)
+    highmet_teff = 10**dsep.interpolate_DSEP_isochrone_cols(
+        highmet, 10, massrange, incol="M/Mo", outcol="LogTeff")
+    highmet_K = dsep.interpolate_DSEP_isochrone_cols(
+        highmet, 10, massrange, incol="M/Mo", outcol="Ks")
+    solmet = dsep.DSEPIsochrone.isochrone_from_file(0.0)
+    solmet_teff = 10**dsep.interpolate_DSEP_isochrone_cols(
+        solmet, 10, massrange, incol="M/Mo", outcol="LogTeff")
+    solmet_K = dsep.interpolate_DSEP_isochrone_cols(
+        solmet, 10, massrange, incol="M/Mo", outcol="Ks")
+    lowmet = dsep.DSEPIsochrone.isochrone_from_file(-0.5)
+    lowmet_teff = 10**dsep.interpolate_DSEP_isochrone_cols(
+        lowmet, 10, massrange, incol="M/Mo", outcol="LogTeff")
+    lowmet_K = dsep.interpolate_DSEP_isochrone_cols(
+        lowmet, 10, massrange, incol="M/Mo", outcol="Ks")
+
+    hr.absmag_teff_plot(
+        highmet_teff, highmet_K, color=bc.red, linestyle="-", marker="", ls=3,
+        axis=ax, label="[Fe/H] = 0.5")
+    hr.absmag_teff_plot(
+        solmet_teff, solmet_K, color=bc.black, linestyle="-", marker="", ls=3,
+        axis=ax, label="[Fe/H] = 0.0")
+    hr.absmag_teff_plot(
+        lowmet_teff, lowmet_K, color=bc.blue, linestyle="-", marker="", ls=3,
+        axis=ax, label="[Fe/H] = -0.5")
+
+    # Now add some data.
+    full = full_apogee_splitter()
+    full_data = full.subsample([
+        "~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
+
+    hr.absmag_teff_plot(full_data["TEFF"], full_data["M_K"], color=bc.black,
+                        marker=".", ls="", label="Berger Main Sequence")
+
+    plt.plot([6250, 4500], [2.7, 2.7], 'k--')
+
+    ax.set_xlim(6200, 4500)
+    ax.set_ylim(5, 1)
+    ax.legend(loc="lower left")
+    ax.set_xlabel("APOGEE Teff (K)")
+    ax.set_ylabel("Ks")
+
+@write_plot("binarycut")
+def plot_metallicity_excess():
+    apo = full_apogee_splitter()
+    targets = apo.subsample(["~Bad", "H APOGEE", "In Gaia", "K Detection"])
+    
+    print("Excluding {0:d} not bad targets with bad Teffs".format(
+        np.ma.count_masked(targets["TEFF"])))
+    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
+
+    print("Excluding {0:d} further bad targets with bad [Fe/H]".format(
+        np.ma.count_masked(targets["FE_H"])))
+    targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
+
+    targets["DSEP K"] = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
+        targets["TEFF"], targets["FE_H"], "Ks"))
+    targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
+
+    dwarfs = targets[targets["M_K"] > 2.7]
+
+    f, ax = plt.subplots(1,1, figsize=(10,10))
+    hr.absmag_teff_plot(targets["TEFF"], targets["K Excess"], color=bc.black,
+                        linestyle="", marker=".", label="Full", axis=ax)
+    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["K Excess"], color=bc.green,
+                        linestyle="", marker=".", label="Dwarfs", axis=ax)
+    ax.plot([8000, 3500], [0, 0], 'k-', lw=3)
+    ax.plot([8000, 3500], [-0.75, -0.75], 'k:')
+    ax.plot([5500, 5500], [-6, 6], 'k--', lw=2)
+
+    ax.set_xlabel("APOGEE Teff (K)")
+    ax.set_ylabel("M_K - DSEP K (Age: 5.5; [Fe/H] adjusted)")
+    ax.legend(loc="upper left")
+    ax.set_ylim(1.5, -3)
+    ax.set_xlim(6100, 3500)
 
 @write_plot("astero")
 def asteroseismic_sample_MK():
@@ -906,34 +1003,6 @@ def plot_rr_fractions():
     ax2.set_ylabel("Rapid Rotator Fraction")
 
 
-@write_plot("astero_rot")
-def asteroseismic_rotation_analysis():
-    '''Plot rotation comparison of asteroseismic sample.'''
-    astero = asteroseismic_data_splitter()
-    marginal = astero.subsample([
-        "~Bad", "Asteroseismic Dwarfs", "Vsini marginal", "~DLSB", "Mcq"])
-    detections = astero.subsample([
-        "~Bad", "Asteroseismic Dwarfs", "Vsini det", "~DLSB", "Mcq"])
-
-    mcq = catin.read_McQuillan_catalog()
-    marginal_periodpoints = au.join_by_id(marginal, mcq, "kepid", "KIC")
-    detections_periodpoints = au.join_by_id(detections, mcq, "kepid", "KIC")
-
-    f, ax = plt.subplots(1,1, figsize=(10,10))
-
-    rot.plot_vsini_velocity(
-        marginal_periodpoints["VSINI"], marginal_periodpoints["Prot"],
-        marginal_periodpoints["radius"], 
-        raderr_below=marginal_periodpoints["radius_err1"],
-        raderr_above=marginal_periodpoints["radius_err2"], color=bc.sky_blue,
-        ax=ax, sini_label=False)
-
-    rot.plot_vsini_velocity(
-        detections_periodpoints["VSINI"], detections_periodpoints["Prot"],
-        detections_periodpoints["radius"], 
-        raderr_below=detections_periodpoints["radius_err1"],
-        raderr_above=detections_periodpoints["radius_err2"], color=bc.blue,
-        ax=ax)
 
 @write_plot("cool_rot")
 def cool_dwarf_rotation_analysis():
@@ -1114,35 +1183,6 @@ def plot_k_excess_rotation_apogee():
     plt.legend(loc="lower right")
     plt.title("Teff < 5200 K")
 
-def plot_metallicity_excess():
-    apo = full_apogee_splitter()
-    targets = apo.subsample(["~Bad", "In Gaia", "K Detection"])
-    
-    print("Excluding {0:d} not bad targets with bad Teffs".format(
-        np.ma.count_masked(targets["TEFF"])))
-    targets = targets[~np.ma.getmaskarray(targets["TEFF"])]
-
-    print("Excluding {0:d} further bad targets with bad [Fe/H]".format(
-        np.ma.count_masked(targets["FE_H"])))
-    targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
-
-    targets["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
-        targets["TEFF"], targets["FE_H"], "Ks")
-    targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
-    print(np.ma.count_masked(targets["K Excess"]))
-
-    dwarfs = targets[targets["M_K"] > 2.95]
-
-    hr.absmag_teff_plot(targets["TEFF"], targets["K Excess"], color=bc.black,
-                        linestyle="", marker=".", label="Full")
-    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["K Excess"], color=bc.yellow,
-                        linestyle="", marker=".", label="Dwarfs")
-    plt.plot([8000, 3500], [0, 0], 'k--')
-    plt.plot([8000, 3500], [-0.75, -0.75], 'k:')
-
-    plt.xlabel("APOGEE Teff (K)")
-    plt.ylabel("M_K - DSEP K (Age: 5.5; [Fe/H] adjusted)")
-    plt.legend(loc="upper left")
 
 def plot_binarity_diagram():
     cool_dwarf = cool_data_splitter()

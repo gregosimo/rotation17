@@ -415,11 +415,13 @@ metallicities \citep{Dotter07}. It has also been successful at predicting
 near-infrared isochrones in M67 \citep{Sarajedini09}. As such, we expect it to
 do well at predicting K-band magnitudes for \Kepler{} cool dwarfs.
 
-In order to derive K-band magnitudes, we interpolate over \Teff{} and [Fe/H]
+In order to derive K-band magnitudes for the spectroscopic sample, we 
+interpolate over \Teff{} and [Fe/H]
 assuming solar alpha abundance and a fiducial age of 5.5 Gyr, representative
 of the typical age of the thick disk. For the sample drawn from
 \citet{McQuillan14}, without spectroscopic [Fe/H], we assume the mean
 metallicity of the overlap sample with APOGEE\@.
+
 
 \subsection{Comparison to other isochrones}
 
@@ -523,30 +525,6 @@ of predicted apparent H-band magnitudes are shown in \cref{fig:metal_poor}.
 \section{Data Validation}
 \label{sec:analysis}
 
-\begin{figure*}
-    \gridline{\fig{astero}{0.3\textwidth}{(a)}
-              \fig{cool_mk_sample}{0.3\textwidth}{(b)}
-              \fig{binary_cut}{0.3\textwidth}{(c)}}
-    \caption{\emph{Left:} Stellar properties of the full APOKASC 
-    asteroseismic dwarf/subgiant control sample. The black points mark
-    K-band absolute magnitudes for the full control sample. Green squares mark
-    the subsample showing oscillations. 
-    \emph{Middle:} The full cool dwarf sample as measured with APOGEE stellar 
-    parameters. The stellar classifications of dwarfs, photometric binaries, 
-    subgiants, and giants marked as teal, purple, and mustard
-    dots. Photometric binaries which could also be considered subgiants are
-    marked with a pentagon.  The dotted vertical line indicates the 
-    \(\Teff = 5450\) K boundary.
-    \emph{Right:} Magnitude excess of targets observed in the cool 
-    sample above 3 Gyr DSEP models at matching \Teff{} and 
-    [Fe/H]. Photometric binaries are shown in green, single stars in teal, and
-    subgiants are in purple. The blue, black, and red lines denote the location of 14 Gyr
-    isochrones at [Fe/H] = 0.5, 0.0, -0.5. The solid straight line denotes the 
-    cut between single stars on the bottom and photometric binaries
-above. The larger cutoff at higher temperature results from the faster age
-evolution for hotter stars.\label{fig:sample}}
-\end{figure*}
-
 \subsection{Spectroscopic parameters}
 
 The first step to obtaining a usable spectroscopic sample is to perform a 
@@ -577,61 +555,7 @@ spectroscopic \Teff{} measured for the APOKASC dwarfs \citep{Serenelli17}.
 Uncertainties in [Fe/H] have also been found to be on the order of 0.1 mag
 \citep{Serenelli17}. \gvs{Can also try cross-checking with CKS.}
 
-\gvs{How to distinguish multiple-star systems and subgiants}
-We distinguish between single and multiple-star systems by deriving K-band
-luminosity excesses compared to DSEP models. Photometric binaries clearly stand
-out at 0.75 mag above the main sequence. We attempt to separate multiple-star
-systems by interpolating DSEP models between \Teff{} and
-\(M_K\). For this calculation, we choose DSEP models with 3 Gyr as a 
-reference age. The range in absolute K-band magnitude achievable by age
-variation start around 0.5 mag near \(\Teff \sim
-5500\) K, and drops down to 0.1 mag near \(\Teff \sim 4000\) K, as illustrated
-in \cref{fig:binarity}. We use the temperature cut indicated in
-\cref{fig:binarity} to distinguish photometric single systems from
-multiple-star systems.
-
-\gvs{If I calculate the maximum age given metallicity/temperature, this
-will be unimportant}
-By exploring the evolution of stellar parameters between 1--14 Gyr, we found
-that stars hotter than \(\Teff = 5450\) K were significantly more difficult to 
-characterize due to metal-rich stars having reached the subgiant branch by 14 
-Gyr. Because only a 
-small fraction of our sample has \(\Teff > 5450\) K, we removed targets hotter
-than that cut. The effect of the cut on the sample is shown in the 
-right-hand panel of \cref{fig:sample}.
-
-To obtain a reliable sample of \vsini, we also inspected the spectra for every target with 
-\(\vsini > 7 \kms\) for the presence of double lines. Most targets showed 
-obvious cases of ASPCAP 
-fitting a single broad line over two separate narrow features, other cases 
-only revealed the second component in individual visit spectra. The targets 
-showing double-lined spectra were excluded from the analysis because of
-the unreliability of the catalog \vsini{}. Objects classified as having
-double-lined spectra are shown in \cref{fig:sample}. More sophisticated future
-analyses may be able to disentangle \vsini{} measurements from each component 
-\citep{ElBadry18}. There are
-also cases where the observed spectra show high RV variability
-without a visible second component. We include these cases in our sample
-because the measured \vsini{} shouldn't be impacted.
-
-To control for differences between the photometric and spectroscopic sample,
-we performed the bulk of our analysis on the subset of 408 objects
-observed in APOGEE which also have period detections in \citet{McQuillan14}.
-An additional 205 did not have significant periods in \citet{McQuillan14}, and
-will be analyzed separately. The remaining 44 targets were observed in APOGEE,
-but excluded by the original sample selection in \citet{McQuillan14}. 
-
-The selection of the asteroseismic targets mirrors that of the cool dwarf
-sample. From the 426 asteroseismic dwarfs from the APOKASC v4.2.4 catalog, we 
-removed three objects with the STAR\_BAD flag, while including 51 objects with 
-the \STARWARN{} and 46 objects with the \VSINIWARN{} flags after visual 
-inspection. All targets with \(\vsini \ge 7\) \kms{} were visually
-inspected for double-lined spectra leading to four being excluded. 91 of 
-the remaining stars have period detections in \citet{McQuillan14}, 240 were 
-period nondetections, and 88 did not fall under the selection criteria in 
-\citet{McQuillan14}. 
-
-\section{\vsini{} validation}
+\subsection{\vsini{} validation}
 \label{sec:vsini_check}
 
 \begin{figure*}
@@ -657,15 +581,6 @@ period nondetections, and 88 did not fall under the selection criteria in
 \end{figure*}
 
 
-
-We used the iron-abundance as measured by APOGEE to act as a proxy for
-metallicity. Although APOGEE provides a weighted metallicity [M/H], the 
-stellar isochrones used in this work use iron abundance as inputs, so we 
-treated [Fe/H] as our metallicity measure for this purpose. For typical APOGEE 
-dwarfs in our temperature range, the claimed precision is about 0.01
-dex (Holtzmann et al.\ in prep). \gvs{What did Serenelli et al (2017) say about
-metallicity uncertainties?}
-
 The availability of published \vsini{} is relatively new to the ASPCAP pipeline, only
 being included since DR13. As a result, catalog \vsini{}s have not been 
 extensively vetted and verified. APOGEE does not provide a reasonable
@@ -678,11 +593,10 @@ giants and found a detection threshold of about 7 \kms. We repeat their
 analysis for DR14 spectra in the cool dwarf regime to ensure their results
 continue to hold in this new regime. 
 
-A comparison between the APOGEE and \citet{Bruntt12} targets is shown in
-\cref{fig:comps}. Not shown are six
-objects which the ASPCAP pipeline classified as giants, and omitted
-\vsini{}. The \citet{Bruntt12} \vsini{} is less than 5 \kms{} for all of 
-these objects, making them consistent with 
+A comparison between the overlapping APOGEE and \citet{Bruntt12} targets is shown in
+\cref{fig:comps}. Six objects without \vsini{}, classified by the ASPCAP 
+pipeline as giants, are not shown. The \citet{Bruntt12} \vsini{} is less than 5 \kms{} for all of 
+these objects, making them consistent with APOGEE
 nondetections.  In order to characterize the APOGEE \vsini{}s, we model the 
 two datasets as being linearly related above a specific detection threshold 
 with constant fractional uncertainty. The sample shows a 
@@ -693,14 +607,15 @@ significantly smaller than the expected APOGEE errors, we performed a simple
 linear regression for all targets with APOGEE \vsini{} above the detection 
 limit to obtain the relationship. The two datasets have slopes
 consistent with one, but with a significant zero-point offset of 9\%,
-APOGEE \vsini{} being lower than the \citet{Bruntt12}
+the APOGEE \vsini{} being lower than the \citet{Bruntt12}
 \vsini{}. We estimated the measurement error by calculating the mean squared 
 error of the residuals, yielding a 13\% uncertainty which we adopted as the 
 uncertainty in APOGEE \vsini{}.
 
-We plot the APOGEE \vsini{} agains the \vsini{} measured from
-\citet{Stauffer87} in \cref{fig:comps} to look for systematic
-uncertainties. At high \vsini{}, the two datasets agree well, even
+To make sure that \vsini{} continues to be a reliable measure of rotation for
+cool dwarfs, we plot the APOGEE \vsini{} agains the \vsini{} measured from
+\citet{Stauffer87} in \cref{fig:comps}. At high \vsini{}, the two datasets 
+agree well, even
 without the offset seen in the \citet{Bruntt12} sample. Near the the 10
 \kms{} \citet{Stauffer87} detection limit, they find a few targets with
 much higher \vsini{} than APOGEE detects. While this may be
@@ -708,34 +623,30 @@ underestimated noise near the detection limit for \citet{Stauffer87}, we
 note that this could also indicate that genuine rapid rotators may be
 missed by APOGEE\@.
 
-Our comparison with APOGEE noted a difference in behaviors, with
-disagreement between APOGEE and \citet{Stauffer87} for some
-targets with \(7 \kms < \vsini < 10 \kms\). In order to ensure that our 
-results are not driven by potential nondetections, we split the rapid
-rotators into two groups: a \vsini{} detection group, with \(\vsini > 10
-\kms\), and a marginal \vsini{} group, with \(7 \kms < \vsini < 10
-\kms\). Results which hold in the \vsini{} detection group as well as in
-the full sample will be considered robust.
-
-In order to validate our methodology of comparing photometric rotation
-data to spectroscopic rotation data, we used the asteroseismic sample to
-compared the measured APOGEE \vsini{} to the equatorial velocity 
-derived from the rotational periods and the asteroseismic radii. The resulting 
+\gvs{Does this actually support the point? Or is it a distraction now?} 
+As an additional check on the quality of \vsini{}, we used the asteroseismic 
+sample to compared the measured APOGEE \vsini{} to the equatorial velocity 
+derived from the rotational periods \citep{Garcia14} and the asteroseismic 
+radii \citep{Serenelli17}. The resulting 
 comparison is shown in the right panel of \cref{fig:comps}. We find that
-of the confident and marginal detections, two and three, respectively, have 
-non-physical solutions with \(\sin i > 1\). 
+twelve out of \gvs{NUM} asteroseismic targets have
+non-physical solutions with \(\sin i > 1\). \gvs{The overlap with Garcia is
+much larger, so I need to double-check these}
 
-The marginal detections with unphysical \vsini{} (KIC 8677016, 8952800, 10518551) 
-have \vsini{} values close to the detection threshold. Because the errors of 
+Seven of the targets with unphysical \vsini{} have \vsini{} values close to 
+the detection threshold. Because the errors of 
 marginal \vsini{} detections are complicated, it may be possible that these 
 are outliers. 
 
-Of the confident detections with unphysical \vsini{}, KIC 3223000 has a
-\vsini{} which is slightly above the predicted equatorial velocity. It
+Two of the remaining objects with unphysical \vsini{}, are only
+slightly above the predicted equatorial velocity. \gvs{Check the UKIRT images
+for these, just in case.} It
 is a 1.7-\(\sigma\) difference based on the \vsini{} uncertainty, which
-may be consistent as a statistical fluctuation. It can also
-be explained by the 4.9 day measured rotation period actually being a 
-half-period detection alias, implying a twice as large equatorial velocity. 
+may be consistent as a statistical fluctuation. 
+
+Two other targets can be explained by the measured rotation period actually 
+being a half-period detection alias, implying a twice as large equatorial 
+velocity. 
 
 The final outlier, KIC 9908400, is so significantly off of the relation
 that it can not be explained by either uncertainties or aliasing. However,
@@ -746,6 +657,88 @@ Additionally, KIC 9908400 has a high \Teff{} placing it above the Kraft
 break, where convective envelopes are thin;
 making spots unlikely. Photometric variation originating from the fainter 
 star would explain the mismatch in \vsini{} and rotation period.
+
+To obtain a reliable sample of \vsini{} in our full sample, we also inspected 
+the spectra for every target with \(\vsini > 7 \kms\) for the presence of 
+double lines. Most targets showed obvious cases of ASPCAP 
+fitting a single broad line over two separate narrow features, other cases 
+only revealed the second component in individual visit spectra. The targets 
+showing double-lined spectra were excluded from the analysis because of
+the unreliability of the catalog \vsini{}. More sophisticated future
+analyses may be able to disentangle \vsini{} measurements from each component 
+\citep{ElBadry18}. There are
+also cases where the observed spectra show high RV variability
+without a visible second component. We include these cases in our sample
+because the measured \vsini{} shouldn't be impacted.
+
+For typical APOGEE 
+dwarfs in our temperature range, the claimed precision is about 0.01
+dex (Holtzmann et al.\ in prep). \gvs{What did Serenelli et al (2017) say about
+metallicity uncertainties?}
+
+\section{Binary Selection}
+
+Characterizing the binary population in the rapid rotators requires separating
+photometric binaries from other classes of objects which lie above the main
+sequence, such as subgiants, metal-rich stars, or high-noise outliers. We first
+attempt to exclude subgiants from the sample, then we select a \Teff{} regime
+where the dwarf and subgiant branches are sufficiently separated that
+photometric binaries can be easily distinguished. Lastly, we classify stars as
+being part of photometric binaries if they lie sufficiently off the main
+sequence.
+
+\subsection{Subgiant Exclusion}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{turnoff}
+    \caption{10 Gyr DSEP models of [Fe/H] = -0.5 (blue), 0.0 (black) and 0.5
+    (red) overlayed on the spectroscopic sample. The absolute K-band magnitude
+    of the turnoff at all metallicities is shown as the dashed line at \(M_K =
+2.7\). Points above the line are a mixture of photometric binaries, main
+sequence stars, and subgiants. Points below should be free of 
+subgiants.}\label{fig:turnoff}
+\end{figure}
+
+We select a regime which should be devoid of subgiants by modeling the turnoff
+for a 10 Gyr population, representative of the oldest thick-disk stars.
+Zoom-ins of the 10 Gyr turnoff are overlayed on our sample for three different
+metallicities in \cref{fig:turnoff}. One useful property of the DSEP
+predictions is that the turnoff K-band magnitude is independent of metallicity.
+As a result, we restrict ourselves to the sample less luminous than \(M_K =
+2.7\) to ensure a clean sample of dwarfs.
+
+\subsection{Unbiased Binary Regime}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{binarycut}
+    \caption{Magnitude difference between each point in the spectroscopic
+    sample and the 5.5 Gyr DSEP isochrone with the corresponding [Fe/H]. Green
+points are those which meet the magnitude cut in the previous section, cleaned
+of subgiants. The horizontal dotted line represents a factor of two increase in
+luminosity above the predicted main sequence, characteristic of binaries. The
+vertical dashed line indicates the temperature where the photometric binaries
+are separated from the subgiant branch.}
+    \label{fig:binarycut}
+\end{figure}
+
+While the sample has been selected to exclude subgiants, binary statistics on
+the hot end will be biased because photometric binaries would fall above the
+magnitude cut. This bias is seen in \cref{fig:binarycut}, which shows the
+magnitude excess of the dwarf sample selected in the previous section compared
+to the more luminous sample. The main sequence isochrones are adjusted for
+metallicity, which should reduce the scatter about the zero-point. Above 
+5500 K, the sample containing subgiants lies less than 0.75 mag above the 
+main sequence, indicating that photometric binaries would have removed in the
+magnitude cut. Below 5500 K, the subgiant branch lies above 0.75 mag, and the
+population of photometric binaries should be complete.
+
+\subsection{Flagging Binaries}
+
+Binaries are flagged as targets which lie at least 3\(\sigma\) above the
+DSEP-predicted single-star isochrone. This uncertainty is
+defined\ldots{} \gvs{I'm still working on how to get to the uncertainties.}
 
 \section{Results}
 \label{sec:results}
