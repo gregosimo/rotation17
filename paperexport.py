@@ -111,55 +111,111 @@ def missing_gaia_targets():
 
 
 @write_plot("apogee_selection")
-def selection_coordinates():
+def apogee_selection_coordinates():
     '''Show the APOGEE and McQuillan samples in selection coordinates.'''
-    fullsamp = catin.stelparms_with_original_KIC()
     full_apogee = full_apogee_splitter()
 
-    f, ax = plt.subplots(1,1, figsize=(12,12))
-    cool_dwarfs = full_apogee.subsample(["Cool Sample"])
+    f, (ax1, ax2) = plt.subplots(1,2, figsize=(12,24), sharex=True, sharey=True)
+    cool_dwarfs = full_apogee.subsample([
+        "~Bad", "Cool Sample", "In Gaia", "K Detection"])
     apokasc_dwarf = full_apogee.subsample([
-        "APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+        "~Bad", "APOGEE2_APOKASC_DWARF", "~Cool Sample", "In Gaia", 
+        "K Detection"])
     apokasc_giant = full_apogee.subsample([
-        "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", "~Cool Sample"])
+        "~Bad", "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", 
+        "~Cool Sample", "In Gaia", "K Detection"])
 
-    hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", ls="",
-    label="Full Kepler", axis=ax)
-    hr.logg_teff_plot(
-        apokasc_giant["teff"], apokasc_giant["logg"], color=bc.green, 
-        marker=".", ls="", label="APOKASC Giant", axis=ax)
-    hr.logg_teff_plot(
-        apokasc_dwarf["teff"], apokasc_dwarf["logg"], color=bc.blue, marker=".", 
-        ls="", label="APOKASC Dwarf", axis=ax)
-    hr.logg_teff_plot(
-        cool_dwarfs["teff"], cool_dwarfs["logg"], color=bc.red, marker=".", 
-        ls="", label="Cool Dwarf", axis=ax)
-    plt.xlim(7000, 3000)
-    plt.xlabel("Huber Teff (K)")
-    plt.ylabel("Huber log(g) (cm/s/s)")
+    # Compare the M_K diagrams from before Gaia and after Gaia.
+    catalog.generate_abs_mag_column(
+        cool_dwarfs, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+    catalog.generate_abs_mag_column(
+        apokasc_dwarf, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+    catalog.generate_abs_mag_column(
+        apokasc_giant, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+
+    hr.absmag_teff_plot(
+        apokasc_giant["TEFF"], apokasc_giant["KIC M_K"], color=bc.green, 
+        marker=".", ls="", label="APOKASC Giant", axis=ax1)
+    hr.absmag_teff_plot(
+        apokasc_dwarf["TEFF"], apokasc_dwarf["KIC M_K"], color=bc.blue, marker=".", 
+        ls="", label="APOKASC Dwarf", axis=ax1)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["KIC M_K"], color=bc.red, marker=".", 
+        ls="", label="Cool Dwarf", axis=ax1)
+
+    hr.absmag_teff_plot(
+        apokasc_giant["TEFF"], apokasc_giant["M_K"], color=bc.green, 
+        marker=".", ls="", label="APOKASC Giant", axis=ax2)
+    hr.absmag_teff_plot(
+        apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.blue, marker=".", 
+        ls="", label="APOKASC Dwarf", axis=ax2)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.red, marker=".", 
+        ls="", label="Cool Dwarf", axis=ax2)
+    ax1.set_xlim(7000, 3000)
+    ax1.set_ylim(8, -9)
+    ax1.set_xlabel("APOGEE Teff (K)")
+    ax1.set_ylabel("KIC DR25 M_K")
+    ax2.set_xlabel("APOGEE Teff (K)")
+    ax2.set_ylabel("Gaia M_K")
     plt.legend(loc="upper left")
 
 @write_plot("mcquillan_selection")
-def mcquillan_coordinates():
-    fullsamp = catin.stelparms_with_original_KIC()
+def mcquillan_selection_coordinates():
     mcq = catin.mcquillan_with_stelparms()
     nomcq = catin.mcquillan_nondetections_with_stelparms()
 
-    f, ax = plt.subplots(1,1, figsize=(12,12))
-    hr.logg_teff_plot(
-        fullsamp["teff"], fullsamp["logg"], color=bc.black, marker=".", 
-        ls="", label="Full Kepler", axis=ax)
-    hr.logg_teff_plot(
-        nomcq["teff"], nomcq["logg"], color=bc.light_pink, 
-        marker=".", ls="", label="McQuillan Nondetections", axis=ax)
-    hr.logg_teff_plot(
-        mcq["teff"], mcq["logg"], color=bc.purple, 
-        marker=".", ls="", label="McQuillan Detections", axis=ax)
+    # Generate K-band magnitudes
+    catalog.generate_abs_mag_column(
+        mcq, "kmag", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+    catalog.generate_abs_mag_column(
+        nomcq, "kmag", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+    catalog.generate_abs_mag_column(
+        mcq, "kmag", "Gaia M_K", samp.AV_to_AK, avcol="av", distcol="dis")
+    catalog.generate_abs_mag_column(
+        nomcq, "kmag", "Gaia M_K", samp.AV_to_AK, avcol="av", distcol="dis")
 
-    plt.xlim(7000, 3000)
-    plt.xlabel("Huber Teff (K)")
-    plt.ylabel("Huber log(g) (cm/s/s)")
+    f, (ax1, ax2, ax3) = plt.subplots(
+        1,3, figsize=(36,6))
+    teff_bin_edges = np.arange(3500, 6500, 50)
+    mk_bin_edges = np.arange(-7, 8, 0.02)
+    print(np.min(mcq["KIC M_K"]))
+    print(np.min(mcq["Gaia M_K"]))
+
+    mcq_kic_hist, xedges, yedges = np.histogram2d(
+        mcq["teff"], mcq["KIC M_K"], bins=(teff_bin_edges, mk_bin_edges))
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    ax1.imshow(mcq_kic_hist.T, origin="lower", extent=extent,
+               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
+               cmap=plt.get_cmap("Purples"))
+    mcq_gaia_hist, xedges, yedges = np.histogram2d(
+        mcq["teff"], mcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    ax2.imshow(mcq_gaia_hist.T, origin="lower", extent=extent,
+               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
+               cmap=plt.get_cmap("Purples"))
+    ratio_cmap = plt.get_cmap("Greys")
+    ratio_cmap.set_bad(color="red")
+    mcq_nondet_hist, xedges, yedges = np.histogram2d(
+        nomcq["teff"], nomcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
+    mcq_detfrac_hist = np.ma.masked_invalid(
+        mcq_gaia_hist / (mcq_gaia_hist+mcq_nondet_hist))
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
+               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
+               cmap=ratio_cmap)
+
+    ax1.set_xlim(6400, 3500)
+    ax1.set_ylim(8, -7)
+    ax1.set_ylabel("KIC Ks")
+    ax1.set_xlabel("Huber Teff (K)")
+    ax2.set_xlim(6400, 3500)
+    ax2.set_ylim(8, -7)
+    ax2.set_ylabel("Gaia Ks")
+    ax2.set_xlabel("Huber Teff (K)")
+    ax3.set_xlim(6400, 3500)
+    ax3.set_ylim(8, -7)
+    ax3.set_xlabel("Huber Teff (K)")
     plt.legend(loc="upper left")
 
 @write_plot("MIST_DSEP_age")
