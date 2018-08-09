@@ -8,8 +8,12 @@ import numpy.core.defchararray as npstr
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.ticker import AutoMinorLocator
+from matplotlib.colors import Normalize
 from astropy.table import Table, vstack
 from astropy.io import ascii
+from astropy.stats import median_absolute_deviation
+from astropy.modeling.models import Gaussian1D,Const1D
+from astropy.modeling import models, fitting
 import statop as stat
 import functools
 import scipy
@@ -28,6 +32,8 @@ import rotation_consistency as rot
 import sample_characterization as samp
 import mist
 import dsep
+import data_cache as cache
+import eclipsing_binaries as ebs
 
 PAPER_PATH = paths.HOME_DIR / "papers" / "rotletter18"
 TABLE_PATH = PAPER_PATH / "tables"
@@ -67,40 +73,11 @@ def touch(fname, mode=0o666, dir_fd=None, **kwargs):
         os.utime(f.fileno() if os.utime in os.supports_fd else fname,
                  dir_fd=None if os.supports_fd else dir_fd, **kwargs)
 
-@au.memoized
-def asteroseismic_data_splitter():
-    '''A persistent datasplitter for the asteroseismic sample.'''
-    astero = split.APOKASCSplitter()
-    split.initialize_asteroseismic_sample(astero)
-    return astero
 
-@au.memoized
-def full_apogee_splitter():
-    '''A persistent DataSplitter for the cool dwarf sample.'''
-    apogee = split.APOGEESplitter()
-    # No need to split off objects w/ and w/o Gaia detections
-    split.initialize_full_APOGEE(apogee)
-    targeted_splitted = apogee.split_subsample(["Targeted"])
-    return targeted_splitted
-
-@au.memoized
-def cool_data_splitter():
-    '''A persistent Datasplitter for the cool sample.'''
-    full = full_apogee_splitter()
-    cool = full.split_subsample(["Cool", "H Jen"])
-    split.initialize_cool_KICs(cool)
-    return cool
-
-@au.memoized
-def hot_dwarf_splitter():
-    '''A persistent Datasplitter for the hot dwarf sample.'''
-    full = full_apogee_splitter()
-    hot = full.split_subsample(["Hot"])
-    return hot
 
 def missing_gaia_targets():
     '''Plot properties of targets missing Gaia observations.'''
-    full = full_apogee_splitter()
+    full = cache.full_apogee_splitter()
     full_data = full.subsample(["~Bad"])
     missing_gaia = full_data[full_data["dis"].mask]
 
@@ -113,35 +90,58 @@ def missing_gaia_targets():
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
     '''Show the APOGEE and McQuillan samples in selection coordinates.'''
-    full_apogee = full_apogee_splitter()
+    clean_apogee = cache.clean_apogee_splitter()
+    catalog.generate_abs_mag_column_with_errors(
+        clean_apogee.data, "K", "K_ERR", "KIC M_K", "KIC M_K_err1", 
+        "KIC M_K_err2", samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist",
+        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
+        avupcol="av_err1", avdowncol="av_err2")
 
-    f, (ax1, ax2) = plt.subplots(1,2, figsize=(12,24), sharex=True, sharey=True)
-    cool_dwarfs = full_apogee.subsample([
-        "~Bad", "Cool Sample", "In Gaia", "K Detection"])
-    apokasc_dwarf = full_apogee.subsample([
-        "~Bad", "APOGEE2_APOKASC_DWARF", "~Cool Sample", "In Gaia", 
-        "K Detection"])
-    apokasc_giant = full_apogee.subsample([
-        "~Bad", "APOGEE2_APOKASC_GIANT", "~APOGEE2_APOKASC_DWARF", 
-        "~Cool Sample", "In Gaia", "K Detection"])
+    f, (ax1, ax2) = plt.subplots(1,2, figsize=(24, 12), sharex=True, sharey=True)
+    cool_dwarfs = clean_apogee.subsample(["APOGEE_KEPLER_COOLDWARF"])
+    apokasc_dwarf = clean_apogee.subsample(["APOGEE2_APOKASC_DWARF"])
+    apokasc_giant = clean_apogee.subsample(["APOGEE2_APOKASC_GIANT"])
+    apogee_EB = clean_apogee.subsample(["APOGEE_KEPLER_EB"])
+    apogee2_EB = clean_apogee.subsample(["APOGEE2_EB"])
+    apogee2_koi = clean_apogee.subsample(["APOGEE2_KOI"])
+    apogee2_koi_control = clean_apogee.subsample(["APOGEE2_KOI_CONTROL"])
+    apogee_seismic = clean_apogee.subsample(["APOGEE_KEPLER_SEISMO"])
+    apogee2_monitor = clean_apogee.subsample(["APOGEE_RV_MONITOR_KEPLER"])
+    apogee_hosts = clean_apogee.subsample(["APOGEE_KEPLER_HOST"])
+    fullsample = clean_apogee.subsample([])
 
-    # Compare the M_K diagrams from before Gaia and after Gaia.
-    catalog.generate_abs_mag_column(
-        cool_dwarfs, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
-    catalog.generate_abs_mag_column(
-        apokasc_dwarf, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
-    catalog.generate_abs_mag_column(
-        apokasc_giant, "K", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
+
 
     hr.absmag_teff_plot(
         apokasc_giant["TEFF"], apokasc_giant["KIC M_K"], color=bc.green, 
         marker=".", ls="", label="APOKASC Giant", axis=ax1)
     hr.absmag_teff_plot(
-        apokasc_dwarf["TEFF"], apokasc_dwarf["KIC M_K"], color=bc.blue, marker=".", 
-        ls="", label="APOKASC Dwarf", axis=ax1)
+        apokasc_dwarf["TEFF"], apokasc_dwarf["KIC M_K"], color=bc.blue, 
+        marker=".", ls="", label="APOKASC Dwarf", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee_seismic["TEFF"], apogee_seismic["KIC M_K"], color=bc.violet, 
+        marker=".", ls="", label="Asteroseismic", axis=ax1)
     hr.absmag_teff_plot(
         cool_dwarfs["TEFF"], cool_dwarfs["KIC M_K"], color=bc.red, marker=".", 
         ls="", label="Cool Dwarf", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee_EB["TEFF"], apogee_EB["KIC M_K"], color=bc.sky_blue, marker="8", 
+        ls="", label="Eclipsing Binary", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee2_EB["TEFF"], apogee2_EB["KIC M_K"], color=bc.sky_blue, 
+        marker="8", ls="", label="", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee2_koi["TEFF"], apogee2_koi["KIC M_K"], color=bc.purple, 
+        marker="d", ls="", label="KOI", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee2_koi_control["TEFF"], apogee2_koi_control["KIC M_K"],
+        color=bc.purple, marker="d", ls="", label="", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee2_monitor["TEFF"], apogee2_monitor["KIC M_K"], color=bc.purple, 
+        marker="d", ls="", label="RV Monitor", axis=ax1)
+    hr.absmag_teff_plot(
+        apogee_hosts["TEFF"], apogee_hosts["KIC M_K"], color=bc.purple, 
+        marker="d", ls="", label="", axis=ax1)
 
     hr.absmag_teff_plot(
         apokasc_giant["TEFF"], apokasc_giant["M_K"], color=bc.green, 
@@ -150,15 +150,51 @@ def apogee_selection_coordinates():
         apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.blue, marker=".", 
         ls="", label="APOKASC Dwarf", axis=ax2)
     hr.absmag_teff_plot(
+        apogee_seismic["TEFF"], apogee_seismic["M_K"], color=bc.violet, 
+        marker=".", ls="", label="Asteroseismic", axis=ax2)
+    hr.absmag_teff_plot(
         cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.red, marker=".", 
         ls="", label="Cool Dwarf", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee_EB["TEFF"], apogee_EB["M_K"], color=bc.sky_blue, marker="8", 
+        ls="", label="Eclipsing Binary", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee2_EB["TEFF"], apogee2_EB["M_K"], color=bc.sky_blue, 
+        marker="8", ls="", label="", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee2_koi["TEFF"], apogee2_koi["M_K"], color=bc.purple, 
+        marker="d", ls="", label="KOI", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee2_koi_control["TEFF"], apogee2_koi_control["M_K"],
+        color=bc.purple, marker="d", ls="", label="", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee2_monitor["TEFF"], apogee2_monitor["M_K"], color=bc.purple, 
+        marker="d", ls="", label="", axis=ax2)
+    hr.absmag_teff_plot(
+        apogee_hosts["TEFF"], apogee_hosts["M_K"], color=bc.purple, 
+        marker="d", ls="", label="", axis=ax2)
+
+    # Add a representative error bar.
+    dwarfs = np.logical_and(
+        fullsample["TEFF"] < 5500, fullsample["M_K"] > 2.95)
+    teff_error=120
+    median_kic_errup = np.median(fullsample["KIC M_K_err1"])
+    median_kic_errdown = np.median(fullsample["KIC M_K_err2"])
+    ax1.errorbar(
+        [3500], [3.0], yerr=[[median_kic_errdown], [median_kic_errup]],
+        xerr=[teff_error], elinewidth=3)
+    median_k_errup = np.median(fullsample["M_K_err1"]) 
+    median_k_errdown = np.median(fullsample["M_K_err2"])
+    ax2.errorbar(
+        [3500], [3.0], yerr=[[median_k_errdown], [median_k_errup]], 
+        xerr=teff_error, elinewidth=3)
     ax1.set_xlim(7000, 3000)
     ax1.set_ylim(8, -9)
     ax1.set_xlabel("APOGEE Teff (K)")
     ax1.set_ylabel("KIC DR25 M_K")
     ax2.set_xlabel("APOGEE Teff (K)")
     ax2.set_ylabel("Gaia M_K")
-    plt.legend(loc="upper left")
+    ax2.legend(loc="upper left")
 
 @write_plot("mcquillan_selection")
 def mcquillan_selection_coordinates():
@@ -176,49 +212,57 @@ def mcquillan_selection_coordinates():
         nomcq, "kmag", "Gaia M_K", samp.AV_to_AK, avcol="av", distcol="dis")
 
     f, (ax1, ax2, ax3) = plt.subplots(
-        1,3, figsize=(36,6))
-    teff_bin_edges = np.arange(3500, 6500, 50)
+        1,3, figsize=(36,12))
+    teff_bin_edges = np.arange(3500, 7000, 50)
     mk_bin_edges = np.arange(-7, 8, 0.02)
     print(np.min(mcq["KIC M_K"]))
     print(np.min(mcq["Gaia M_K"]))
 
+    count_cmap = plt.get_cmap("viridis")
+    count_cmap.set_under("white")
     mcq_kic_hist, xedges, yedges = np.histogram2d(
         mcq["teff"], mcq["KIC M_K"], bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-    ax1.imshow(mcq_kic_hist.T, origin="lower", extent=extent,
+    # This is to distinguish 0 in the colormap.
+    im = ax1.imshow(mcq_kic_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
-               cmap=plt.get_cmap("Purples"))
+               cmap=count_cmap, norm=Normalize(vmin=1))
+    f.colorbar(im, ax=ax1)
     mcq_gaia_hist, xedges, yedges = np.histogram2d(
         mcq["teff"], mcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-    ax2.imshow(mcq_gaia_hist.T, origin="lower", extent=extent,
+    im = ax2.imshow(mcq_gaia_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
-               cmap=plt.get_cmap("Purples"))
-    ratio_cmap = plt.get_cmap("Greys")
-    ratio_cmap.set_bad(color="red")
+               cmap=count_cmap, norm=Normalize(vmin=1))
+    f.colorbar(im, ax=ax2)
+    ratio_cmap = plt.get_cmap("viridis")
+    ratio_cmap.set_bad(color="white")
     mcq_nondet_hist, xedges, yedges = np.histogram2d(
         nomcq["teff"], nomcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
     mcq_detfrac_hist = np.ma.masked_invalid(
         mcq_gaia_hist / (mcq_gaia_hist+mcq_nondet_hist))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-    ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
+    im = ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
                cmap=ratio_cmap)
+    f.colorbar(im, ax=ax3)
 
-    ax1.set_xlim(6400, 3500)
+    ax1.set_xlim(7000, 3500)
     ax1.set_ylim(8, -7)
-    ax1.set_ylabel("KIC Ks")
+    ax1.set_ylabel("KIC M_K")
     ax1.set_xlabel("Huber Teff (K)")
-    ax2.set_xlim(6400, 3500)
+    ax1.set_title("Pre-Gaia period detections")
+    ax2.set_xlim(7000, 3500)
     ax2.set_ylim(8, -7)
-    ax2.set_ylabel("Gaia Ks")
+    ax2.set_ylabel("Gaia M_K")
     ax2.set_xlabel("Huber Teff (K)")
-    ax3.set_xlim(6400, 3500)
+    ax2.set_title("Post-Gaia period detections")
+    ax3.set_xlim(7000, 3500)
     ax3.set_ylim(8, -7)
     ax3.set_xlabel("Huber Teff (K)")
+    ax3.set_title("Post-Gaia detection fraction")
     plt.legend(loc="upper left")
 
-@write_plot("MIST_DSEP_age")
 def isochrone_difference_ages():
     '''Plot the difference between DSEP and MIST isochrones at different ages.
 
@@ -256,7 +300,6 @@ def isochrone_difference_ages():
     ax.set_ylim(0.4, -0.4)
     plt.legend(loc="upper right")
 
-@write_plot("MIST_DSEP_metallicity")
 def isochrone_difference_metallicity():
     '''Plots the difference in isochrones over a large swath of metallicity.'''
     teffpoints = np.linspace(6000, 3500, 6, endpoint=True)
@@ -264,10 +307,10 @@ def isochrone_difference_metallicity():
     plotcolors = ["#253494", "#2c7fb8", "#41b6c4", "#7fcdbb", "#c7e9b4", "#ffffcc"]
     f, ax = plt.subplots(1,1, figsize=(12,12))
     for teff, color in zip(teffpoints, plotcolors):
-        mist_ks = samp.calc_MIST_model_mag_fixed_age_alpha(
-            [teff], fehpoints, "Ks")
-        dsep_ks = samp.calc_DSEP_model_mag_fixed_age_alpha(
-            [teff], fehpoints, "Ks")
+        mist_ks = samp.calc_model_mag_fixed_age_alpha(
+            [teff], fehpoints, "Ks", model="MIST")
+        dsep_ks = samp.calc_model_mag_fixed_age_alpha(
+            [teff], fehpoints, "Ks", model="DSEP")
         ax.plot(fehpoints, mist_ks-dsep_ks, color=color, linestyle="-",
                 marker="o", label="{0:d} K".format(int(teff)),
                 markerfacecolor=bc.black)
@@ -276,20 +319,153 @@ def isochrone_difference_metallicity():
     ax.set_ylabel("MIST Ks - DSEP Ks (mag)")
     ax.legend(loc="upper left")
 
+@write_plot("mist_hr")
+def mist_iso_hr_test():
+    '''Plot the HR diagram with MIST isochrones overlayed.'''
+    full = cache.clean_apogee_splitter()
+    full_data = full.subsample([])
+
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    minorlocator = AutoMinorLocator()
+    # Plot the data.
+    hr.absmag_teff_plot(
+        full_data["TEFF"], full_data["M_K"], marker=".", color=bc.black, ls="",
+        axis=ax, label="")
+
+    # Now put on the tracks
+    teffs = np.linspace(6500, 3500, 200)
+    youngks = samp.calc_model_mag_fixed_age_feh_alpha(teffs, 0.0, "Ks", age=1e9)
+    midks = samp.calc_model_mag_fixed_age_feh_alpha(teffs, 0.0, "Ks", age=4.5e9)
+    oldks = samp.calc_model_mag_fixed_age_feh_alpha(teffs, 0.0, "Ks", age=9e9)
+    hr.absmag_teff_plot(
+        teffs, youngks, marker="", ls="-", color=bc.blue, axis=ax, 
+        label="1 Gyr", lw=3)
+    hr.absmag_teff_plot(
+        teffs, midks, marker="", ls="-", color=bc.purple, axis=ax, 
+        label="4.5 Gyr", lw=3)
+    hr.absmag_teff_plot(
+        teffs, oldks, marker="", ls="-", color=bc.red, axis=ax, label="9 Gyr",
+        lw=3)
+    ax.set_xlabel("APOGEE Teff (K)")
+    ax.set_ylabel("$M_K$")
+    ax.set_ylim(6, 2.5)
+    ax.legend(loc="lower left")
+
+@write_plot("mist_uncertainties")
+def mist_uncertainties():
+    '''Plot the uncertainty in Ks due to [Fe/H] uncertainty.'''
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    teffgrid, teffstep = np.linspace(
+        3500, 7000, 200+1, endpoint=True, retstep=True)
+    fehs = [-0.25, 0.0, 0.25]
+    lowmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        teffgrid, fehs[0], "Ks", age=1e9)
+    solmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        teffgrid, fehs[1], "Ks", age=1e9)
+    highmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        teffgrid, fehs[2], "Ks", age=1e9)
+    oldmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        teffgrid, fehs[1], "Ks", age=9e9)
+    # Uncertainties due to metallicity
+    meterr = 0.1*np.abs((highmet[1:-1] - lowmet[1:-1])/(fehs[2]-fehs[0]))
+    nometerr = 0.15*np.abs((highmet[1:-1] - lowmet[1:-1])/(fehs[2]-fehs[0]))
+
+    # Uncertainties due to temperature.
+    teffdiff = np.diff(solmet)
+    apogee_teffdiff = np.exp(4.58343 + 0.000289796*(teffgrid[1:-1]-4500))
+    tefferr = apogee_teffdiff*np.abs((teffdiff[1:]+teffdiff[:-1])/(2*teffstep))
+
+    # Uncertainties due to age.
+    ageerr = np.abs((oldmet[1:-1] - solmet[1:-1])) / np.sqrt(12)
+
+    fullmeterr = np.sqrt(meterr**2 + tefferr**2)
+    fullnometerr = np.sqrt(nometerr**2 + tefferr**2)
+
+    newteffgrid = teffgrid[1:-1]
+
+    ax.plot(newteffgrid, tefferr, marker="", ls="-", color=bc.red, 
+            label="APOGEE Teff Errors")
+    ax.plot(newteffgrid, meterr, marker="", ls="-", color=bc.blue,
+            label="0.1 dex [Fe/H] Errors")
+    ax.plot(newteffgrid, nometerr, marker="", ls="--", color=bc.blue,
+            label="0.15 dex [Fe/H] Errors")
+    ax.plot(newteffgrid, fullmeterr, marker="", ls="-", color=bc.black,
+            label="Teff + [Fe/H]", lw=3)
+    ax.plot(newteffgrid, fullnometerr, marker="", ls="--", color=bc.black, lw=3)
+    ax.plot(newteffgrid, ageerr, marker="", ls="-", color=bc.orange,
+            label="Age Error")
+    hr.invert_x_axis(ax)
+    ax.set_xlabel("Teff (K)")
+    ax.set_ylabel(r"$M_K$ error")
+    ax.legend(loc="upper left")
+
+@write_plot("mist_teff_uncertainty")
+def mist_teff_uncertainty():
+    '''Plot the uncertainty in Ks due to Teff uncertainty.'''
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    teffgrid, teffstep = np.linspace(
+        3500, 7000, 101, endpoint=True, retstep=True)
+    kvals = samp.calc_model_mag_fixed_age_feh_alpha(
+        teffgrid, 0.0, "Ks", age=1e9)
+    diff = np.diff(kvals)
+    deriv = (diff[1:]+diff[:-1])/(2*teffstep)
+    newteffgrid = teffgrid[1:-1]
+    
+    ax.plot(newteffgrid, np.abs(deriv)*120, marker="", ls="-", color=bc.black)
+    hr.invert_x_axis(ax)
+    ax.set_xlabel("Teff (K)")
+    ax.set_ylabel(r"$(120)\frac{dK}{dT_{eff}}$")
+
+@write_plot("full_kdiff")
+def subtracted_K_plot():
+    '''Show the full sample in coordinates of subtracted K.'''
+    full = cache.apogee_splitter_with_DSEP()
+    full_data = full.subsample([])
+
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    minorLocator = AutoMinorLocator()
+    hr.absmag_teff_plot(
+        full_data["TEFF"], full_data["K Excess"], color=bc.black, marker=".",
+        ls="", axis=ax)
+    ax.plot([6500, 3500], [0, 0], 'k-')
+    ax.plot([6500, 3500], [-1.3, -1.3], 'k--')
+    ax.set_xlabel("APOGEE Teff (K)")
+    ax.set_ylabel(r"$M_K$ - $M_K$ (DSEP; [Fe/H] adjusted)")
+
 @write_plot("metallicity")
 def dwarf_metallicity():
     '''Show the metallicity distribution of the cool dwarfs.'''
-    full = full_apogee_splitter()
-    full_data = full.subsample(["~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
-    full_with_fe = full_data[~full_data["FE_H"].mask]
+    full = cache.apogee_splitter_with_DSEP()
+    full_data = full.subsample(["Dwarfs", "APOGEE MetCor Teff"])
 
     f, ax = plt.subplots(1,1, figsize=(12,12))
     minorLocator = AutoMinorLocator()
-    ax.hist(full_with_fe["FE_H"], cumulative=True, normed=True, bins=200)
+    ax.hist(full_data["FE_H"], cumulative=True, normed=True, bins=200)
     ax.yaxis.set_minor_locator(minorLocator)
+    ax.plot([-1.25, 0.075], [0.5, 0.5], 'k-', lw=3)
+    ax.plot([0.075, 0.075], [0.5, 0], 'k-', lw=3)
+    ax.plot([-1.25, -0.14], [0.165, 0.165], 'k-', lw=1)
+    ax.plot([-0.14, -0.14], [0.165, 0], 'k--', lw=1)
+    ax.plot([-1.25, 0.235], [0.835, 0.835], 'k-', lw=1)
+    ax.plot([0.235, 0.235], [0.835, 0], 'k--', lw=1)
     ax.set_xlabel("APOGEE [Fe/H]")
     ax.set_ylabel("Cumulative distribution")
-    ax.set_xlim(-2.0, 0.46)
+    ax.set_xlim(-1.25, 0.46)
+
+def median_absolute_deviation_custom(vals, centerval=None):
+    '''Calculate the median absolute deviation about a centerval.
+    
+    The usual definition of median absolute deviation uses the deviation about
+    the median of the sample. This function allows the point about which the
+    deviation is calculated to be specified.'''
+    if centerval is None:
+        mad =  median_absolute_deviation(vals)
+    else:
+        deviations = vals - centerval
+        absolute_deviations = np.abs(deviations)
+        mad = np.median(absolute_deviations)
+        
+    return mad
 
 
 @write_plot("metallicity_bins")
@@ -297,60 +473,821 @@ def metallicity_bins():
     '''Make a 2x2 plot of models in each metallicity bin.'''
     f, axes = plt.subplots(2,2, figsize=(12,12), sharex=True, sharey=True)
     axeslist = itertools.chain(*axes)
-    full = full_apogee_splitter()
-    full_data = full.subsample([
-        "~Bad", "H APOGEE", "In Gaia", "Berger Main Sequence"])
-    full_data = full_data[np.logical_not(np.logical_or(
-        np.ma.getmaskarray(full_data["TEFF"]), 
-        np.ma.getmaskarray(full_data["FE_H"])))]
-    metallicity_bin_edges = np.array([-2.0, -0.5, 0.0, 0.2, 0.5])
-    # Remember this has size metallicity_bin_edges x test_teffs.
-    k_array = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
-        full_data["TEFF"], full_data["FE_H"], "Ks"))
-    full_data["DSEP K"] = k_array
-    full_data["K Excess"] = full_data["M_K"] - full_data["DSEP K"]
-    bin_indices = np.digitize(full_data["FE_H"], metallicity_bin_edges)
-    for low_met_index, high_met_index, ax, in zip(
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs"])
+#    metallicity_bin_edges = np.array([-2.0, -0.5, 0.0, 0.2, 0.5])
+    metallicity_bin_edges = np.array([-0.5, -0.3, 0.0, 0.2, 0.5])
+    mean_mets = (metallicity_bin_edges[1:] + metallicity_bin_edges[:-1])/2
+    bin_indices = np.digitize(dwarfs["FE_H"], metallicity_bin_edges)
+    inputteffs = np.linspace(3500, 6500, 500)
+    # These should both be of the shape len(mean_mets) x len(teffs)
+    oldKs = samp.calc_model_mag_fixed_age_alpha(
+        inputteffs, mean_mets, "Ks", age=9e9, model="MIST")
+    youngKs = samp.calc_model_mag_fixed_age_alpha(
+        inputteffs, mean_mets, "Ks", age=1e9, model="MIST")
+    for low_met_index, high_met_index, mid_met, ax, in zip(
             range(len(metallicity_bin_edges)-1), 
-            range(1, len(metallicity_bin_edges)), axeslist):
-        data_bin = full_data[bin_indices == high_met_index]
+            range(1, len(metallicity_bin_edges)), mean_mets, axeslist):
+        data_bin = dwarfs[bin_indices == high_met_index]
         # Plot the data.
         hr.absmag_teff_plot(
             data_bin["TEFF"], data_bin["K Excess"], color=bc.black, marker=".", 
             ls="", axis=ax, label="Spectroscopic Sample")
         ax.plot([6500, 3500], [0, 0], color=bc.black, lw=3, ls="-", marker="")
         # Now calculate the median and lower 1-sigma percentile.
-        teff_bins = np.linspace(5500, 4000, 7)
+        # Is this even necessary anymore? Or will it be shown on median
+        # metallicity.
+        teff_bins = np.linspace(5500, 4000, 4)
         teff_indices = np.digitize(data_bin["TEFF"], teff_bins)
         k_medians = np.zeros(len(teff_bins)-1)
         k_1sigs = np.zeros(len(teff_bins)-1)
         for i in range(1, len(teff_bins)):
             teff_data_bin = data_bin[teff_indices == i]
             if len(teff_data_bin) > 0:
-                k_medians[i-1] = np.percentile(teff_data_bin["K Excess"], 50)
-                k_1sigs[i-1] = np.percentile(teff_data_bin["K Excess"], 100-16.5)
+                k_medians[i-1] = np.percentile(teff_data_bin["K Excess"], 100-25)
+                teff_data_bin.sort("K Excess")
+                single_data = teff_data_bin[len(teff_data_bin)//2:]
+                k_1sigs[i-1] = k_medians[i-1] + median_absolute_deviation(
+                    single_data["K Excess"])
             else:
                 k_medians[i-1] = np.nan
                 k_1sigs[i-1] = np.nan
         # Now plot the medians and lower 1-sigma percentiles
         teff_means = (teff_bins[:-1]+teff_bins[1:])/2
-        hr.absmag_teff_plot(teff_means, k_medians, color=bc.red, marker="x",
-                            ls="--", ms=4, label="Median", axis=ax)
-        hr.absmag_teff_plot(teff_means, k_1sigs, color=bc.red, marker=".",
-                            ls="--", ms=4, label="1-sigma", axis=ax)
+#       hr.absmag_teff_plot(teff_means, k_medians, color=bc.red, marker="x",
+#                           ls="--", ms=4, label="Median", axis=ax)
+#       hr.absmag_teff_plot(teff_means, k_1sigs, color=bc.red, marker=".",
+#                           ls="--", ms=4, label="1-sigma", axis=ax)
+
+        # Now plot a isochrone at the median metallicity.
+        # While I want the full isochrone, it's been doing weird things over
+        # mass, so I'm just going to stick to the teff space.
+        # The DSEP isochrones will stop keeping track of masses at some point.
+        hr.absmag_teff_plot(
+            inputteffs, oldKs[low_met_index,:]-youngKs[low_met_index,:], 
+            color=bc.blue, label="9 Gyr", ls="-", marker="", axis=ax)
+
         ax.set_title("{0:3.1f} < [Fe/H] <= {1:3.1f}".format(
             metallicity_bin_edges[low_met_index],
             metallicity_bin_edges[high_met_index]))
         ax.set_xlabel("")
         ax.set_ylabel("")
     ax.set_xlim(6500, 3500)
-    ax.set_ylim(0.2, -2)
-    axes[0][0].set_ylabel("M_K - DSEP K")
-    axes[1][0].set_ylabel("M_K - DSEP K")
+    ax.set_ylim(0.5, -1.2)
+    axes[0][0].set_ylabel("M_K - MIST K")
+    axes[1][0].set_ylabel("M_K - MSIT K")
     axes[1][0].set_xlabel("Teff (K)")
     axes[1][1].set_xlabel("Teff (K)")
 
+def running_percentile(xvals, yvals, size, percentile=0.5):
+    '''Calculate a running percentile for xvals and yvals.'''
+    median_xs = np.zeros(len(xvals)-size)
+    median_ys = np.zeros(len(yvals)-size)
+    for start_index, end_index in zip(
+            range(0, len(xvals)-size), range(size, len(xvals))):
+        median_xs[start_index] = np.mean(xvals[start_index:end_index])
+        median_ys[start_index] = np.percentile(
+            xvals[start_index:end_index], percentile)
+    return median_xs, median_ys
 
+def median_over_metallicity():
+    '''Plot the behavior of the 25th percentile over metallicity.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs"])
+    # I want evenly-populated bins.
+    metallicity_bin_edges = np.percentile(
+        dwarfs["FE_H"], np.linspace(0, 100, 5+1, endpoint=True))
+    metallicity_bin_indices = np.digitize(dwarfs["FE_H"], metallicity_bin_edges)
+    teff_bin_edges = np.linspace(4000, 5500, 2+1, endpoint=True)
+    teff_bin_indices = np.digitize(dwarfs["TEFF"], teff_bin_edges)
+    # This will hold the percentiles for the hot and cool bins.
+    percentiles = np.zeros((len(metallicity_bin_edges)-1, len(teff_bin_edges)))
+    mads = np.zeros((len(metallicity_bin_edges)-1, len(teff_bin_edges)))
+    teff_colors = [bc.red, bc.blue]
+    for low_met_index, high_met_index in zip(
+            range(len(metallicity_bin_edges)-1), 
+            range(1, len(metallicity_bin_edges))):
+        for low_teff_index, high_teff_index in zip(
+                range(0, len(teff_bin_edges)-1), 
+                range(1, len(teff_bin_edges))):
+            tablebin = dwarfs[
+                np.logical_and(metallicity_bin_indices == high_met_index, 
+                teff_bin_indices == high_teff_index)]
+            print(len(tablebin))
+            try:
+                percentiles[low_met_index,low_teff_index] = np.percentile(
+                    tablebin["K Excess"], 100-25)
+            except IndexError:
+                percentiles[low_met_index,low_teff_index] = np.nan
+                mads[low_met_index,low_teff_index] = np.nan
+            else:
+                tablebin.sort("K Excess")
+                dwarfbin = tablebin[len(tablebin)//2:]
+                plt.plot(
+                    dwarfbin["FE_H"], dwarfbin["K Excess"], marker=".",
+                    color=teff_colors[low_teff_index], ls="", label="")
+                mads[low_met_index,low_teff_index] = median_absolute_deviation(
+                    dwarfbin["K Excess"])
+
+    met_avg = (metallicity_bin_edges[:-1]+metallicity_bin_edges[1:])/2
+    teff_avg = (teff_bin_edges[:-1]+teff_bin_edges[1:])/2
+    plt.errorbar(met_avg, percentiles[:,0], marker="o", ls="-", color=bc.blue,
+             label="{0:d} < Teff < {1:d}".format(
+                 int(teff_bin_edges[0]), int(teff_bin_edges[1])),
+             yerr=mads[:,0], capsize=5)
+    plt.errorbar(met_avg, percentiles[:,1], marker="o", ls="-", color=bc.red,
+             label="{0:d} < Teff < {1:d}".format(
+                 int(teff_bin_edges[1]), int(teff_bin_edges[2])),
+             yerr=mads[:,1], capsize=5)
+
+    # Now calculate the age differences.
+    oldtracks = samp.calc_model_mag_fixed_age_alpha(
+        teff_avg, met_avg, "Ks", age=9e9, model="MIST")
+    youngtracks = samp.calc_model_mag_fixed_age_alpha(
+        teff_avg, met_avg, "Ks", age=1e9, model="MIST")
+    oldexcess = oldtracks - youngtracks
+    plt.fill_between(
+        met_avg, oldexcess[:,0], np.zeros(oldexcess.shape[0]), color=bc.blue, 
+        alpha=0.3, label="T={0:d} K; 1-9 Gyr range".format(int(teff_avg[0])))
+    plt.fill_between(
+        met_avg, oldexcess[:,1], np.zeros(oldexcess.shape[0]), color=bc.red, 
+        alpha=0.3, label="T={0:d} K; 1-9 Gyr range".format( int(teff_avg[1])))
+    plt.plot(met_avg, np.zeros(len(met_avg)), color=bc.black, marker="",
+             ls="--")
+
+    redchisq = np.sum(
+        (percentiles/(1.4826*mads))**2, axis=0)/(len(met_avg)-1)
+    for teff, chisq in zip(teff_avg, redchisq):
+        print("Chi-squared for {0:d} K bin is {1:.1f}.".format(
+            int(teff), chisq))
+
+    plt.xlabel("[Fe/H]")
+    plt.ylabel("M_K - DSEP K (1.0 Gyr) 25% excess percentile")
+    hr.invert_y_axis()
+    plt.legend(loc="upper right")
+
+@write_plot("metallicity_correction")
+def metallicity_corrected_excesses():
+    '''Plot the indices corrected by metallicity.'''
+    f, (ax1, ax2) = plt.subplots(
+        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True)
+    targs = cache.apogee_splitter_with_DSEP()
+    coolsamp = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    # I want values in metallicity bins.
+    metallicity_bin_edges = np.percentile(
+        coolsamp["FE_H"], np.linspace(0, 100, 6+1, endpoint=True))
+#   metallicity_bin_edges = np.array([-1.2, -0.5, -0.25, 0.0, 0.25, 0.5])
+    print(len(coolsamp))
+    metallicity_bin_indices = np.digitize(
+        coolsamp["FE_H"], metallicity_bin_edges)
+    percentiles = np.zeros(len(metallicity_bin_edges)-1)
+    med_met = np.zeros(len(metallicity_bin_edges)-1)
+    weights = np.zeros(len(metallicity_bin_edges)-1)
+    # I want ind to start at 1 and end right before the binedges length.
+    # metallicity_bin_edges[ind] denotes the high index.
+    for ind in range(1, len(metallicity_bin_edges)):
+        tablebin = coolsamp[metallicity_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["K Excess"], 100-25)
+        med_met[ind-1] = np.mean(tablebin["FE_H"])
+        weights[ind-1] = len(tablebin)
+    cor_coeff = np.polyfit(med_met, percentiles, 2)
+    cor_poly = np.poly1d(cor_coeff)
+    
+    ax1.plot(coolsamp["FE_H"], coolsamp["K Excess"], marker=".", color=bc.black,
+             ls="", label="Original")
+    ax1.plot(med_met, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(-1.0, 0.5, 100, endpoint=True)
+    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax1.set_ylabel("M_K - M_K (MIST; 1 Gyr)")
+    ax1.set_ylim(0.3, -1.2)
+    ax1.legend(loc="upper left")
+    residual = coolsamp["K Excess"] - cor_poly(coolsamp["FE_H"])
+    singles = residual > np.percentile(residual, 50)
+    binaries = ~singles
+    mad = median_absolute_deviation_custom(residual[singles])
+    ax2.plot(
+        coolsamp["FE_H"][singles], residual[singles], color=bc.black, 
+        marker="o", ls="", label="Single")
+    ax2.plot(
+        coolsamp["FE_H"][binaries], residual[binaries], color=bc.black, 
+        marker="o", ls="", label="Binary")
+    ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
+             horizontalalignment="center", verticalalignment="center")
+    hr.invert_y_axis(ax2)
+    ax2.set_xlabel("[Fe/H]")
+    ax2.set_ylabel("Residual")
+
+def solar_temperature_correction():
+    '''Plot the behavior of the sample over [Fe/H].'''
+    f, (ax1, ax2) = plt.subplots(
+        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True)
+    targs = cache.apogee_splitter_with_DSEP()
+    coolsamp = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    # I want values in metallicity bins.
+    metallicity_bin_edges = np.percentile(
+        coolsamp["TEFF"], np.linspace(0, 100, 5+1, endpoint=True))
+#   metallicity_bin_edges = np.array([-1.2, -0.5, -0.25, 0.0, 0.25, 0.5])
+    metallicity_bin_indices = np.digitize(
+        coolsamp["TEFF"], metallicity_bin_edges)
+    percentiles = np.zeros(len(metallicity_bin_edges)-1)
+    med_met = np.zeros(len(metallicity_bin_edges)-1)
+    # I want ind to start at 1 and end right before the binedges length.
+    # metallicity_bin_edges[ind] denotes the high index.
+    for ind in range(1, len(metallicity_bin_edges)):
+        tablebin = coolsamp[metallicity_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["Solar K Excess"], 100-25)
+        med_met[ind-1] = np.mean(tablebin["TEFF"])
+    cor_coeff = np.polyfit(med_met, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+    
+    ax1.plot(coolsamp["TEFF"], coolsamp["Solar K Excess"], marker=".", 
+             color=bc.black, ls="", label="Original")
+    ax1.plot(med_met, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(4000, 5000, endpoint=True)
+    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
+    ax1.set_ylim(0.3, -1.2)
+    ax1.legend(loc="upper left")
+    residual = coolsamp["Solar K Excess"] - cor_poly(coolsamp["TEFF"])
+    mad = median_absolute_deviation(residual)
+    ax2.plot(coolsamp["TEFF"], residual, color=bc.black, marker="o", ls="")
+    ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
+             horizontalalignment="center", verticalalignment="center")
+    hr.invert_y_axis(ax2)
+    hr.invert_x_axis(ax2)
+    ax2.set_xlabel("[Fe/H]")
+    ax2.set_ylabel("Residual")
+
+def metallicity_corrected_excesses_temperature():
+    '''Plot the corrected excesses against temperature.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"], dwarfs["Corrected K Excess"], marker=".", 
+        color=bc.black, ls="")
+    plt.plot([5000, 4000], [0, 0], 'k--')
+
+def metallicity_corrected_excesses_metallicity():
+    '''Plot the corrected excesses against [Fe/H]'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+
+    plt.plot(
+        dwarfs["FE_H"], dwarfs["Corrected K Excess"], marker=".", 
+        color=bc.black, ls="")
+    plt.plot([-1.0, 0.5], [0, 0], 'k--')
+    hr.invert_y_axis()
+
+def plot_solar_corrected_comparisons():
+    '''Plot the solar corrected values and the trend.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    coolsamp = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    # Want a linear characterization of the temperature.
+    teff_bin_edges = np.percentile(
+        coolsamp["TEFF"], np.linspace(0, 100, 5+1, endpoint=True))
+    teff_bin_indices = np.digitize(
+        coolsamp["TEFF"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = coolsamp[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["Corrected K Solar"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["TEFF"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+
+    hr.absmag_teff_plot(
+        coolsamp["TEFF"], coolsamp["Corrected K Solar"], marker="o", 
+        color=bc.black, ls="", label="Solar", axis=ax)
+    print(percentiles)
+    ax.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(4000, 5100, 100, endpoint=True)
+    ax.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax.plot([5100, 4000], [0, 0], 'k--')
+
+def plot_McQuillan_corrected_comparison():
+    '''Plot the trend in McQuillan.'''
+    mcq = cache.mcquillan_splitter_with_DSEP()
+    nondet = cache.mcquillan_nondetections_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right MetCor Teff"])
+    nondet_dwarfs = nondet.subsample(["Dwarfs", "Right MetCor Teff"])
+
+    # Combine the McQuillan detections and nondetections.
+    correction_cols = ["teff", "K Excess"]
+    combotable = vstack(
+        [mcq_dwarfs[correction_cols], nondet_dwarfs[correction_cols]])
+    
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    # Want a linear characterization of the temperature.
+    teff_bin_edges = np.percentile(
+        combotable["teff"], np.linspace(0, 100, 5+1, endpoint=True))
+    teff_bin_indices = np.digitize(
+        combotable["teff"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = combotable[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["K Excess"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["teff"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+
+    hr.absmag_teff_plot(
+        combotable["teff"], combotable["K Excess"], marker="o", 
+        color=bc.black, ls="", label="Raw Excess", axis=ax, zorder=1)
+    print(percentiles)
+    ax.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned", zorder=2)
+    testx = np.linspace(4000, 5100, 100, endpoint=True)
+    ax.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit",
+            zorder=3)
+    ax.plot([5100, 4000], [0, 0], 'k--')
+
+
+def compare_MS_dispersion():
+    '''Calculate the dispersion before and after metallicity correction.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+
+    single_ind = (dwarfs["Corrected K Excess"] > np.percentile(
+        dwarfs["Corrected K Excess"], 35))
+
+    print("Metallicity-corrected dispersion: {0:.3f}".format(
+        median_absolute_deviation(dwarfs["Corrected K Excess"][single_ind])))
+
+    print("Metallicity-ignorant dispersion: {0:.3f}".format(
+        median_absolute_deviation(dwarfs["Corrected K Solar"][single_ind])))
+
+    fig, ax = plt.subplots(1, 1)
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"][single_ind], dwarfs["Corrected K Excess"][single_ind],
+        marker=".", color=bc.black, ls="", label="Dwarfs", axes=ax)
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"][~single_ind], dwarfs["Corrected K Excess"][~single_ind],
+        marker=".", color=bc.red, ls="", label="Binaries", axes=ax)
+    ax.set_ylim(1.2, -1.2)
+    ax.set_title("Metallicity Corrected")
+
+    fig, ax = plt.subplots(1, 1)
+    plt.plot(
+        dwarfs["FE_H"][single_ind], dwarfs["Corrected K Solar"][single_ind],
+        marker=".", color=bc.black, ls="", label="Dwarfs", axes=ax)
+    plt.plot(
+        dwarfs["FE_H"][~single_ind], dwarfs["Corrected K Solar"][~single_ind],
+        marker=".", color=bc.red, ls="", label="Binaries", axes=ax)
+#   hr.absmag_teff_plot(
+#       dwarfs["TEFF"][single_ind], dwarfs["Corrected K Solar"][single_ind],
+#       marker=".", color=bc.black, ls="", label="Dwarfs", axes=ax)
+#   hr.absmag_teff_plot(
+#       dwarfs["TEFF"][~single_ind], dwarfs["Corrected K Solar"][~single_ind],
+#       marker=".", color=bc.red, ls="", label="Binaries", axes=ax)
+    ax.set_ylim(1.2, -1.2)
+    ax.set_title("No Metallicity")
+
+@write_plot("excess_hist")
+def collapsed_met_histogram():
+    '''Plot the distribution of K Excesses in the cool, unevolved sample.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    cooldwarfs = targs.subsample(["Dwarfs", "Cool Noev"])
+
+    arraylist, bins, patches = plt.hist(
+        [cooldwarfs["Corrected K Excess"], cooldwarfs["Corrected K Solar"]], 
+         bins=80, color=[bc.blue, bc.red], alpha=0.5, range=(-1.6, 1.1),
+        label=["[Fe/H] Corrected", "[Fe/H] = 0.08"],  histtype="bar")
+    metarray = arraylist[0]
+    nometarray = arraylist[1]
+    singlemodel = Gaussian1D(50, 0, 0.1, bounds={"mean": (-1.6, 1.1)})
+    binarymodel = Gaussian1D(10, -0.75, 0.1, bounds={"mean": (-1.6, 1.1)})
+    floormodel = Const1D(3, bounds={"amplitude": (0, 100)})
+    dualmodel = singlemodel+binarymodel
+    fitter = fitting.SLSQPLSQFitter()
+    fittedmet = fitter(dualmodel, (bins[1:]+bins[:-1])/2, metarray)
+    inputexcesses = np.linspace(-1.6, 1.1, 200)
+    metmodel = fittedmet(inputexcesses)
+    fittednomet = fitter(
+        dualmodel, (bins[1:]+bins[:-1])/2, nometarray)
+    nometmodel = fittednomet(inputexcesses)
+    plt.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
+    plt.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
+    print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
+    print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
+    plt.xlabel("Metallicity-corrected K Excess")
+    plt.ylabel("N")
+    plt.legend(loc="upper left")
+
+def K_Excess_hr_diagram():
+    '''Plot a full HR diagram in subtracted K space.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs"])
+    fullsamp = targs.subsample(["Not Dwarfs"])
+
+    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["Corrected K Excess"],
+                        marker=".", color=bc.red, ls="", label="MS + Binaries")
+    hr.absmag_teff_plot(fullsamp["TEFF"], fullsamp["Corrected K Excess"],
+                        marker=".", color=bc.black, ls="", label="Full Sample")
+    minorLocator = AutoMinorLocator()
+    ax = plt.gca()
+    ax.yaxis.set_minor_locator(minorLocator)
+    plt.plot([7000, 3000], [0, 0], 'k-')
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("Corrected K Excess")
+    plt.legend(loc="upper left")
+
+@write_plot("Teff_relation")
+def teff_comparison():
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    comparable_dwarfs = dwarfs[au.multi_logical_or(
+        dwarfs["teff_prov"] == "KIC0",  dwarfs["teff_prov"] == "PHO1", 
+        dwarfs["teff_prov"] == "PHO54", dwarfs["teff_prov"] == "PHO2")]
+    comparable_dwarfs = comparable_dwarfs[~comparable_dwarfs["TEFF"].mask]
+                                                      
+    ax.plot(comparable_dwarfs["teff"], comparable_dwarfs["SDSS-Teff"], 'k.')
+    coeff = np.polyfit(comparable_dwarfs["teff"], comparable_dwarfs["SDSS-Teff"], 1)
+    poly = np.poly1d(coeff)
+    testteffs = np.linspace(4000, 5100, 200)
+    testys = poly(testteffs)
+    ax.plot(testteffs, testys, 'k-')
+    ax.plot(testteffs, testteffs, 'k--')
+    scatter = np.std(
+        comparable_dwarfs["teff"] - poly(comparable_dwarfs["SDSS-Teff"]))
+    print("The relationship is y = {0:.1f} x + {1:.1f}".format(
+        coeff[0], coeff[1]))
+    print("The scatter in the relation is {0:4.0f} K".format(scatter))
+    ax.set_xlabel("Huber Teff (K)")
+    ax.set_ylabel("Pinsonneault Teff (K)")
+    ax.set_title("Effective Temperature Comparison")
+
+def teff_comparison_mcquillan():
+    '''Compare Huber vs Pinsonneault Teffs for the full McQuillan sample.'''
+    mcq = cache.mcquillan_splitter_with_DSEP()
+    nomcq = cache.mcquillan_nondetections_splitter_with_DSEP()
+
+    mcq_dwarf = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarf = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    correction_cols = ["teff", "teff_prov", "SDSS-Teff"]
+    combotable = vstack([mcq_dwarf[correction_cols],
+                         nomcq_dwarf[correction_cols]])
+
+    f, ax = plt.subplots(1,1, figsize=(12,12))
+    comparable_dwarfs = combotable[~combotable["SDSS-Teff"].mask]
+
+    provenances = ["KIC0", "PHO1"]
+    labels = ["Brown et al (2010)", "Pinsonneault et al (2012)"]
+    colors = [bc.green, bc.violet]
+                                                      
+    oppo_array = np.ones(len(comparable_dwarfs), dtype=np.int)
+    for prov, lab, c in zip(provenances, labels, colors):
+        prov_indicator = comparable_dwarfs["teff_prov"] == prov
+        ax.plot(comparable_dwarfs["teff"][prov_indicator],
+                comparable_dwarfs["SDSS-Teff"][prov_indicator], color=c,
+                label=lab, marker=".", ls="")
+        oppo_array[prov_indicator] = 0
+        print("{0}: {1:d}".format(prov, np.count_nonzero(prov_indicator)))
+    ax.plot(comparable_dwarfs["teff"][oppo_array],
+            comparable_dwarfs["SDSS-Teff"][oppo_array], color=bc.black,
+            label="Others", marker=".", ls="", ms=7)
+    print("{0}: {1:d}".format("Others", np.count_nonzero(oppo_array)))
+    print(comparable_dwarfs["SDSS-Teff"][oppo_array])
+
+    coeff = np.polyfit(comparable_dwarfs["teff"], comparable_dwarfs["SDSS-Teff"], 1)
+    poly = np.poly1d(coeff)
+    testteffs = np.linspace(4000, 5100, 200)
+    testys = poly(testteffs)
+    ax.plot(testteffs, testys, 'k-')
+    ax.plot(testteffs, testteffs, 'k--')
+    scatter = np.std(
+        comparable_dwarfs["teff"] - poly(comparable_dwarfs["SDSS-Teff"]))
+    print("The relationship is y = {0:.1f} x + {1:.1f}".format(
+        coeff[0], coeff[1]))
+    print("The scatter in the relation is {0:4.0f} K".format(scatter))
+    ax.legend()
+    ax.set_xlabel("Huber Teff (K)")
+    ax.set_ylabel("Pinsonneault Teff (K)")
+    ax.set_title("Effective Temperature Comparison")
+
+@write_plot("Teff_comparison")
+def compare_photometric_spectroscopic_temperatures():
+    '''Plot two-panels to compare photometric to spectroscopic temps.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    apocool = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    hubercool = targs.subsample(["Dwarfs", "Huber MetCor Teff"])
+    
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 12))
+    comparable_dwarfs = apocool[
+        np.logical_or(apocool["teff_prov"] == "PHO54", 
+        np.logical_or(apocool["teff_prov"] == "KIC0",
+        np.logical_or(apocool["teff_prov"] == "PHO2", 
+                      apocool["teff_prov"] == "PHO1")))]
+
+    # Make the same plot as before with the spectroscopic temperatures.
+    teff_bin_edges = np.percentile(
+        comparable_dwarfs["TEFF"], np.linspace(0, 100, 5+1, endpoint=True))
+    teff_bin_indices = np.digitize(
+        comparable_dwarfs["TEFF"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = comparable_dwarfs[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["Corrected K Solar"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["TEFF"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+
+    hr.absmag_teff_plot(
+        comparable_dwarfs["TEFF"], comparable_dwarfs["Corrected K Solar"], 
+        marker="o", color=bc.black, ls="", label="Solar", axis=ax1)
+    ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(4000, 5100, 100, endpoint=True)
+    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot([5100, 4000], [0, 0], 'k--')
+    ax1.set_xlabel("APOGEE Teff (K)")
+    ax1.set_ylabel("Corrected K Excess")
+    ax1.set_ylim(0.5, -1.5)
+
+    # Now make the previous plot with the photometric temperatures.
+    comparable_dwarfs = hubercool[
+        np.logical_or(hubercool["teff_prov"] == "PHO54", 
+        np.logical_or(hubercool["teff_prov"] == "KIC0",
+        np.logical_or(hubercool["teff_prov"] == "PHO2", 
+                      hubercool["teff_prov"] == "PHO1")))]
+    teff_bin_edges = np.percentile(
+        comparable_dwarfs["teff"], np.linspace(0, 100, 5+1, endpoint=True))
+    teff_bin_indices = np.digitize(
+        comparable_dwarfs["teff"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = comparable_dwarfs[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["Corrected Phot Teff K Solar"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["teff"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+
+    hr.absmag_teff_plot(
+        comparable_dwarfs["teff"], 
+        comparable_dwarfs["Corrected Phot Teff K Solar"], marker="o", 
+        color=bc.black, ls="", label="Solar", axis=ax2)
+    ax2.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(4000, 5100, 100, endpoint=True)
+    ax2.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax2.plot([5100, 4000], [0, 0], 'k--')
+    ax2.set_xlabel("Huber Teff (K)")
+    ax2.set_ylabel("")
+    ax2.set_ylim(0.5, -1.5)
+
+def compare_McQuillan_to_nondetections():
+    '''Compare binarity of the McQuillan period detections to nondetections.'''
+    periods = cache.mcquillan_corrected_splitter()
+    nondets = cache.mcquillan_nondetections_corrected_splitter()
+
+    periods_stats = periods.subsample(["Dwarfs", "Right Statistics Teff"])
+    nondets_stats = nondets.subsample(["Dwarfs", "Right Statistics Teff"])
+
+    arraylist, bins, patches = plt.hist(
+        [periods_stats["Corrected K Excess"], 
+         nondets_stats["Corrected K Excess"]], bins=80, color=[bc.blue, bc.red], 
+        alpha=0.5, range=(-1.6, 1.1), normed=True,
+        label=["Period Detections", "Nondetections"],  histtype="step", 
+        cumulative=True)
+    sig = scipy.stats.anderson_ksamp([
+        periods_stats["Corrected K Excess"], 
+        nondets_stats["Corrected K Excess"]])
+    print(sig)
+    plt.xlabel("Metallicity-corrected K Excess")
+    plt.ylabel("N (< K) / N")
+    plt.legend(loc="upper left")
+
+
+
+@write_plot("rapid_rotator_excess")
+def rapid_rotator_bins():
+    '''Plot the distribution of K Excesses for different bins of rotation.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    cooldwarfs = targs.subsample(["Dwarfs"])
+    mcq = catin.read_McQuillan_catalog()
+    ebs = catin.read_villanova_EBs()
+    
+    mcq_cooldwarfs = au.join_by_id(cooldwarfs, mcq, "kepid", "KIC")
+    eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
+    periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
+    f, axes = plt.subplots(
+        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
+        sharey=True)
+    mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
+    eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
+    titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
+              zip(periodbins[:-1], periodbins[1:])]
+    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    for i, (title, ax) in enumerate(zip(titles, axes)):
+        mcq_periodbin = mcq_cooldwarfs[mcq_period_indices == i+1]
+        eb_periodbin = eb_cooldwarfs[eb_period_indices == i+1]
+        hr.absmag_teff_plot(
+            mcq_cooldwarfs["TEFF"], mcq_cooldwarfs["Corrected K Excess"], 
+            marker=".", color=bc.black, ls="", axis=ax)
+        hr.absmag_teff_plot(
+            mcq_periodbin["TEFF"], mcq_periodbin["Corrected K Excess"], 
+            marker="o", color=bc.red, ls="", axis=ax)
+        hr.absmag_teff_plot(
+            eb_periodbin["TEFF"], eb_periodbin["Corrected K Excess"],
+            marker="*", color=bc.pink, ls="", ms=12, axis=ax)
+
+        ax.set_ylabel("Metallicity-Corrected K Excess")
+        ax.set_xlabel("")
+        ax.set_title(title)
+        ax.plot([3500, 6500], [-0.2, -0.2], 'k--')
+        ax.plot([4000, 4000], [0.3, -1.25], 'k--')
+        ax.plot([5250, 5250], [0.3, -1.25], 'k--')
+    axes[-1].set_xlabel("APOGEE Teff (K)")
+    axes[-1].set_xlim(6500, 3500)
+    axes[-1].set_ylim(0.3, -1.25)
+
+def plot_teff_prov():
+    '''Plot the spectroscopic Teff vs photometric teffs.'''
+    clean = cache.clean_apogee_splitter()
+    # Continue this to show how the plots differ depending on the provenance
+    # that's used.
+    clean.data["Spec K"] = samp.calc_model_mag_fixed_age_alpha(
+        clean.data["TEFF"], 0.03, "Ks", age=1e9, model="MIST")
+    clean.data["Phot K"] = samp.calc_model_mag_fixed_age_alpha(
+        clean.data["teff"], 0.03, "Ks", age=1e9, model="MIST")
+
+
+@write_plot("full_mcquillan_rr_excess")
+def mcquillan_rapid_rotator_bins():
+    '''Plot the rapid rotator bins in the full McQuillan sample.'''
+    mcq = cache.mcquillan_splitter_with_DSEP()
+    ebs = cache.eb_splitter_with_DSEP()
+    dwarfs = mcq.subsample(["Dwarfs"])
+    eb_dwarfs = ebs.subsample(["Dwarfs"])
+
+    periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
+    f, axes = plt.subplots(
+        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
+        sharey=True)
+    mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
+    eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
+    titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
+              zip(periodbins[:-1], periodbins[1:])]
+    titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
+    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    for i, (title, ax) in enumerate(zip(titles, axes)):
+        mcq_periodbin = dwarfs[mcq_period_indices == i]
+        eb_periodbin = eb_dwarfs[eb_period_indices == i]
+        hr.absmag_teff_plot(
+            mcq_periodbin["teff"], mcq_periodbin["Corrected K Excess"], 
+            marker="o", color=bc.red, ls="", axis=ax, zorder=1)
+        hr.absmag_teff_plot(
+            eb_periodbin["teff"], eb_periodbin["Corrected K Excess"], 
+            marker="*", color=bc.pink, ls="", ms=12, axis=ax, zorder=2)
+        ax.set_ylabel("Teff-Corrected K Excess")
+        ax.set_title(title)
+        ax.plot([3500, 6500], [-0.3, -0.3], 'k--', zorder=3)
+        ax.plot([4000, 4000], [0.3, -1.25], 'k--', zorder=3)
+        ax.plot([5000, 5000], [0.3, -1.25], 'k--', zorder=3)
+    ax.set_xlabel("KIC DR25 Teff (K)")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(0.3, -1.25)
+
+def calculate_APOGEE_binary_significance(min_P, max_P):
+    '''Calculates the significance of binarity for APOGEE binaries.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    dwarfs = targs.subsample(["Dwarfs", "APOGEE Statistics Teff"])
+    mcq = catin.read_McQuillan_catalog()
+    nomcq = catin.read_McQuillan_nondetections()
+    combocols = ["Corrected K Excess"]
+    dwarfmcq = au.join_by_id(dwarfs, mcq, "kepid", "KIC")
+    dwarfnomcq = au.join_by_id(dwarfs, nomcq, "kepid", "KIC")
+    fulldwarfs = vstack([dwarfmcq[combocols], dwarfnomcq[combocols]])
+    ebs = catin.read_villanova_EBs()
+    dwarfebs = au.join_by_id(dwarfs, ebs, "kepid", "KIC")
+    # We only want detached systems
+    dwarfebs = dwarfebs[dwarfebs["morph"] < 0.55]
+
+    # The fraction of binaries in the full sample.
+    full_binaryfrac = (
+        (np.count_nonzero(fulldwarfs["Corrected K Excess"] < -0.2) +
+         np.count_nonzero(dwarfebs["Corrected K Excess"] < -0.2)) / 
+        (len(fulldwarfs) + len(dwarfebs)))
+    # Index rapid rotators in the period bin.
+    rapidrot = np.logical_and(
+        dwarfmcq["Prot"] > min_P, dwarfmcq["Prot"] < max_P)
+    # Index EBs in the period bin.
+    rapidebs = np.logical_and(
+        dwarfebs["period"] > min_P, dwarfebs["period"] < max_P)
+    # Number of rapid rotators showing binary excesses
+    rapidbins = np.count_nonzero(
+        dwarfmcq["Corrected K Excess"][rapidrot] < -0.2)
+    # Number of ebs in the period bin showing binary excesses
+    rapidebbins = np.count_nonzero(
+        dwarfebs["Corrected K Excess"][rapidebs] < -0.2)
+    fullrapid = np.count_nonzero(rapidrot) + np.count_nonzero(rapidebs)
+    rapidsig = scipy.stats.binom_test(
+        rapidbins+rapidebbins, fullrapid, full_binaryfrac, alternative="greater")
+    print("Number of rapid binaries: {0:d}".format(rapidbins+rapidebbins))
+    print("Number of rapid rotators: {0:d}".format(fullrapid))
+    print("Full Binary Fraction: {0:.2f}".format(full_binaryfrac))
+    print(rapidsig)
+
+def calculate_McQuillan_binary_significance(min_P, max_P):
+    '''Calculates the significance of binary for McQuillan binaries.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    nomcq = cache.mcquillan_nondetections_corrected_splitter()
+    ebs = cache.eb_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarfs = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    generic_columns = ["Corrected K Excess"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+    # We only want detached systems
+    dwarf_ebs = dwarf_ebs[dwarf_ebs["morph"] < 0.55]
+
+    # This is the fraction of binaries in the whole sample.
+    full_binaryfrac = (
+        (np.count_nonzero(dwarfs["Corrected K Excess"] < -0.2) +
+         np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.2))/
+        (len(dwarfs) + len(dwarf_ebs)))
+    # Number of rapid rotators.
+    rapidrot = np.logical_and(
+        mcq_dwarfs["Prot"] > min_P, mcq_dwarfs["Prot"] < max_P)
+    # Number of EBs that are tidally-synchronized.
+    rapidebs = np.logical_and(
+        dwarf_ebs["period"] > min_P, dwarf_ebs["period"] < max_P)
+    # Total Number of rapidly rotating binaries.
+    rapidbins = np.count_nonzero(
+        mcq_dwarfs["Corrected K Excess"][rapidrot] < -0.2)
+    # Total number of close EBs
+    rapidebbins = np.count_nonzero(
+        dwarf_ebs["Corrected K Excess"][rapidebs] < -0.2)
+    # Total number of rapid rotators
+    fullrapid = np.count_nonzero(rapidrot) + np.count_nonzero(rapidebs)
+    rapidsig = scipy.stats.binom_test(
+        rapidbins+rapidebbins, fullrapid, full_binaryfrac,
+        alternative="greater")
+    print("Number of rapid binaries: {0:d}".format(rapidbins+rapidebbins))
+    print("Number of rapid rotators: {0:d}".format(fullrapid))
+    print("Full binary fraction: {0:.2f}".format(full_binaryfrac))
+    print(rapidsig)
+
+def verify_eb_rapid_rotator_rate():
+    '''Compare the rate of EBs to the rate of rapid rotators.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    nomcq = cache.mcquillan_nondetections_corrected_splitter()
+    eb_split = cache.eb_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarfs = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    generic_columns = ["Corrected K Excess"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    dwarf_ebs = eb_split.subsample(["Dwarfs", "Right Statistics Teff"])
+    # We only want detached systems
+    dwarf_ebs = dwarf_ebs[dwarf_ebs["period"] > 1]
+
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    # Now bin the EBs
+    period_bins = np.geomspace(1, 5, 10)
+    period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
+    eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
+    normalized_ebs = eb_hist / (len(dwarfs)+len(dwarf_ebs))
+    ax.step(period_bin_centers, normalized_ebs, where="post", color=bc.red,
+             ls="-", label="EBs")
+    ax.set_xscale("linear")
+
+    # Bin the rapid rotators
+    rapid_hist, _ = np.histogram(mcq_dwarfs["Prot"], bins=period_bins)
+    normalized_rapid = rapid_hist / (len(dwarfs)+len(dwarf_ebs))
+    ax.step(period_bin_centers, normalized_rapid, where="post", color=bc.blue,
+            ls="-", label="Rapid rotators")
+
+    correction_spline = ebs.read_Kirk_geometric_correction_spline()
+    correction_factors = correction_spline(np.log10(period_bin_centers))
+    eb_predictions = correction_factors * normalized_rapid
+    ax.step(period_bin_centers, eb_predictions, where="post", color=bc.blue,
+            linestyle=":", label="Predicted EBs from Rapid rotators")
+    ax.set_xlabel("Period (day)")
+    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.legend(loc="center right")
     
 
 @write_plot("Bruntt_comp")
@@ -594,7 +1531,7 @@ def old_turnoff():
         axis=ax, label="[Fe/H] = -0.5")
 
     # Now add some data.
-    full = full_apogee_splitter()
+    full = cache.full_apogee_splitter()
     full_data = full.subsample([
         "~Bad", "H APOGEE", "In Gaia", "~Berger Giant"])
 
@@ -611,7 +1548,7 @@ def old_turnoff():
 
 @write_plot("binarycut")
 def plot_metallicity_excess():
-    apo = full_apogee_splitter()
+    apo = cache.full_apogee_splitter()
     targets = apo.subsample(["~Bad", "H APOGEE", "In Gaia", "K Detection"])
     
     print("Excluding {0:d} not bad targets with bad Teffs".format(
@@ -622,8 +1559,8 @@ def plot_metallicity_excess():
         np.ma.count_masked(targets["FE_H"])))
     targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
 
-    targets["DSEP K"] = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
-        targets["TEFF"], targets["FE_H"], "Ks"))
+    targets["DSEP K"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
+        targets["TEFF"], targets["FE_H"], "Ks", model="MIST"))
     targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
 
     dwarfs = targets[targets["M_K"] > 2.7]
@@ -1141,7 +2078,7 @@ def cool_dwarf_rotation_analysis():
 def full_sample_mk():
     '''Plot the full sample on an HR diagram with M_K'''
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
-    full = full_apogee_splitter()
+    full = cache.full_apogee_splitter()
     targets = full.subsample(["~Bad", "In Gaia", "K Detection"])
 
     print("Excluding {0:d} not bad targets with bad Teffs".format(
@@ -1163,7 +2100,7 @@ def full_sample_mk():
 def plot_solar_excess():
     f, (a0, a1) = plt.subplots(2, 1, gridspec_kw = {"height_ratios": [2, 1]},
                                sharex=True)
-    apo = full_apogee_splitter()
+    apo = cache.full_apogee_splitter()
     targets = apo.subsample(["~Bad", "In Gaia", "K Detection"])
 
     print("Excluding {0:d} not bad targets with bad Teffs".format(
@@ -1214,7 +2151,7 @@ def plot_solar_excess():
 @write_plot("binary_cut")
 def plot_k_excess_rotation_apogee():
     '''Plot the K-band excess against rotation for McQuillan targets'''
-    apo = full_apogee_splitter()
+    apo = cache.full_apogee_splitter()
     good_phot = apo.split_subsample(["~Bad", "In Gaia", "K Detection"])
     good_phot.split_mag(
         "M_K", 2.95, ("Nondwarfs", "Dwarfs", "No mag"), 
@@ -1232,10 +2169,10 @@ def plot_k_excess_rotation_apogee():
         np.ma.count_masked(targets["FE_H"])))
     targets = targets[~np.ma.getmaskarray(targets["FE_H"])]
 
-    targets["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
-        targets["TEFF"], targets["FE_H"], "Ks", age=5.5)
-    dlsbs["DSEP K"] = samp.calc_DSEP_model_mag_fixed_age_alpha(
-        dlsbs["TEFF"], dlsbs["FE_H"], "Ks", age=5.5)
+    targets["DSEP K"] = samp.calc_model_mag_fixed_age_alpha(
+        targets["TEFF"], targets["FE_H"], "Ks", age=9.65, model="MIST")
+    dlsbs["DSEP K"] = samp.calc_model_mag_fixed_age_alpha(
+        dlsbs["TEFF"], dlsbs["FE_H"], "Ks", age=9.65)
     targets["K Excess"] = targets["M_K"] - targets["DSEP K"]
     dlsbs["K Excess"] = dlsbs["M_K"] - dlsbs["DSEP K"]
 
@@ -1597,22 +2534,23 @@ def low_metallicity_selection():
     '''Determine whether low-metallicity targets should have been observed in
     APOGEE'''
 
-    apo = full_apogee_splitter()
-    lowmet = apo.subsample(["~Bad", "In Gaia", "K Detection", "Low Met",
-                            "Berger Main Sequence", "H APOGEE"])
-    lowmet = lowmet[~lowmet["TEFF"].mask]
+    apo = cache.apogee_splitter_with_DSEP()
+    targs = apo.subsample(["Dwarfs"])
+    lowmet = targs[targs["FE_H"] < -0.5]
 
-    lowmet["DSEP H"] = np.diag(samp.calc_DSEP_model_mag_fixed_age_alpha(
-        lowmet["TEFF"], lowmet["FE_H"], "H"))
-    lowmet["DSEP H Apparent"] = (
-        lowmet["DSEP H"] + 5 * np.log10(lowmet["dis"]/10) + 0.190 *
-        lowmet["av"])
+    targs["MIST H"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
+        targs["TEFF"], targs["FE_H"], "H", age=1e9, alpha=0.0, model="MIST"))
+    targs["MIST H Apparent"] = (
+        targs["MIST H"] + 5 * np.log10(targs["dis"]/10) + 0.190 *
+        targs["av"])
 
-    hr.absmag_teff_plot(lowmet["TEFF"], lowmet["H"], color=bc.black, ls="",
+    hr.absmag_teff_plot(targs["FE_H"], targs["H"], color=bc.black, ls="",
                         marker="o", label="Original")
-    hr.absmag_teff_plot(lowmet["TEFF"], lowmet["DSEP H Apparent"],
-                        color=bc.red, ls="", marker="x", label="DSEP")
+    hr.absmag_teff_plot(targs["FE_H"], targs["MIST H Apparent"],
+                        color=bc.red, ls="", marker="x", label="MIST")
     plt.plot([6500, 3500], [11, 11], 'k--')
+    plt.xlabel("APOGEE [Fe/H]")
+    plt.ylabel("Apparent H")
 
 
 def APOGEE_metallicity_agreement():
@@ -1715,6 +2653,77 @@ def APOGEE_metallicity_slice():
     plt.xlabel("APOGEE Teff (K)")
     plt.ylabel("M_K")
     plt.title("APOGEE -0.1 < [Fe/H] < 0.1")
+
+def MIST_metallicity_between_interpolation():
+    '''Plot MIST isochrones interpolating over metallicity.'''
+    age = 9e9
+    feh_gridpoints = np.linspace(-0.5, 0.5, 4+1, endpoint=True)
+
+    feh_models = np.linspace(-0.5, 0.5, 8+1, endpoint=True)
+    teffpoints = np.linspace(3500, 6500, 500)
+    kvals = samp.calc_model_mag_fixed_age_alpha(
+        teffpoints, feh_models, "Ks", age=age, model="MIST")
+    colors = [bc.black, bc.red, bc.green, bc.algae, bc.brown, bc.sky_blue,
+              bc.purple, bc.blue, bc.orange]
+    for i, (feh, c) in enumerate(zip(feh_models, colors)):
+        hr.absmag_teff_plot(
+            teffpoints, kvals[i, :], color=c, marker="", ls="-", 
+            label="[Fe/H] = {0:.2f}".format(feh))
+        if feh in feh_gridpoints:
+            model = mist.MISTIsochrone.isochrone_from_file(feh)
+            met_table = model.iso_table(age)
+            hr.absmag_teff_plot(
+                10**met_table[model.logteff_col],
+                met_table[mist.band_translation["Ks"]], color=c, marker="o",
+                ls="", label="")
+    plt.xlabel("Teff (K)") 
+    plt.ylabel("Ks")
+    plt.legend(loc="lower left")
+
+def MIST_age_difference_with_metallicity():
+    '''Plot the age evolution for different metallicity targets.
+
+    Show the original points as well just to make sure that there isn't
+    weirdness with plotting.'''
+    youngage = 1e9
+    oldage=9e9
+    feh_gridpoints = np.linspace(-0.5, 0.5, 4+1, endpoint=True)
+
+    feh_models = np.linspace(-0.5, 0.5, 8+1, endpoint=True)
+    teffpoints = np.linspace(3500, 6500, 500)
+    masspoints = np.linspace(0.1, 2.0, 500)
+    oldteffs = 10**samp.calc_model_over_feh_fixed_age_alpha(
+        masspoints, mist.MISTIsochrone.mass_col,
+        mist.MISTIsochrone.logteff_col, feh_models, oldage, model="MIST")
+    oldks = samp.calc_model_over_feh_fixed_age_alpha(
+        masspoints, mist.MISTIsochrone.mass_col,
+        mist.band_translation["Ks"], feh_models, oldage, model="MIST")
+    assert np.all(oldteffs.mask == oldks.mask)
+    colors = [bc.black, bc.red, bc.green, bc.algae, bc.brown, bc.sky_blue,
+              bc.purple, bc.blue, bc.orange]
+    for i, (feh, c) in enumerate(zip(feh_models, colors)):
+        iso_badmass = oldteffs[i,:].mask
+        oldteffs_feh = oldteffs[i,:][~iso_badmass]
+        oldks_feh = oldks[i,:][~iso_badmass]
+        youngks_feh = samp.calc_model_mag_fixed_age_alpha(
+            oldteffs_feh, feh, "Ks", age=youngage, model="MIST")
+        hr.absmag_teff_plot(
+            oldteffs_feh, oldks_feh-youngks_feh, color=c, marker="", ls="-", 
+            label="[Fe/H] = {0:.2f}".format(feh))
+        if feh in feh_gridpoints:
+            oldmodel = mist.MISTIsochrone.isochrone_from_file(feh)
+            met_table = oldmodel.iso_table(oldage)
+            young_ys = samp.calc_model_mag_fixed_age_alpha(
+                10**met_table[oldmodel.logteff_col], feh, "Ks", age=youngage,
+                model="MIST")
+            hr.absmag_teff_plot(
+                10**met_table[oldmodel.logteff_col],
+                met_table[mist.band_translation["Ks"]]-young_ys, color=c, 
+                marker="o", ls="", label="")
+    plt.xlabel("Teff (K)") 
+    plt.ylabel("Ks (9 Gyr)- Ks (1 Gyr)")
+    plt.legend(loc="lower left")
+
 
 def DLSB_HR_Diagram(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf"),
