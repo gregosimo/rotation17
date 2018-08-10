@@ -7,6 +7,7 @@ import numpy as np
 import numpy.core.defchararray as npstr
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.patches as mpatches
 from matplotlib.ticker import AutoMinorLocator
 from matplotlib.colors import Normalize
 from astropy.table import Table, vstack
@@ -919,23 +920,57 @@ def collapsed_met_histogram():
     plt.ylabel("N")
     plt.legend(loc="upper left")
 
+@write_plot("sample_dk")
 def K_Excess_hr_diagram():
     '''Plot a full HR diagram in subtracted K space.'''
     targs = cache.apogee_splitter_with_DSEP()
     dwarfs = targs.subsample(["Dwarfs"])
     fullsamp = targs.subsample(["Not Dwarfs"])
 
-    hr.absmag_teff_plot(dwarfs["TEFF"], dwarfs["Corrected K Excess"],
-                        marker=".", color=bc.red, ls="", label="MS + Binaries")
-    hr.absmag_teff_plot(fullsamp["TEFF"], fullsamp["Corrected K Excess"],
-                        marker=".", color=bc.black, ls="", label="Full Sample")
+    f, (ax1, ax2) = plt.subplots(2, 1, figsize=(12*2, 12))
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"], dwarfs["K Excess"], marker=".", 
+        color=bc.red, ls="", label="MS + Binaries", axis=ax1, zorder=1)
+    hr.absmag_teff_plot(
+        fullsamp["TEFF"], fullsamp["K Excess"], marker=".", 
+        color=bc.black, ls="", label="Full Sample", axis=ax1, zorder=2)
+    inset_box = mpatches.Rectangle(
+        [3500, -2], 3000, 2.5, ls="--", color=bc.brown, lw=4, fill=False,
+        zorder=3)
+    ax1.add_patch(inset_box)
     minorLocator = AutoMinorLocator()
-    ax = plt.gca()
-    ax.yaxis.set_minor_locator(minorLocator)
-    plt.plot([7000, 3000], [0, 0], 'k-')
-    plt.xlabel("APOGEE Teff (K)")
-    plt.ylabel("Corrected K Excess")
-    plt.legend(loc="upper left")
+    ax1.yaxis.set_minor_locator(minorLocator)
+    ax1.plot([7000, 3000], [0, 0], 'k-')
+    ax1.set_xlim(7000, 3500)
+    ax1.set_ylim(3, -15)
+    ax1.legend(loc="upper left")
+    # Now plot an inset map.
+    hr.absmag_teff_plot(
+        dwarfs["TEFF"], dwarfs["K Excess"], marker=".", 
+        color=bc.red, ls="", label="MS + Binaries", axis=ax2)
+    hr.absmag_teff_plot(
+        fullsamp["TEFF"], fullsamp["K Excess"], marker=".", 
+        color=bc.black, ls="", label="Full Sample", axis=ax2)
+    # Plot the bins.
+    teff_bin_edges = np.linspace(6000, 4000, 20+1)
+    teff_bin_indices = np.digitize(dwarfs["TEFF"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = dwarfs[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["K Excess"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["TEFF"])
+    ax2.plot(med_teff, percentiles, marker="o", color=bc.algae, ls="-",
+             label="Binned")
+    ax2.plot([7000, 3000], [0, 0], 'k-')
+    ax2.plot([7000, 3000], [-0.75, -0.75], 'k--')
+    ax2.set_xlim([6500, 3500])
+    ax2.set_ylim(0.5, -2)
+    ax1.set_xlabel("APOGEE Teff (K)")
+    ax2.set_xlabel("APOGEE Teff (K)")
+    ax1.set_ylabel("K Excess")
+    ax2.set_ylabel("K Excess")
 
 @write_plot("Teff_relation")
 def teff_comparison():
@@ -943,24 +978,21 @@ def teff_comparison():
     dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
 
     f, ax = plt.subplots(1,1, figsize=(12,12))
-    comparable_dwarfs = dwarfs[au.multi_logical_or(
-        dwarfs["teff_prov"] == "KIC0",  dwarfs["teff_prov"] == "PHO1", 
-        dwarfs["teff_prov"] == "PHO54", dwarfs["teff_prov"] == "PHO2")]
-    comparable_dwarfs = comparable_dwarfs[~comparable_dwarfs["TEFF"].mask]
+    comparable_dwarfs = dwarfs[~dwarfs["SDSS-Teff"].mask]
                                                       
-    ax.plot(comparable_dwarfs["teff"], comparable_dwarfs["SDSS-Teff"], 'k.')
-    coeff = np.polyfit(comparable_dwarfs["teff"], comparable_dwarfs["SDSS-Teff"], 1)
+    ax.plot(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 'k.')
+    coeff = np.polyfit(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 1)
     poly = np.poly1d(coeff)
     testteffs = np.linspace(4000, 5100, 200)
     testys = poly(testteffs)
     ax.plot(testteffs, testys, 'k-')
     ax.plot(testteffs, testteffs, 'k--')
     scatter = np.std(
-        comparable_dwarfs["teff"] - poly(comparable_dwarfs["SDSS-Teff"]))
+        comparable_dwarfs["TEFF"] - poly(comparable_dwarfs["SDSS-Teff"]))
     print("The relationship is y = {0:.1f} x + {1:.1f}".format(
         coeff[0], coeff[1]))
     print("The scatter in the relation is {0:4.0f} K".format(scatter))
-    ax.set_xlabel("Huber Teff (K)")
+    ax.set_xlabel("APOGEE Teff (K)")
     ax.set_ylabel("Pinsonneault Teff (K)")
     ax.set_title("Effective Temperature Comparison")
 
