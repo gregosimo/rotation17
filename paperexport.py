@@ -201,27 +201,26 @@ def mcquillan_selection_coordinates():
     mcq = catin.mcquillan_with_stelparms()
     nomcq = catin.mcquillan_nondetections_with_stelparms()
 
-    # Generate K-band magnitudes
-    catalog.generate_abs_mag_column(
-        mcq, "kmag", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
-    catalog.generate_abs_mag_column(
-        nomcq, "kmag", "KIC M_K", samp.AV_to_AK, avcol="av", distcol="dist")
-    catalog.generate_abs_mag_column(
-        mcq, "kmag", "Gaia M_K", samp.AV_to_AK, avcol="av", distcol="dis")
-    catalog.generate_abs_mag_column(
-        nomcq, "kmag", "Gaia M_K", samp.AV_to_AK, avcol="av", distcol="dis")
+    catalog.generate_abs_mag_column_with_errors(
+        mcq, "kmag", "kmag_err", "KIC M_K", "KIC M_K_err1", "KIC M_K_err2", 
+        samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist", 
+        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
+        avupcol="av_err1", avdowncol="av_err2")
+    catalog.generate_abs_mag_column_with_errors(
+        nomcq, "kmag", "kmag_err", "KIC M_K", "KIC M_K_err1", "KIC M_K_err2", 
+        samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist", 
+        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
+        avupcol="av_err1", avdowncol="av_err2")
 
     f, (ax1, ax2, ax3) = plt.subplots(
         1,3, figsize=(36,12))
-    teff_bin_edges = np.arange(3500, 7000, 50)
+    teff_bin_edges = np.arange(4000, 7000, 50)
     mk_bin_edges = np.arange(-7, 8, 0.02)
-    print(np.min(mcq["KIC M_K"]))
-    print(np.min(mcq["Gaia M_K"]))
 
     count_cmap = plt.get_cmap("viridis")
     count_cmap.set_under("white")
     mcq_kic_hist, xedges, yedges = np.histogram2d(
-        mcq["teff"], mcq["KIC M_K"], bins=(teff_bin_edges, mk_bin_edges))
+        mcq["SDSS-Teff"], mcq["KIC M_K"], bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     # This is to distinguish 0 in the colormap.
     im = ax1.imshow(mcq_kic_hist.T, origin="lower", extent=extent,
@@ -229,7 +228,7 @@ def mcquillan_selection_coordinates():
                cmap=count_cmap, norm=Normalize(vmin=1))
     f.colorbar(im, ax=ax1)
     mcq_gaia_hist, xedges, yedges = np.histogram2d(
-        mcq["teff"], mcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
+        mcq["SDSS-Teff"], mcq["M_K"], bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     im = ax2.imshow(mcq_gaia_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
@@ -238,30 +237,61 @@ def mcquillan_selection_coordinates():
     ratio_cmap = plt.get_cmap("viridis")
     ratio_cmap.set_bad(color="white")
     mcq_nondet_hist, xedges, yedges = np.histogram2d(
-        nomcq["teff"], nomcq["Gaia M_K"], bins=(teff_bin_edges, mk_bin_edges))
+        nomcq["SDSS-Teff"], nomcq["M_K"], bins=(teff_bin_edges, mk_bin_edges))
     mcq_detfrac_hist = np.ma.masked_invalid(
         mcq_gaia_hist / (mcq_gaia_hist+mcq_nondet_hist))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
     im = ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
                cmap=ratio_cmap)
+    # Overplot isochrones on the figure.
+    testteff=np.linspace(4000, 6500, 1000)
+    mistiso = mist.MISTIsochrone.isochrone_from_file(0.0)
+    youngks = samp.calc_model_mag_fixed_age_feh_alpha(
+        testteff, 0.0, "Ks", age=1e9)
+    oldks = samp.calc_model_mag_fixed_age_feh_alpha(
+        testteff, 0.0, "Ks", age=9e9)
+    hr.absmag_teff_plot(testteff, youngks, color=bc.blue, marker="", ls="-",
+                        axis=ax3, label="1 Gyr")
+    hr.absmag_teff_plot(testteff, oldks, color=bc.red, marker="", ls="-",
+                        axis=ax3, label="9 Gyr")
+
+
     f.colorbar(im, ax=ax3)
 
-    ax1.set_xlim(7000, 3500)
+    ax1.set_xlim(7000, 4000)
     ax1.set_ylim(8, -7)
-    ax1.set_ylabel("KIC M_K")
-    ax1.set_xlabel("Huber Teff (K)")
+    ax1.set_ylabel("KIC $M_K$")
+    ax1.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax1.set_title("Pre-Gaia period detections")
-    ax2.set_xlim(7000, 3500)
+    ax2.set_xlim(7000, 4000)
     ax2.set_ylim(8, -7)
-    ax2.set_ylabel("Gaia M_K")
-    ax2.set_xlabel("Huber Teff (K)")
+    ax2.set_ylabel("Gaia $M_K$")
+    ax2.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax2.set_title("Post-Gaia period detections")
-    ax3.set_xlim(7000, 3500)
+    ax3.set_xlim(7000, 4000)
     ax3.set_ylim(8, -7)
-    ax3.set_xlabel("Huber Teff (K)")
+    ax3.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax3.set_title("Post-Gaia detection fraction")
     plt.legend(loc="upper left")
+
+def isochrone_radius_teff_age():
+    '''Plot how the radius changes with age as a function of Teff.'''
+    dsep_solar = dsep.DSEPIsochrone.isochrone_from_file(0.0)
+
+    test_teff = np.linspace(3500, 6500, 1000)
+    young_radii = dsep_solar.interpolate_to_radius(
+        1.0, np.log10(test_teff), dsep_solar.logteff_col, interp_kind="linear",
+        mask_outside_bounds=True)
+    old_radii = dsep_solar.interpolate_to_radius(
+        10.0, np.log10(test_teff), dsep_solar.logteff_col, interp_kind="linear",
+        mask_outside_bounds=True)
+
+    plt.plot(test_teff, old_radii/young_radii, color=bc.blue, ls="-", marker="")
+    plt.plot([3500, 6500], [1, 1], 'k-')
+    plt.xlabel("Teff (K)")
+    plt.ylabel("R (10 Gyr) / R(1 Gyr)")
+    hr.invert_x_axis()
 
 def isochrone_difference_ages():
     '''Plot the difference between DSEP and MIST isochrones at different ages.
@@ -1419,6 +1449,7 @@ def Pleiades_vsini_comparison():
     ax.plot(nondet_targets["vsini"], nondet_targets["VSINI"], 'r<')
     one_to_one = np.array([1, 100])
     ax.plot(one_to_one, one_to_one, 'k-')
+    ax.plot(one_to_one, [7, 7], 'k:')
     ax.plot(one_to_one, [10, 10], 'k:')
     
     ax.set_xlabel(r"Stauffer and Hartmann (1987) $v \sin i$ (km/s)")
@@ -3059,6 +3090,45 @@ def plot_targs_rv_scatter():
     plt.xlabel("RV uncertainty (km/s)")
     plt.ylabel("Photometric excess")
     plt.legend(loc="upper right")
+
+def rapid_rotator_HR_diagram(ax):
+    apo_splitter = cache.apogee_splitter_with_DSEP()
+    apo_splitter.split_teff("TEFF", [5500], splitnames=("Cool", "Hot"),
+                            null_value=None, teff_crit="Age evolution Teff")
+    apo_splitter.split_vsini(
+        [10], ("Vsini nondet", "Vsini det", "No Vsini"),
+        null_value=np.ma.masked)
+    apo_full = apo_splitter.subsample(["Dwarfs", "Cool"])
+    apo_rapid = apo_splitter.subsample([
+        "Dwarfs", "Cool", "Vsini det", "~DLSB"])
+    apo_dlsb = apo_splitter.subsample(["Dwarfs", "Cool", "DLSB"])
+    mcq = catin.read_McQuillan_catalog()
+    apo_mcq = au.join_by_id(apo_full, mcq, "kepid", "KIC")
+    apo_mcq_rapid = apo_mcq[apo_mcq["Prot"] < 3]
+    print(len(apo_rapid)/len(apo_full))
+
+    # Full sample
+    hr.absmag_teff_plot(apo_full["TEFF"], apo_full["M_K"], color=bc.black,
+                        marker=".", ls="", label="APOGEE")
+    # Vsini Rapid rotator
+    hr.absmag_teff_plot(apo_rapid["TEFF"], apo_rapid["M_K"], color=bc.blue,
+                        marker="o", ls="", label="Vsini > 10 km/s")
+    # DLSB
+    hr.absmag_teff_plot(apo_dlsb["TEFF"], apo_dlsb["M_K"], color=bc.pink,
+                        marker="*", ls="", label="SB2")
+    # McQuillan rapid rotators
+    hr.absmag_teff_plot(
+        apo_mcq_rapid["TEFF"], apo_mcq_rapid["M_K"], color=bc.red, marker="x", 
+        ls="", label="P < 3 day", ms=7)
+    plt.xlabel("APOGEE Teff (K)")
+    plt.ylabel("$M_K$")
+    plt.legend(loc="lower left")
+
+
+
+def aspcap_telecon_plot():
+    '''Want two plots: rapid rotators on HR diagram. And the veq vs vsini
+    plot.'''
 
 if __name__ == "__main__":
 
