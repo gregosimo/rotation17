@@ -29,6 +29,7 @@
 \newcommand{\Teff}{\ensuremath{T_{eff}}}
 \newcommand{\logg}{\ensuremath{\log(g)}}
 \newcommand{\kms}{\textrm{~km~s}\ensuremath{^{-1}}}
+\newcommand{\MK}{\ensuremath{M_K}}
 
 % Targeting flags
 \newcommand{\STARBAD}{\texttt{STAR\_BAD}}
@@ -50,6 +51,7 @@ Phenomenon}
 \email{simonian@astronomy.ohio-state.edu}
 
 \begin{abstract}
+    \gvs{This is still under construction.}
     The \Kepler{} fields have yielded a large data set of photometric rotation
     periods, which when combined with \Gaia{} parallaxes and APOGEE
     high-resolution spectroscopic data for over 4,000 dwarfs and subgiants, 
@@ -74,143 +76,269 @@ Phenomenon}
 
 \section{Introduction}
 
-One of the significant results from the \Kepler{} satellite has been the
-determination of rotational periods for a large sample of old, field stars
-\citep{Basri11,Affer12,Nielsen13,Reinhold13,McQuillan14,Garcia14}.
-These rotation rates are expected to be extremely useful to deriving a field
-gyrochronology, which can better characterize the ages of
-\Kepler{} stars, and hence better understand discovered planets.
+Rotation is a fundamental property of stars; it impacts their lifetimes, can
+induce mixing, and can serve as a population diagnostic. Stars are also born 
+with a wide range of rotation rates \citep{Attridge92, Herbst00, Henderson12}.
+With a strong dependence on stellar mass. \citet{Kraft67} noted a dichotomy in
+rotation rates among field stars hotter than 6200 K rotating with a wide range
+of \vsini, and those cooler than 6200 K, including the Sun, rotation with
+largely undetectable \vsini. This abrupt transition is due to the onset of
+convective envelopes for lower-mass stars, which enables efficient angular
+momentum loss through magnetized winds \citep{Parker58,Weber67}.
+
+The strong dependence of angular momentum loss on rotation \citep{Kawaler88}
+leads to the rapid convergence of a wide range of rotation rates to a unique
+value for stars older than 0.5 Gyr \citep{Pinsonneault89}. Rotation is
+therefore a potentially valuable age diagnostic for stellar populations
+\citep{Skumanich72}; this has been used to derive empirical relationships for
+field populations, sometimes referred to as gyrochronology \citep{Barnes07,
+Mamajek08, Meibom09}.  
+
+Angular momentum evolution models have usually been calibrated using rotation periods in
+star clusters, which have known ages and are easily characterized
+\citep{Krishnamurthi97, Gallet13, Somers17}. The calibrating clusters are typically
+young (\(< 1\) Gyr), with the behavior at old ages anchored by the Sun. A full 
+theoretical treatment of gyrochronology requires evolutionary stellar models 
+that include a variety of physical effects (see \citet{Gallet13} for an
+overview).
+
+The \Kepler{} satellite \citep{Borucki10,Koch10}, which observed the same
+region of the sky for over four years, has revolutionized our ability to
+measure stellar rotation. Large-scale analyses have extracted rotation periods
+from the light curves of tens of thousands of stars \citep{Nielsen13,
+Reinhold13, Garcia14, McQuillan14} in the field. These rotation periods along 
+with a field gyrochronology are expected to provide insights on the age 
+distribution of the field, and thus provide more accurate representation of 
+transiting exoplanets.
+
+The new observations of old field stars enabled by \Kepler{} have challenged 
+our theories of angular momentum evolution on multiple fronts. Existing 
+gyrochronological models anchored at the Sun have not been able to explain
+the rotation of field stars with asteroseismic ages \citep{Angus15, 
+VanSaders16}. The \Kepler{} population at long periods shows a sharp
+discontinuity which is not predicted by stellar models \citep{VanSaders18}. 
+Nearby K- and M-dwarfs show a bimodality in the period distribution which has
+no clear explanation in stellar physics \citep{Davenport18}. Additionally,
+there are substantially more rapid rotators than predicted
+A major puzzle to come out of the large sample of rotation period data is that
+around 10\% of the dwarfs observed by \Kepler{} show shorter rotation periods 
+than expected for a 1 Gyr population. There have been signs that the
+\Kepler{} field may have a larger youthful population than previously expected
+\citep{Berger18a}. While the rate of rapid rotators is in potential agreement
+with a larger population of young stars, rapid rotators can also be explained
+by other properties other than youth.
 
 
-Current attempts to synthesize rotation information with known ages of
-asteroseismic targets in the \Kepler{} field have consistently found a dearth
-of long-period (\(P_{rot} \sim 60\) day) rotators \citep{Angus15,vanSaders16}. 
-Forward modeling of the \Kepler{} field using existing rotation-activity
-relations and estimates of the \Kepler{} selection function further confirm 
-that models significantly under-predict the number of (\(P_{rot} > 30\) day) 
-rotators in the \Kepler{} field \citep{vanSaders18}. Proposed solutions for 
-relieving this tension have been modifying the activity relation in models to 
-drop precipitously at a particular rotation threshold, or modifyling angular 
-momentum loss to shut off at \(P_{rot} \sim 30\) days \citep{vanSaders18}.
+As a galactic field population the \Kepler{} field contains heterogeneous
+mixture of stellar populations not compatible with existing gyrochronological
+relations which have been difficult to disentangle using only photometry.
+Subgiants, while being rare in clusters, make up 20\% of \Kepler{} targets
+\citep{Gaidos13, Berger18b}. Since the subgiant population consists of stars
+expanding off the main sequence from above the Kraft break, they obey a
+different gyrochronology relation than that calibrated for dwarfs in clusters
+\citep{vanSaders13}. Binaries form an additional source of contamination in the
+field. In addition to the secondary's flux causing mismatched stellar
+parameters \citep{ElBadry18,Jackson18}, binaries close enough to tidally
+interact will be off the gyrochronology relationship entirely. Understanding
+the age distribution of the \Kepler{} field will require characterizing the
+background population of tidally-synchronized binaries.
 
-Rotation has proven to be puzzling on the rapid end as well. The \Kepler{} 
-field was chosen to point outside of the plane of the galactic
-disk, biasing the field toward older stars.  Despite the old age of the
-field, there is still a population of rapid rotators at the level of 10\% 
-which have rotation rates significantly higher than expected from
-existing gyrochronological relations \citep{McQuillan14}. Possible explanation
-for these rapid rotators are a truly young stellar population, a background of
-tidally-synchronized binaries, contamination of background pulsators in the
-\Kepler{} PSF, or confusion with rapidly-rotating subgiants \citep{vanSaders13}. 
+In addition to providing better ages, a large sample of tidally-synchronized
+binaries would be valuable in and of itself. These systems are intrinsically
+rare and usually require significant spectroscopic resources to discover and
+characterize \citep{Mathieu90, Raghavan10, Geller15}. Close binaries tend to be
+found in triple systems \citep{Tokovinin06}. The tighest systems are predicted
+to actually experience significant orbital period evolution over the age of the
+Milky Way, predicting a population of merger products \citep{Andronov06}.
+Characterizing the close, tidally-synchronized firled population will enable us
+to predict the prevalence of mergers in the field as well as compare merger
+rates to those observed in clusters.
 
-A substantial population of young stars would be a significant change in our
-view of the \Kepler{} field. Already, more detailed models of the
-\Kepler{} field are indicating that there may be more young stars than
-previously thought \citep{vanSaders18}. In addition, a widespread presence of
-Lithium may indicate that planet-hosting stars may be more youthful than
-expected \citep{Berger18a}. Rotation will provde an independent view into youth
-in the \Kepler{} field.
+The availability of \Gaia{} DR2 parallaxes \citep{Gaia18,Lindegren18} has
+enabled us to better characterize sources of rapid rotation beyond that
+available through photometry and spectroscopy. Young single stars would be
+observed as rapid rotators within the field main sequence. Subgiants would be
+substantially more luminous than the main sequence due to the expansion of
+their stellar envelopes. Lastly, binaries should be up to twice as luminous as
+the main sequence, extending up to 0.75 mag above the single-star sequence.
+While these populations overlap for hot stars, the subgiants and binaries
+should separate cleanly on the lower main sequence.
 
-In addition to youth, the discovery of a significant population of
-tidally-synchronized binaries would also be an exciting find.
-Tidally-synchronized binaries do not form through the typical fragmentation
-process, but rather from dynamical interactions on the pre-main sequence
-\citep{Bate02}. However, tidally-synchronized binaries have been difficult to
-characterize because they are rare \citep{Patience02,Raghavan10}. A substantial
-number of new tidally-synchronized systems would be extremely useful for
-characterizing the population.
+An additional constraint on the populations comes from the substantial sample
+of spectroscopically-characterized dwarfs from the Apache Point Observatory
+Galactic Evolution Experiment (APOGEE) \citep{Majewski17}. Approximately 5000 dwarfs and subgiants
+have been observed in the \Kepler{} field with reliable effective temperature
+and metallicities \citep{Holtzmann18}. This sample will be valuable for
+understanding the importance of metallicity to identify populations of
+binaries.
 
-Previous studies have succesfully combined rotational periods and \vsini{} 
-to study systematics in the radii of pre-main sequence stars
-\citep{Rhode01,Jeffries07}, the inclination distribution in clusters 
-\citep{Jackson10}, and the inference of radius inflation
-\citep{Jackson09,Jackson16,Jackson18}. All of these studies were done for
-clusters, where large numbers of spectra could be observed and analyzed under 
-the assumption of uniform distances and composition. The availability of
-rotation periods and \vsini{} for field stars will be instrumental in 
-illuminating other phenomena such as gyrochronology 
-\citep{Barnes07,Mamajek08,Angus15}, radius inflation \citep{Jackson18}, and 
-rotation on the subgiant branch \citep{vanSaders13}.
-
-In this paper, we study the rotation distribution of \Kepler{} targets as
-seen from APOGEE \vsini{}s and compare to published periods. In 
-Section~\ref{sec:data} we describe the various catalogs we synthesize to
-successfully determine binarity and rapid rotation.
-In Section~\ref{sec:analysis}, we show how we obtain a well-characterized
-sample of cool dwarfs with rotation information. In
-Section~\ref{sec:vsini_check} we validate the quality of the APOGEE \vsini{}
-measurements as well as demonstrate that spectroscopic and photometric rotation
-measures agree in the 
-APOKASC asteroseismic sample. In Section~\ref{sec:results}, we demonstrate that
-rapid rotation is primarily seen in photometric binaries, and that there is
-disagreement between photometric and spectroscopic rotation measures in the
-cool dwarfs. In Section~\ref{sec:discussion}, we compare the two measures of 
-rotation on a point-by-point basis and postulate reasons for disagreement. 
-Lastly, we summarize our findings and discuss future efforts in 
-Section~\ref{sec:conclusions}.
+This paper will attempt to measure the prevlanece of photometric binaries among
+hte rapid rotators in \citep{McQuillan14}. In Section 2, we will describe our
+sample, as well as the data used to select binaries from the sample. In Section
+3, we demonstrate the regime where binaries can be successfully distinguished
+from subgiants with both the presence and absence of metallicity information.
+Section 4 illustrates our results of the prominene of binaries among the rapid
+rotators. Lastly, we discuss the implications of our results for the population
+of rapid rotators and lay out future avenues to explore.
 
 \section{Catalog Data}
 \label{sec:data}
 
+The base sample of this study consists of \Kepler{} targets with photometric
+period detections. All targets in the \Kepler{} field have stellar parameters
+determined at the very least by KIC photometry \citep{Brown11}. The total
+number of objects with period detections is 34,030.
+
+We also examine a spectroscopically-characterized subsample from APOGEE\. This
+sample has measured metallicity as well as spectroscopically-determined
+temperatures. The overlap between this sample and the \citet{McQuillan14}
+period detections is 1,244.
+
+To calculate vertical displacements above the main sequence, we use photometry
+from 2MASS \citep{Skrutskie06}, parallaxes from Gaia DR2 \citep{Gaia18}, along
+with \Teff{} and extinction values estimated from the \Kepler{} Stellar 
+Parameter Catalog DR25 \citep[KSPC]{Huber14,Mathur17}. For the spectroscopic sample,
+\Teff{} and [Fe/H] are taken from APOGEE DR14 \citep{Abolfathi18}. More detail
+on these catalogs is given below.
+
+\subsection{Default Stellar Parameters}
+
+Stellar parameters for the full \Kepler{} sample are available as part of the
+\Kepler{} Stellar Parameter Catalog DR25 \citep[KSPC]{Mathur17}. The KSPC
+compiles stellar parameters from the literature and simultaneously fits them
+using DSEP \citep{Dotter08} stellar evolutionary tracks via the methodology of
+\citet{Huber14}. Revised stellar parameters, such as \Teff, as well as inferred
+quantities, such as distance and extinction, are output along with asymmetric
+1-\(\sigma\) uncertainties. Most \Kepler{} targets just have
+photometrically-derived input values from the KIC \citep{Brown11}, but in cases
+where more precise constraints can be found in the literature, such as
+spectroscopic parameters, those are inputted instead.
+
+For this paper, we also make use of extinctions and distances from the KSPC\.
+Unlike the temperature, which is fit directly to the grid of models, the
+distance and extinction are inferred from the predicted absolute magnitude and
+a 3D extinction map \citep{Amores05} The extinction is given as \(A_V\), which we
+convert to other bands using the \citep{Cardelli89} extinction law.
+
+\subsection{Astrometric Data}
+
+The ability to distinguish between different evolutionary states of stars is
+enabled by parallaxes derived from the \Gaia{} mission's Data Release 2
+\citep{Gaia18}. The Gaia DR2 performed a fully consistent single-star
+5-parameter (\(\alpha\), \(\delta\), \(\mu_\alpha\), \(\mu_\delta\), \(\pi\))
+solution to 1.3 billion sources over 22 months of observations
+\citep{Lindegren18}. For targets which could not be adequately fit with a
+single-star 5-parameter solution, a 2-parameter (\(\alpha\), \(\delta\))
+solution is performed instead \citep{Michalik15}. The criteria for a
+2-parameter fall-back solution include targets with Gaia \(G > 21.0\), having
+fewer than 6 visibility periods of observations, and an error ellipse larger
+than a magnitude-dependent limit in its largest dimension \citep{Lindegren18}.
+
+% APOGEE Targeted sample APOKASC (APOKASC + Cool Dwarf - faint dwarfs) - 7642
+% Not bad APOGEE targeted sample - 7395
+% Good APOGEE with good K detection - 7373
+% Good APOGEE in Gaia - 6961
+
+We use  cross-matched database of \citet{Berger18b} to match \Kepler{} targets
+against \Gaia{} DR2 detections.
+\citet{Berger18b} based their sample on the Kepler Stellar Parameter Pipeline
+DR25 \citep{Mathur17}, and cross-matched those sources against \Gaia{} DR2
+using both position and G-band flux. Of the successfully cross-matched targets,
+\citet{Berger18b} excluded objects with fractional parallax errors greater than
+0.2, \(\Teff < 3000\) K, \(\logg < 0.1\), or with low-quality 2MASS photometry. 
+We converted parallax to distance modulus by using an
+exponentially-decreasing volume density prior with a 1.35 kpc length scale
+\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
+of 0.5 mas \citep{Zinn18}. \gvs{Should we include a table of this?} In 
+addition to the most probable solutions, the 1-\(\sigma\) asymmetric 
+confidence intervals for distances were also reported by \citet{Berger18b}.
+
+\subsection{Photometric Data}
+
+In order to characterize our stellar sample, we chose to use absolute K-band
+magnitude as a proxy for luminosity. K-band apparent magnitudes were measured
+by the 2MASS survey \citep{Skrutskie06}, which has profile-fit photometry with 
+uncertainties available for nearly the full sample. A small fraction of 
+targets (1.5\%) of the \citet{McQuillan14} sample have photometry flagged due
+to blending. To avoid contaminating the binary sequence with blended objects,
+we exclude these targets.
+
+We chose to use K-band magnitudes because the measurement uncertainties
+associated with it are low. The typical K uncertainty for the
+\citep{McQuillan14} sample is 0.03 mag. The typical extinction and its
+uncertainty in our sample is \(A_V = 0.33\), and \(\sigma_{A_V}=0.025\).
+Applying the \citet{Cardelli89} relation that \(A_K/A_V = 0.114\), the effect
+of extinction itself shrinks to the level of photometric errors. While we
+include the extinctions to avoid biasing our sample, the use of K-band makes us
+confident that our results are not significantly impacted by extinction.
+
+Because the signature of binarity is substantially larger than the
+uncertainties of hte measurements, we eschew detailed modeling of the
+uncertainties in favor of the simpler approach of adding the uncertainties in
+quadrature to obtain an absolute magnitude. Most of the sample is either
+strongly dominated by photometric errors or distance errors, and this treatment
+will do an appropriate job of approximating the uncertainties in the measured
+absolute magnitude.
+
+\subsection{Rotation Data}
+
+The rotation periods for our sample are derived from \citet{McQuillan14}, 
+which is to-date the largest homogeneous analysis of rotational variability in
+\Kepler{} stars. \citet{McQuillan14} selected their sample to have photometric
+\(\Teff < 6500\) K \citep{Brown11,Dressing13}, and implemented the color-color
+and \logg{} cuts advocated in \citet{Ciardi11}, which ranged from \(\logg = 
+3.5\) at 6000 K to \(\logg = 4.0\) at 4250 K. 
+In addition to the temperature and gravity cuts, \citet{McQuillan14} also 
+excluded known eclipsing binaries and plantary transit candidates. 
+
+Rotational periods in \citet{McQuillan14} were measured by calculating the 
+autocorrelation function and fitting the location of multiple peaks. In lieu 
+of visual verification of the autocorrelation function, \citet{McQuillan14}
+performs two automated tests to distinguish physical periodicity from
+instrumental artifacts or other sources of variability. First, the 
+periodicity must be consistent in different segments of the light curve.
+Secondly, the height of the first peak must be larger than a temperature- and
+period-dependent threshold. In order to reduce contamination from pulsators, 
+\citet{McQuillan14} only considered periods between 0.2--70 days.
+
 \begin{figure}[htb]
-    \plottwo{apogee_selection}{mcquillan_selection}
-    \caption{\emph{Left: } The characteristics of the base APOGEE samples 
-        according to the Kepler Stellar Parameter Catalog DR25. The
-    black points denote the photometric \Teff{} and \logg{} of the full
-    sample observed by \Kepler{}. Red points denote the cool dwarf sample 
-    observed in APOGEE-1. The blue and green points denote dwarfs and giants 
- observed in APOGEE-2. \emph{Right: } The characteristics of the
- \citet{McQuillan14} nondetection and detection samples. Light pink points show
- the location of period nondetections while the purple points show targets with 
- period detections.}\label{fig:selection}
+    \centering
+    \plotone{mcquillan_selection}
+    \caption{\emph{Left:} \Teff-\(M_K\) diagram for the \citet{McQuillan14}
+    sample with period detections. Distances for the absolute magnitude
+calculation are taken from the KSPC DR25. \emph{Middle:} \Teff-\(M_K\) diagram
+using distances from \Gaia{} DR2 parallaxes. A binary sequence is clearly
+visible on the lower main sequence. \emph{Right:} The variation in the 
+\citet{McQuillan14} period detection fraction across the \Teff-\(M_K\) diagram. }
+    \label{fig:mcquillan_selection}
 \end{figure}
 
-This study makes use of two rotation samples in the \Kepler{} field: one
-smaller but well-characterized sample with spectroscopic \vsini{} observed by
-APOGEE, and a significantly larger sample with starspot variability periods
-from \citet{McQuillan14} without spectroscopic characterization.
+The distribution of \citet{McQuillan14} targets is shown in a \Teff-\(M_K\)
+diagram in \cref{fig:mcquillan_selection}, using pre- and post-\Gaia{}
+distances. One of the new results enabled by \Gaia{} is that a binary sequence,
+located above the main sequence, is clearly seen. Additionally, many of the
+period detections on the giant branch have gone away, which is to be expected
+since red giants are expected to be slowly rotating. There are also a
+collection of objects several magnitudes brighter than the main sequence, but
+cooler than the red giant branch. These are interesting objects worth
+following-up.
 
-In order to calculate absolute magnitudes for both samples, we use photometry
-from 2MASS \citep{Skrutskie06}, parallaxes from Gaia DR2 \citep{Gaia18}, and
-extinction values estimated from the \Kepler{} Stellar Parameter Catalog DR25
-\citep{Huber14,Mathur17}.
-
-Lastly, APOGEE \vsini{} have been a relatively new addition to the catalog and
-have not been extensively validated. We perform our own validation in two ways:
-direct comparison to literature \vsini{} for overlapping samples, and inference
-of \vsini{} from period and radius for an asteroseismically-characterized 
-sample. Details are all of the input catalog as given below.
+The period detection fraction also shows encouraging trends in
+\cref{fig:mcquillan_selection}. Cooler stars tend
+to be more spotted, indicating an increase in spottiness on the lower main
+sequence. An interesting feature we note is that the detection fraction shows a
+bifurcation between the main sequence and binary sequence hotter than about
+4500 K. While we do not delve in the feature, we point out its existence, and
+that it is consistent with evolution of activity on the single-star sequence, 
+with more evolved stars having fewer spots detections.
 
 \subsection{Spectroscopic Parameters}
 
-The spectroscopic sample for this study was drawn from two observing programs by the APOGEE
-survey, both designed are magnitude and color-selected samples of
-\Kepler{} targets observed over the two phases of the APOGEE program, APOGEE-1
-and APOGEE-2. The APOGEE-1 survey started operations as a bright-time
-survey as part of the third generation of the Sloan Digital Sky Survey
-\citep{Eisenstein11}. The workhorse behind the survey is the APOGEE instrument,
-a high-resolution (R \(\sim\) 22,000) multi-fiber near-infrared spectrograph
-\citep{Wilson10}, mounted on the SDSS 2.5-meter telescope at Apache Point
-Observatory \citep{Gunn06}. APOGEE-1 was then extended into the fourth stage of
-the Sloan Digital Sky Survey \citep{Blanton17} as APOGEE-2. \gvs{Fill in science
-requirements of APOGEE-2 vs APOGEE-1}
-
-In the first phase of APOGEE (APOGEE-1) \citep{Majewski17}, around 1000 dwarfs
-with \(7 \le H \le 11\), photometric temperatures cooler than 5500 K, and
-\logg{} greater than 4.0 \citep{Brown11,Pinsonneault12} were observed as part
-of an ancillary science program. A broader effort in APOGEE-2 to completely observe
-\Kepler{} targets with \(7 \le H \le 11\) with photometric temperatures between
-5000--6500 K and photometric \(\logg > 3.5\), as well as targets with
-photometric \(\logg < 3.5\) and photometric temperature less than 5500 K  
-\citep{Pinsonneault12,Huber14} has added around 3,500 dwarfs and 3,500 giants 
-as of APOGEE Data Release 14 \citep{Zasowski17}. Observations for additional 
-objects such as Kepler Objects of Interest and eclipsing binaries were also 
-obtained, but with more complex selection functions. In the interest of keeping
-a sample with a well-defined selection function, we exclude these other
-targeting programs.
-
-
-
+We draw our spectroscopic sample from the Data Release 14 \citep{Abolfathi18}
+of the APOGEE survey \citep{Majewski17}. The workhorse behind the survey is the
+APOGEE spectrograph, a high-resolution (\(R \sim 22,000\)) multi-fiber
+near-infrared spectrograph \citep{Wilson10}, mounted on the SDSS 2.5-meter
+telescope at Apache Point Observatory \citep{Gunn06}.
 
 Reduction of the APOGEE data takes place in three main stages. First,
 individual visit spectra are reduced, including detector calibration, bad pixel
@@ -234,171 +362,58 @@ temperatures  were found to be a strong function of \Teff{}, ranging from 130
 K at 5500 K down to 85 K at 4000 K (Holtzman et al.\ in prep) for solar
 metallicity objects observed at a signal-to-noise ratio of 100. 
 
+We inspected the fits to a representative set of spectra for targets flagged 
+by the ASPCAP pipeline as having potential quality problems. A small fraction
+(2.5\%) of targets have the \STARBAD{} quality flag enabled. Visual inspection
+of a representative sample of spectra indicated that the flag was largely the
+result of poor subtraction or normalization of the spectrum in the pipeline. Or
+due to poor model fits on the cool (\(\Teff < 4250 K\)) end. We did not find
+that the presence of a secondary triggered this flag, so we exclude these
+targets from further analysis. A substantially larger fraction of targets
+(14\$) have the \STARWARN{} quality flag enabled. Visual inspection of the
+spectra indicated that the fit reasonably resembed the target spectra. Because
+we did not find any clear problems with stellar parameter determinations, we 
+included these objects in our sample.
 
+\begin{figure}[htb]
+    \centering
+    \plotone{apogee_selection}
+    \caption{\emph{Left:} \Teff-\(M_K\) diagram for the APOGEE observations of
+        \Kepler{} targets. Distances for the absolute magnitude calculation are
+        taken from the KSPC DR25. The small green and blue dots indicate
+        color-selected asteroseismic targets, while the small purple dot
+        indicates targets observed due to the presence of asteroseismic signals
+        in their \Kepler{} light curve. The small red points denote the
+        cool-dwarf sample. The light blue circles show the eclipsing binaries.
+        Purple diamonds are Kepler Objects of Interest. \emph{Right:} 
+        \Teff-\(M_K\) diagram using distances from \Gaia{} DR2 parallaxes. A binary sequence is clearly
+visible on the lower main sequence.}\label{fig:apogee_selection}
+\end{figure}
 
-\subsection{Time-Series Data}
+\Cref{fig:apogee_selection} shows all \Kepler{} targets with observed
+spectroscopic temperatures in the APOGEE DR14, color-coded by observing
+program. One of the driving efforts for \Kepler{} field observations has been
+the spectroscopic characterization of asteroseismic targets, shown as small
+green, blue and purple dots \citep{Zasowski17,Pinsonneault18}. These
+observations have been substantially biased toward giants and subgiants. A
+complementary program aimed to observe the full \Kepler{} sample cooler than
+5500 K and brighter than \(H < 11\). This sample ended up observing about 1,200
+targets, shown as small red dots. Another \(\sim 1400\) observations have been
+made to characterize \Kepler{} planet hosts with \(H < 14\), shown as purple
+diamonds. Lastly around 200 eclipsing binaries \citep{Prsa11,Slawson11} were
+also observed, and are shown as light blue circles.
 
-Data from the \Kepler{} satellite \citep{Borucki10, Koch10}, which took data
-over the same region of the sky for over four years, has revolutionized 
-the field of stellar rotation, and forms the
-basis of our photometric rotation sample. It has only been
-through the exquisite precision of \Kepler{} just below 1000 part per million for
-the general \Kepler{} sample and regular sampling that starspot variability 
-could be measured for tens of thousands of stars.
-
-We use photometric rotational periods from \citet{McQuillan14}, which is
-to-date the largest homogeneous analysis of rotational variability in
-\Kepler{} stars. \citet{McQuillan14} selected their sample to have photometric
-\(\Teff < 6500\) K \citep{Brown11,Dressing13}, and implemented a color-color
-and temperature-dependent \logg{} cut \citep{Brown11} advocated in
-\citet{Ciardi11}, which ranged from 3.5 at 6000 K to 4.0 at 4250 K. 
-In addition to the temperature and gravity cuts, \citet{McQuillan14} also 
-excluded known eclipsing binaries and plantary
-transit candidates. 
-
-Rotational periods in \citet{McQuillan14} were measured by calculating the 
-autocorrelation function and fitting the location of multiple peaks. In lieu of
-visual verification of the autocorrelation function, \citet{McQuillan14}
-performs two automated tests to distinguish physical periodicity from
-instrumental artifacts or other sources of variability. First, the 
-periodicity must be consistent in different segments of the light curve.
-Secondly, the height of the first peak must be larger than a temperature- and
-period-dependent threshold. In order to reduce contamination from pulsators, 
-only periods between between 0.2-70 days are considered.
-
-
-\subsection{Astrometric Data}
-
-The ability to distinguish between different evolutionary states of stars is
-enabled by parallaxes derived from the \Gaia{} mission's Data Release 2
-\citep{Gaia18}. The Gaia DR2 performed a fully consistent single-star
-5-parameter (\(\alpha\), \(\delta\), \(\mu_\alpha\), \(\mu_\delta\), \(\pi\))
-solution to 1.3 billion sources over 22 months of observations
-\citep{Lindegren18}. For targets which could not be adequately fit with a
-single-star 5-parameter solution, a 2-parameter (\(\alpha\), \(\delta\))
-solution is performed instead \citep{Michalik15}. The criteria for a
-2-parameter fall-back solution include targets with Gaia \(G > 21.0\), having
-fewer than 6 visibility periods of observations, and an error ellipse larger
-than a magnitude-dependent limit in its largest dimension \citep{Lindegren18}.
-
-% APOGEE Targeted sample APOKASC (APOKASC + Cool Dwarf - faint dwarfs) - 7642
-% Not bad APOGEE targeted sample - 7395
-% Good APOGEE with good K detection - 7373
-% Good APOGEE in Gaia - 6961
-
-We use distances derived from \Gaia{} parallaxes included in the cross-matched
-database of asterometric radii of \Kepler{} targets in \citet{Berger18b}.
-\citet{Berger18b} based their sample on the Kepler Stellar Parameter Pipeline
-DR25 \citep{Mathur17}, and cross-matched those sources against \Gaia{} DR2. Of
-the cross-matched targets, objects with fractional parallax errors greater than
-0.2, \(\Teff < 3000\) K, \(\logg < 0.1\), or missing JHK photometry were
-excluded. \gvs{Do I need a full accounting of why certain objects were not
-included?} Parallaxes were converted to distance by using an
-exponentially-decreasing volume density prior with a 1.35 kpc length scale
-\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
-of 0.3 mas \citep{Lindegren18} \gvs{Since I'm converting to distance modulus
-    anyway, would it be more appropriate to go directly from parallax to
-    distance modulus correctly, as opposed to going from parallax to distance
-correctly, and then distance to distance modulus incorrectly?}. In addition to the most probable solutions, the
-1-\(\sigma\) asymmetric confidence intervals for distances were also reported
-by \citet{Berger18b}.
-
-The analysis by \citep{Berger18b} also provided classifications of objects
-based on evolutionary state and binarity. Before settling on specialized
-evolutionary state classifications for our analysis, we use objects in their
-``Main Sequence'' classification to roughly characterize the dwarf sample. For
-example, the median fractional uncertainty in the distance is \gvs{NUM}.
-
-\subsection{Photometric Data}
-
-In order to characterize our stellar sample, we chose to use absolute K-band
-magnitude as a proxy for luminosity. K-band apparent magnitudes were collected 
-from the 2MASS survey 
-\citep{Skrutskie06}, which has profile-fit photometry with uncertainties 
-available for nearly the full sample. A small fraction of targets have only 
-upper limits reported because of blending contamination. \gvs{Typical K error} 
-Because the distance error and photometric
-errors are both expected to have small contributions to the absolute K-band
-magnitude, on the order of 0.01 mag, we chose to use K-band magnitudes to
-minimize the impact of extinction.
-
-
-Since the full probability density functions for the distances are
-computationally intensive to compute, and unnecessary for our purposes, we
-approximate the confidence interval of \(M_K\) by adding in quadrature the 
-K-band 1-\(\sigma\) uncertainty to the appropriately-scaled asymmetric upper 
-and lower 1-\(\sigma\) confidence intervals for the distance separately. 
-Because most of our sample is either strongly dominated by photometric errors 
-or distance errors, and our results do not depend sensitively on the behavior 
-of the K-band absolute magnitude. This treatment does an appropriate job of
-approximating the uncertainties.
-
-\subsection{Extinction}
-
-While extinction is low in the K-band, we still attempt to correct for it given
-the current best estimates. We use extinction values from the Kepler Stellar
-Parameter Catalog DR25 \citep{Mathur17}. These extinctions were derived by
-performing fits to broad- and intermediate-band photometry using the
-methodology described in \citet{Huber14}. For our main-sequence targets,
-typical values of \(A_V\) are \gvs{NUM} with a median uncertainty of \gvs{NUM}.
-
-We converted the estimated \(A_V\) from the catalog to \(A_K\) using the
-\(\frac{A_K}{E(B-V)}\) value in \citet{Cardelli89}, and assuming the
-canonical Milky-Way \(\frac{A_V}{E(B-V)} = 3.1\). The uncertainties reported in
-the Keper Stellar Parameter Catalog were propagated to the unextincted absolute
-K-band magnitude uncertainty by adding the upper and lower confidence intervals
-to the absolute magnitude in quadrature.
-
-\subsection{Validation Datasets}
-
-We use several previously studied datasets to validate the APOGEE
-\vsini{} values, and to check the uncertainties inherent to APOGEE data.
-
-\subsubsection{Direct \vsini{} comparison}
-
-An independent spectroscopic analysis which has significant overlap with APOGEE
-is that by \citet{Bruntt12} for a sample of asteroseismic targets.
-\citet{Bruntt12} analyzed spectra of 93 \Kepler{} stars showing solar-type
-oscillations using two \(R \sim 80,000\) spectrographs 
-on the 3.6-meter Canada--France--Hawaii Telescope and 2-m Bernard Lyot
-Telescope. While uncertainties are not quoted in \citet{Bruntt12},
-previous analyses have determined \vsini{} uncertainties of about 0.6
-\kms{} \citep{Bruntt10a,Bruntt10b}. \gvs{Check this number more carefully.} The
-number of APOGEE targets overlapping with \citet{Bruntt12} is \gvs{NUM}.
-
-Because the \citet{Bruntt12} asteroseismic targets, which are largely subgiants with
-\(\Teff \sim 6000 K\) lie in a different temperature regime than the cool
-targets, we also compare APOGEE \vsini{}s to measurements of cool 
-dwarfs in the Pleiades \citep{Stauffer87}. Because Pleiades dwarfs are 
-significantly younger than those in the field,
-they rotate much more rapidly. This rapid rotation is advantageous
-because allows for validation over a wide range of \vsini{}. However, 
-the \citet{Stauffer87} survey 
-reported a detection limit of 10 \kms, which is significantly below that in
-\citet{Bruntt12}. As a result, the \citet{Stauffer87} sample only
-verifies that APOGEE \vsini{} measurements are not severely different
-for cool dwarfs.
-
-\subsubsection{Comparison to asteroseismic periods}
-
-In addition to direct comparisons to literature \vsini{}, we validate the 
-APOGEE \vsini{} for a larger sample by comparing \vsini{} to velocities derived
-from rotation periods and asteroseismic radii. This validation can be performed
-on the significantly larger APOKASC catalog
-\citep{Pinsonneault14,Pinsonneault18} to further test the APOGEE \vsini. The 
-APOKASC asteroseismic dwarf and subgiant 
-sample consists of 426 targets which presented solar-type oscillations in 
-\Kepler{} short-cadence data \citep{Chaplin11}, and were observed in APOGEE DR13
-\citep{Majewski17}. Using asteroseismic scaling relations, the radii
-for these objects can be determined to an accuracy of around 3\%
-\citep{Serenelli17}. 
-
-Rotation periods for a subset of 310 asteroseismic dwarfs and subgiants have been reported 
-by \citet{Garcia14}. Contrary to \citet{McQuillan14}, the \citet{Garcia14}
-periods were derived using a wavelet analysis, and periods between 1--100 days
-were considered. The overlap of these targets with APOGEE is \gvs{NUM}.
+While our analysis of rapid rotators only uses the subset of APOGEE targets
+with period detections, the full APOGEE sample is useful for characterizing the
+shape of the single-star sequence. Therefore, in Section~\ref{sec:binaries},
+where we describe characterizing the single-star sequence, we will use the full
+APOGEE sample. In Section~\ref{sec:results}, where we analyze only the behavior
+of the rapid rotators, we only use the 1058 APOGEE targets with
+\citet{McQuillan14} detections.
 
 \section{Stellar Models}
+
+\gvs{Under construction}
 
 Our fiducial single-star model is the Dartmouth Stellar Evolution Program
 \citep[DSEP]{Dotter08}. The DSEP models incorporate gravitational settling of
@@ -522,8 +537,123 @@ to see if it would be fall under APOGEE's inclusion criteria. The distribution
 of predicted apparent H-band magnitudes are shown in \cref{fig:metal_poor}.
 \gvs{NOTE: Actually do this exercise.}
 
-\section{Data Validation}
+\section{Data Analysis}
 \label{sec:analysis}
+
+\gvs{Under Construction}
+
+The crucial quantity we measure for these samples is the vertical displacement
+above the main sequence. Vertical displacement has been calculated many times
+in clusters \citep{Mermillod92}, where the main sequence is described by a
+single-age stellar population with a uniform metallicity. Measuring the
+vertical displacement for a field population is more challenging, because the
+field consists of a heterogeneous sample of ages and metallicities. In order to
+successfully measure a single-star sequence we must either control for or
+characterize these additional factors. 
+
+The vertical displacement consists of two parts: the measured K-band
+luminosity of a star, and the inferred luminosity of a single star with the
+same temperature and metallicity as the original one at a reference age. The 
+former is well-constrained and easily calculated quantity given the 2MASS 
+photometry and the \Gaia{} parallax. The latter requires a single-star model.
+
+We use the MIST \citep{Dotter16,Choi16} isochrones to model the 
+single-star lower main sequence. For a full description of the MIST 
+isochrones, we refer the reader to the source papers, as well as the MESA 
+instrument papers \citep{Paxton11, Paxton13, Paxton15}, which is the stellar 
+model on which the isochrones are based. The MIST isochrones at solar
+metallicity are shown in \cref{fig:rawk} and behave as expected for a field
+star population.
+
+In order to characterize the vertical displacement, we select 1 Gyr isochrones 
+because they span a wide range of temperatures without imposing
+structure from the turnoff. This is necessary for us to draw a threshold where 
+age effects become unimportant compared to binarity. Because we will 
+ultimately be working on the lower main sequence, where age evolution is 
+negligible, the choice of isochrone should not affect our result. 
+
+The vertical displacement of the full APOGEE sample is shown in 
+\cref{fig:sample_dk}. For every star, the displacement is calculated by
+subtracting the luminosity of the 1 Gyr isochrone at that star's metallicity.
+The lower main sequence has now been flattened and goes through the x-axis. The
+upper main sequence lies above the isochrone, which is to be expected because
+K-band luminosity is substantially more sensitive to age for more massive
+stars. In order to separate the cool dwarfs from the base of the red giant 
+branch, we draw a limit of 1.3 magnitudes more luminous. This limit
+cleanly excludes red giant branch stars while providing generous allowance for
+binaries and potential triple systems.
+
+\subsection{\Kepler{} Dwarf Metallicity}
+
+For the full \citet{McQuillan14} sample, where individual metallicities are not
+available, we want to select an isochrone that is representative of the full 
+sample. We do this by assuming that metallicity distribution the spectroscopic 
+targets is representative of the full \Kepler{} field. 
+
+Because we will mostly be concerned with the cool dwarfs, we check the
+metallicity distribution of dwarfs cooler than 5500 K, based on 
+\cref{fig:sample_dk}. The metallicity distribution is shown in
+\cref{fig:metallicity}. The median metallicity is 0.08 with a 1-\(\sigma\)
+confidence interval ranging from -0.14--0.23. A slightly super-solar
+metallicity distribution is consistent with that observed for planet hosts by 
+the California \Kepler{} survey \citep{Petigura17}.  We therefore treat the \([Fe/H] =
+0.08\) isochrone as the representative one where metallicity is unknown, and
+note that the majority of the sample 
+
+\subsection{Corrections for Spectroscopic Sample}
+
+Because our analysis only depends on the vertical displacement above the main
+sequence, and not absolute position, we correct separately for trends in the
+main sequence left over after isochrone subtraction. The NIR behavior of MIST 
+isochrones have not been comprehensively tested at a wide range of 
+metallicities \citep{Choi18}.
+
+The first trend we want to understand is at which temperature threshold do age
+effects start to become important. Because the dwarf sample consists of a
+substantial fraction of photometric binaries, any treatment of the main
+sequence would have to be robust to outliers. In order to characterize the main
+sequence, we choose to use the 75th percentile, as was done in
+\citep{Mermillod92}, where they assumed a population which was 50\% binary and
+50\% single. 
+
+The trend in the 75th percentile is shown in \cref{fig:agetrend}. Based on this
+figure, the main sequence is flat cooler than \(\Teff < 5000 K\), after which
+it trends up due to the effects of age. As a result, we use stars cooler than
+5000 K to understand the behavior of the main sequence when age effects are
+negligible.
+
+We find and correct for a quadratic trend in the vertical displacement of the
+main sequence over metallicity. The trend is shown in \cref{fig:met_trend}.
+The trend is set by 5 bins which each have equal numbers of stars. The
+temperature of the bin is the mean temperature of all stars in that bin; the
+luminosity excess is the 75th percentile of all stars in that bin. We then fit
+a quadratic polynomial to those five bins. We quantify the goodness-of-fit as
+the median absolute deviation of the top 50th percentile of the luminosity
+excesses. Five bins minimized the median absolute deviation, but changing the
+number of bins had a very small effect on the quality of the fit for the bulk
+of the sample. Only the sparsely populated low-metallicity regime (\([Fe/H] <
+-0.5\)) was sensitive to the binning. Because this population is rare, and also
+is expected to both be older and have different abundances, we just treat them
+as outliers in our analysis.
+
+After correcting the trend in metallicity, we return to correct the trend in
+\Teff{}, shown in \cref{fig:apogee_teff_trend}. This trend can be characterized
+using a linear fit, done in the same way as in metallicity space. The resulting
+points should now be reliably flat. The fact that a binary sequence can still
+be seen in the corrected dataset is encouraging that our corrections are
+meaningful.
+
+\subsection{Corrections for Photometric Sample}
+
+The photometric sample in \citep{McQuillan14} differs from the spectroscopic
+sample in two main ways: the lack of metallicity diagnostics, and the necessity
+of using photometric \Teff{} instead of a spectroscopic \Teff{}. Both of these
+differences will increase the uncertainty of the inferred single-star K-band
+luminosity, but not to the point where it affects our results.
+
+\subsubsection{Metallicity Ignorance}
+
+
 
 \subsection{Spectroscopic parameters}
 
@@ -536,16 +666,6 @@ reliable. We categorized our sample into those with \STARBAD, \STARWARN,
 \VSINIWARN{}, and no flag enabled to check the quality of the fits. We
 visually inspected the spectra for a representative sample of these
 quality classes. 
-Visual inspection of spectra for targets with the \STARBAD{} flag showed that they are 
-largely the result of poor subtraction or normalization of the spectrum in the
-pipeline, or are due to poor model fits on the cool (\(\Teff < 4250\) K) end. 
-\gvs{Calculate percentage} in the full sample have the \STARBAD{} quality 
-flag enabled, which have been excluded from the rest of the analysis. 
-Targets labeled as \STARWARN{} are a significantly larger fraction of the 
-sample. We found that the model fits reasonably resembled the target spectra
-based on a visual analysis. 
-For this reason, we retained targets with the \STARWARN{} flag enabled. 
-Targets with the \VSINIWARN{} flags also had visually reasonable spectra.
 
 APOGEE \Teff{} and [Fe/H] uncertainties have largely been characterized.
 Holtzmann et al (in prep) calculated an expression for the temperature scatter
@@ -677,6 +797,9 @@ dex (Holtzmann et al.\ in prep). \gvs{What did Serenelli et al (2017) say about
 metallicity uncertainties?}
 
 \section{Binary Selection}
+\label{sec:binaries}
+
+\gvs{Under Construction}
 
 Characterizing the binary population in the rapid rotators requires separating
 photometric binaries from other classes of objects which lie above the main
@@ -742,6 +865,8 @@ defined\ldots{} \gvs{I'm still working on how to get to the uncertainties.}
 
 \section{Results}
 \label{sec:results}
+
+\gvs{Under Construction}
 
 \begin{figure}[htb]
   \centering
@@ -917,6 +1042,8 @@ consistent with \vsini{}.
 \section{Discussion}
 \label{sec:discussion}
 
+\gvs{Under Construction}
+
 Our analysis by combining APOGEE and \Gaia{} data shows that rapid
 rotation is not a single-star phenomenon. This is an indication that
 consideration of multiplicity is important before applying gyrochronological
@@ -1051,6 +1178,8 @@ broadened.
 
 \section{Conclusion}
 \label{sec:conclusions}
+
+\gvs{Under Construction}
 
 We analyzed the APOGEE sample of 368 cool dwarfs in the \Kepler{} field with 
 rotation periods in \citet{McQuillan14} using DSEP-derived stellar radii. One
