@@ -436,13 +436,10 @@ def mist_teff_uncertainty():
     f, ax = plt.subplots(1, 1, figsize=(12,12))
     teffgrid, teffstep = np.linspace(
         3500, 7000, 101, endpoint=True, retstep=True)
-    kvals = samp.calc_model_mag_fixed_age_feh_alpha(
-        teffgrid, 0.0, "Ks", age=1e9)
-    diff = np.diff(kvals)
-    deriv = (diff[1:]+diff[:-1])/(2*teffstep)
-    newteffgrid = teffgrid[1:-1]
+    kerr = samp.calc_model_mag_err_fixed_age_feh_alpha(
+        teffgrid, 0.0, "Ks", teff_err=150, age=1e9)
     
-    ax.plot(newteffgrid, np.abs(deriv)*120, marker="", ls="-", color=bc.black)
+    ax.plot(teffgrid, kerr, marker="", ls="-", color=bc.black)
     hr.invert_x_axis(ax)
     ax.set_xlabel("Teff (K)")
     ax.set_ylabel(r"$(120)\frac{dK}{dT_{eff}}$")
@@ -499,7 +496,6 @@ def median_absolute_deviation_custom(vals, centerval=None):
     return mad
 
 
-@write_plot("metallicity_bins")
 def metallicity_bins():
     '''Make a 2x2 plot of models in each metallicity bin.'''
     f, axes = plt.subplots(2,2, figsize=(12,12), sharex=True, sharey=True)
@@ -661,7 +657,8 @@ def median_over_metallicity():
 def metallicity_corrected_excesses():
     '''Plot the indices corrected by metallicity.'''
     f, (ax1, ax2) = plt.subplots(
-        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True)
+        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True, 
+        figsize=(12, 15))
     targs = cache.apogee_splitter_with_DSEP()
     coolsamp = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
     # I want values in metallicity bins.
@@ -692,7 +689,7 @@ def metallicity_corrected_excesses():
     testx = np.linspace(-1.0, 0.5, 100, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("M_K - M_K (MIST; 1 Gyr)")
+    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
     ax1.legend(loc="upper left")
     residual = coolsamp["K Excess"] - cor_poly(coolsamp["FE_H"])
@@ -712,41 +709,41 @@ def metallicity_corrected_excesses():
     ax2.set_xlabel("[Fe/H]")
     ax2.set_ylabel("Residual")
 
-def solar_temperature_correction():
-    '''Plot the behavior of the sample over [Fe/H].'''
+@write_plot("spec_teff_correction")
+def spec_temperature_correction():
     f, (ax1, ax2) = plt.subplots(
-        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True)
+        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True, 
+        figsize=(12, 15))
     targs = cache.apogee_splitter_with_DSEP()
     coolsamp = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
     # I want values in metallicity bins.
-    metallicity_bin_edges = np.percentile(
+    teff_bin_edges = np.percentile(
         coolsamp["TEFF"], np.linspace(0, 100, 5+1, endpoint=True))
-#   metallicity_bin_edges = np.array([-1.2, -0.5, -0.25, 0.0, 0.25, 0.5])
-    metallicity_bin_indices = np.digitize(
-        coolsamp["TEFF"], metallicity_bin_edges)
-    percentiles = np.zeros(len(metallicity_bin_edges)-1)
-    med_met = np.zeros(len(metallicity_bin_edges)-1)
+    teff_bin_indices = np.digitize(
+        coolsamp["TEFF"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
     # I want ind to start at 1 and end right before the binedges length.
-    # metallicity_bin_edges[ind] denotes the high index.
-    for ind in range(1, len(metallicity_bin_edges)):
-        tablebin = coolsamp[metallicity_bin_indices == ind]
+    # teff_bin_edges[ind] denotes the high index.
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = coolsamp[teff_bin_indices == ind]
         percentiles[ind-1] = np.percentile(
-            tablebin["Solar K Excess"], 100-25)
-        med_met[ind-1] = np.mean(tablebin["TEFF"])
-    cor_coeff = np.polyfit(med_met, percentiles, 1)
+            tablebin["Partly Corrected K Excess"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["TEFF"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
     cor_poly = np.poly1d(cor_coeff)
     
-    ax1.plot(coolsamp["TEFF"], coolsamp["Solar K Excess"], marker=".", 
-             color=bc.black, ls="", label="Original")
-    ax1.plot(med_met, percentiles, marker="o", color=bc.red, ls="",
+    ax1.plot(coolsamp["TEFF"], coolsamp["Partly Corrected K Excess"], 
+             marker=".", color=bc.black, ls="", label="Original")
+    ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
              label="Binned")
     testx = np.linspace(4000, 5000, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
+    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
     ax1.legend(loc="upper left")
-    residual = coolsamp["Solar K Excess"] - cor_poly(coolsamp["TEFF"])
+    residual = coolsamp["Partly Corrected K Excess"] - cor_poly(coolsamp["TEFF"])
     mad = median_absolute_deviation(residual)
     ax2.plot(coolsamp["TEFF"], residual, color=bc.black, marker="o", ls="")
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
@@ -754,7 +751,53 @@ def solar_temperature_correction():
              horizontalalignment="center", verticalalignment="center")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
-    ax2.set_xlabel("[Fe/H]")
+    ax2.set_xlabel("APOGEE Teff (K)")
+    ax2.set_ylabel("Residual")
+
+@write_plot("phot_teff_correction")
+def phot_temperature_correction():
+    '''Plot the behavior of the sample over [Fe/H].'''
+    f, (ax1, ax2) = plt.subplots(
+        2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True, 
+        figsize=(12, 15))
+    targs = cache.apogee_splitter_with_DSEP()
+    coolsamp = targs.subsample(["Dwarfs", "Pinsonneault MetCor Teff"])
+    # I want values in metallicity bins.
+    teff_bin_edges = np.percentile(
+        coolsamp["SDSS-Teff"], np.linspace(0, 100, 5+1, endpoint=True))
+    teff_bin_indices = np.digitize(
+        coolsamp["SDSS-Teff"], teff_bin_edges)
+    percentiles = np.zeros(len(teff_bin_edges)-1)
+    med_teff = np.zeros(len(teff_bin_edges)-1)
+    # I want ind to start at 1 and end right before the binedges length.
+    # teff_bin_edges[ind] denotes the high index.
+    for ind in range(1, len(teff_bin_edges)):
+        tablebin = coolsamp[teff_bin_indices == ind]
+        percentiles[ind-1] = np.percentile(
+            tablebin["Solar K Excess"], 100-25)
+        med_teff[ind-1] = np.mean(tablebin["SDSS-Teff"])
+    cor_coeff = np.polyfit(med_teff, percentiles, 1)
+    cor_poly = np.poly1d(cor_coeff)
+    
+    ax1.plot(coolsamp["SDSS-Teff"], coolsamp["Solar K Excess"], marker=".", 
+             color=bc.black, ls="", label="Original")
+    ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+             label="Binned")
+    testx = np.linspace(4000, 5000, endpoint=True)
+    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
+    ax1.set_ylim(0.3, -1.2)
+    ax1.legend(loc="upper left")
+    residual = coolsamp["Solar K Excess"] - cor_poly(coolsamp["SDSS-Teff"])
+    mad = median_absolute_deviation(residual)
+    ax2.plot(coolsamp["SDSS-Teff"], residual, color=bc.black, marker="o", ls="")
+    ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
+             horizontalalignment="center", verticalalignment="center")
+    hr.invert_y_axis(ax2)
+    hr.invert_x_axis(ax2)
+    ax2.set_xlabel("Pinsonneault Teff (K)")
     ax2.set_ylabel("Residual")
 
 def metallicity_corrected_excesses_temperature():
@@ -895,7 +938,8 @@ def collapsed_met_histogram():
     targs = cache.apogee_splitter_with_DSEP()
     cooldwarfs = targs.subsample(["Dwarfs", "Cool Noev"])
 
-    arraylist, bins, patches = plt.hist(
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    arraylist, bins, patches = ax.hist(
         [cooldwarfs["Corrected K Excess"], cooldwarfs["Corrected K Solar"]], 
          bins=80, color=[bc.blue, bc.red], alpha=0.5, range=(-1.6, 1.1),
         label=["[Fe/H] Corrected", "[Fe/H] = 0.08"],  histtype="bar")
@@ -912,13 +956,13 @@ def collapsed_met_histogram():
     fittednomet = fitter(
         dualmodel, (bins[1:]+bins[:-1])/2, nometarray)
     nometmodel = fittednomet(inputexcesses)
-    plt.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
-    plt.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
+    ax.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
+    ax.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
-    plt.xlabel("Metallicity-corrected K Excess")
-    plt.ylabel("N")
-    plt.legend(loc="upper left")
+    ax.set_xlabel("Metallicity-corrected K Excess")
+    ax.set_ylabel("N")
+    ax.legend(loc="upper left")
 
 @write_plot("sample_dk")
 def K_Excess_hr_diagram():
@@ -927,7 +971,7 @@ def K_Excess_hr_diagram():
     dwarfs = targs.subsample(["Dwarfs"])
     fullsamp = targs.subsample(["Not Dwarfs"])
 
-    f, (ax1, ax2) = plt.subplots(2, 1, figsize=(12*2, 12))
+    f, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 9*2))
     hr.absmag_teff_plot(
         dwarfs["TEFF"], dwarfs["K Excess"], marker=".", 
         color=bc.red, ls="", label="MS + Binaries", axis=ax1, zorder=1)
@@ -940,17 +984,23 @@ def K_Excess_hr_diagram():
     ax1.add_patch(inset_box)
     minorLocator = AutoMinorLocator()
     ax1.yaxis.set_minor_locator(minorLocator)
-    ax1.plot([7000, 3000], [0, 0], 'k-')
-    ax1.set_xlim(7000, 3500)
+    ax1.plot([6600, 3000], [0, 0], 'k-')
+    ax1.set_xlim(6600, 3500)
     ax1.set_ylim(3, -15)
     ax1.legend(loc="upper left")
     # Now plot an inset map.
     hr.absmag_teff_plot(
-        dwarfs["TEFF"], dwarfs["K Excess"], marker=".", 
-        color=bc.red, ls="", label="MS + Binaries", axis=ax2)
+        dwarfs["TEFF"], dwarfs["K Excess"], marker=".", color=bc.red, ls="", 
+        label="MS + Binaries", axis=ax2)
     hr.absmag_teff_plot(
-        fullsamp["TEFF"], fullsamp["K Excess"], marker=".", 
-        color=bc.black, ls="", label="Full Sample", axis=ax2)
+        fullsamp["TEFF"], fullsamp["K Excess"], marker=".", color=bc.black, 
+        ls="", label="Full Sample", axis=ax2)
+    hr.absmag_teff_plot(
+        [3900], [-1.25], yerr=[
+            [np.median(dwarfs["K Excess Error Down"])], 
+            [np.median(dwarfs["K Excess Error Up"])]],
+        xerr=[np.median(dwarfs["TEFF_ERR"])], marker="", color=bc.red, ls="",
+        label="", axis=ax2)
     # Plot the bins.
     teff_bin_edges = np.linspace(6000, 4000, 20+1)
     teff_bin_indices = np.digitize(dwarfs["TEFF"], teff_bin_edges)
@@ -1044,7 +1094,6 @@ def teff_comparison_mcquillan():
     ax.set_ylabel("Pinsonneault Teff (K)")
     ax.set_title("Effective Temperature Comparison")
 
-@write_plot("Teff_comparison")
 def compare_photometric_spectroscopic_temperatures():
     '''Plot two-panels to compare photometric to spectroscopic temps.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1140,13 +1189,22 @@ def compare_McQuillan_to_nondetections():
     plt.ylabel("N (< K) / N")
     plt.legend(loc="upper left")
 
+@write_plot("ElBadry_Excess")
+def el_badry_excess():
+    '''Plot the distribution of K Excesses using the El-Badry temperatures.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    cooldwarfs = targs.subsample(["Dwarfs", "ElBadry Statistics Teff"])
 
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    hr.absmag_teff_plot(
+        mcq_cooldwarfs["T_eff [K]"], mcq_cooldwarfs["Corrected K Excess"], 
+        marker=".", color=bc.black, ls="", axis=ax, label="")
 
-@write_plot("rapid_rotator_excess")
+@write_plot("apogee_rapid_excess")
 def rapid_rotator_bins():
     '''Plot the distribution of K Excesses for different bins of rotation.'''
     targs = cache.apogee_splitter_with_DSEP()
-    cooldwarfs = targs.subsample(["Dwarfs"])
+    cooldwarfs = targs.subsample(["Dwarfs", "APOGEE Statistics Teff"])
     mcq = catin.read_McQuillan_catalog()
     ebs = catin.read_villanova_EBs()
     
@@ -1154,11 +1212,11 @@ def rapid_rotator_bins():
     eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
     periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
     f, axes = plt.subplots(
-        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
+        len(periodbins),1, figsize=(12,6*len(periodbins)), sharex=True, 
         sharey=True)
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
-    titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
+    titles = ["{0:d} day < Prot <= {1:d} day".format(p2, p1) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
     titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
     for i, (title, ax) in enumerate(zip(titles, axes)):
@@ -1166,22 +1224,22 @@ def rapid_rotator_bins():
         eb_periodbin = eb_cooldwarfs[eb_period_indices == i+1]
         hr.absmag_teff_plot(
             mcq_cooldwarfs["TEFF"], mcq_cooldwarfs["Corrected K Excess"], 
-            marker=".", color=bc.black, ls="", axis=ax)
+            marker=".", color=bc.black, ls="", axis=ax, label="Full Sample")
         hr.absmag_teff_plot(
             mcq_periodbin["TEFF"], mcq_periodbin["Corrected K Excess"], 
-            marker="o", color=bc.red, ls="", axis=ax)
+            marker="o", color=bc.red, ls="", axis=ax, label="Period in Bin")
         hr.absmag_teff_plot(
             eb_periodbin["TEFF"], eb_periodbin["Corrected K Excess"],
-            marker="*", color=bc.pink, ls="", ms=12, axis=ax)
+            marker="*", color=bc.pink, ls="", ms=12, axis=ax, label="EB")
 
         ax.set_ylabel("Metallicity-Corrected K Excess")
         ax.set_xlabel("")
         ax.set_title(title)
-        ax.plot([3500, 6500], [-0.2, -0.2], 'k--')
-        ax.plot([4000, 4000], [0.3, -1.25], 'k--')
-        ax.plot([5250, 5250], [0.3, -1.25], 'k--')
+        ax.plot([4000, 5000], [-0.2, -0.2], 'k--')
+        plt.setp(ax.get_xticklabels(), visible=True)
+        axes[0].legend(loc="upper left")
     axes[-1].set_xlabel("APOGEE Teff (K)")
-    axes[-1].set_xlim(6500, 3500)
+    axes[-1].set_xlim(5000, 4000)
     axes[-1].set_ylim(0.3, -1.25)
 
 def plot_teff_prov():
@@ -1198,37 +1256,35 @@ def plot_teff_prov():
 @write_plot("full_mcquillan_rr_excess")
 def mcquillan_rapid_rotator_bins():
     '''Plot the rapid rotator bins in the full McQuillan sample.'''
-    mcq = cache.mcquillan_splitter_with_DSEP()
+    mcq = cache.mcquillan_corrected_splitter()
     ebs = cache.eb_splitter_with_DSEP()
-    dwarfs = mcq.subsample(["Dwarfs"])
-    eb_dwarfs = ebs.subsample(["Dwarfs"])
+    dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    eb_dwarfs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
     periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
     f, axes = plt.subplots(
-        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
+        len(periodbins),1, figsize=(12,6*len(periodbins)), sharex=True, 
         sharey=True)
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
     titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
-    titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
     titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
     for i, (title, ax) in enumerate(zip(titles, axes)):
-        mcq_periodbin = dwarfs[mcq_period_indices == i]
-        eb_periodbin = eb_dwarfs[eb_period_indices == i]
+        mcq_periodbin = dwarfs[mcq_period_indices == i+1]
+        eb_periodbin = eb_dwarfs[eb_period_indices == i+1]
         hr.absmag_teff_plot(
-            mcq_periodbin["teff"], mcq_periodbin["Corrected K Excess"], 
+            mcq_periodbin["SDSS-Teff"], mcq_periodbin["Corrected K Excess"], 
             marker="o", color=bc.red, ls="", axis=ax, zorder=1)
         hr.absmag_teff_plot(
-            eb_periodbin["teff"], eb_periodbin["Corrected K Excess"], 
+            eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
             marker="*", color=bc.pink, ls="", ms=12, axis=ax, zorder=2)
         ax.set_ylabel("Teff-Corrected K Excess")
         ax.set_title(title)
         ax.plot([3500, 6500], [-0.3, -0.3], 'k--', zorder=3)
-        ax.plot([4000, 4000], [0.3, -1.25], 'k--', zorder=3)
-        ax.plot([5000, 5000], [0.3, -1.25], 'k--', zorder=3)
-    ax.set_xlabel("KIC DR25 Teff (K)")
-    ax.set_xlim(6500, 3500)
+        ax.plot([3500, 6500], [-0.0, -0.0], 'k-', zorder=4)
+    ax.set_xlabel("Pinsonneault et al (2012) Teff (K)")
+    ax.set_xlim(5000, 4000)
     ax.set_ylim(0.3, -1.25)
 
 def calculate_APOGEE_binary_significance(min_P, max_P):
@@ -1282,8 +1338,6 @@ def calculate_McQuillan_binary_significance(min_P, max_P):
     dwarfs = vstack([
         mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
     dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
-    # We only want detached systems
-    dwarf_ebs = dwarf_ebs[dwarf_ebs["morph"] < 0.55]
 
     # This is the fraction of binaries in the whole sample.
     full_binaryfrac = (
@@ -1312,6 +1366,7 @@ def calculate_McQuillan_binary_significance(min_P, max_P):
     print("Full binary fraction: {0:.2f}".format(full_binaryfrac))
     print(rapidsig)
 
+@write_plot("eclipseprob")
 def verify_eb_rapid_rotator_rate():
     '''Compare the rate of EBs to the rate of rapid rotators.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -1328,29 +1383,88 @@ def verify_eb_rapid_rotator_rate():
 
     f, ax = plt.subplots(1, 1, figsize=(12,12))
     # Now bin the EBs
-    period_bins = np.geomspace(1, 5, 10)
+    period_bins = np.linspace(1, 12, 23+1)
+    print(period_bins)
     period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
+    print(period_bin_centers)
     eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
-    normalized_ebs = eb_hist / (len(dwarfs)+len(dwarf_ebs))
-    ax.step(period_bin_centers, normalized_ebs, where="post", color=bc.red,
-             ls="-", label="EBs")
+    totalobjs = len(dwarfs) + len(dwarf_ebs)
+    normalized_ebs = eb_hist / totalobjs
+    eb_upperlim = (au.poisson_upper(eb_hist, 1) - eb_hist) / totalobjs
+    eb_lowerlim = (eb_hist - au.poisson_lower(eb_hist, 1)) / totalobjs
+    print(eb_upperlim)
+    ax.step(period_bins, np.append(normalized_ebs, [0]), where="post", 
+            color=bc.red, ls="-", label="EBs")
+    ax.errorbar(period_bin_centers, normalized_ebs, 
+                yerr=[eb_lowerlim, eb_upperlim], marker="", ls="",
+                color=bc.red, capsize=5)
     ax.set_xscale("linear")
 
     # Bin the rapid rotators
     rapid_hist, _ = np.histogram(mcq_dwarfs["Prot"], bins=period_bins)
-    normalized_rapid = rapid_hist / (len(dwarfs)+len(dwarf_ebs))
-    ax.step(period_bin_centers, normalized_rapid, where="post", color=bc.blue,
+    normalized_rapid = rapid_hist / totalobjs 
+    rapid_upperlim = (au.poisson_upper(rapid_hist, 1) - rapid_hist) / totalobjs
+    rapid_lowerlim = (rapid_hist - au.poisson_lower(rapid_hist, 1)) / totalobjs
+    print(rapid_upperlim)
+    ax.step(period_bins, np.append(normalized_rapid, [0]), where="post", color=bc.blue,
             ls="-", label="Rapid rotators")
+    ax.errorbar(period_bin_centers, normalized_rapid, 
+            yerr=[rapid_lowerlim, rapid_upperlim], marker="", ls="", 
+            color=bc.blue, capsize=5)
 
     correction_spline = ebs.read_Kirk_geometric_correction_spline()
     correction_factors = correction_spline(np.log10(period_bin_centers))
-    eb_predictions = correction_factors * normalized_rapid
-    ax.step(period_bin_centers, eb_predictions, where="post", color=bc.blue,
-            linestyle=":", label="Predicted EBs from Rapid rotators")
+    pred_hist = normalized_rapid * correction_factors / (np.sqrt(3)/2)
+    pred_upperlim =  rapid_upperlim * correction_factors
+    pred_lowerlim = rapid_lowerlim * correction_factors
+    print(pred_upperlim)
+    ax.step(period_bins, np.append(pred_hist, [0]), where="post", color=bc.blue,
+            linestyle=":", label="Predicted EBs from Rapid Rotators")
+    ax.errorbar(period_bin_centers, pred_hist, 
+            yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
+            color=bc.blue, capsize=5)
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
-    ax.legend(loc="center right")
+    ax.legend(loc="upper left")
     
+def tsb_distribution():
+    '''Try to measure the tidally-synchronized binary distribution.
+    
+    This is done by assuming that full sample is made up of two populations
+    with different binary fractions: a single-star evolution sequence with the
+    binary fraction of the full sample, and a tidally-synchronized sequence
+    with the binary fraction of '''
+    mcq = cache.mcquillan_corrected_splitter()
+    nomcq = cache.mcquillan_nondetections_corrected_splitter()
+    eb_split = cache.eb_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarfs = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    generic_columns = ["Corrected K Excess"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    dwarf_ebs = eb_split.subsample(["Dwarfs", "Right Statistics Teff"])
+    # We only want detached systems
+    dwarf_ebs = dwarf_ebs[dwarf_ebs["period"] > 1]
+
+    # Define the binary fractions
+    f_ss = ((np.count_nonzero(dwarfs["Corrected K Excess"] < -0.2) +
+            np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.2)) /
+            (len(dwarfs) + len(dwarf_ebs)))
+    mcq_rapid = np.logical_and(mcq_dwarfs["Prot"] > 1, mcq_dwarfs["Prot"] < 5)
+    eb_rapid = np.logical_and(dwarf_ebs["period"] > 1, dwarf_ebs["period"] < 5)
+    f_ts = (
+        (np.count_nonzero(
+            mcq_dwarfs["Corrected K Excess"][mcq_rapid] < -0.2) + 
+         np.count_nonzero(
+             dwarf_ebs["Corrected K Excess"][eb_rapid] < -0.2)) /
+            (np.count_nonzero(mcq_rapid) + np.count_nonzero(eb_rapid)))
+    # I did the math with binary-to-single ratios instead of binary fractions, 
+    # so this is a quick substitute to avoid a bunch of algebra.
+    e_ss = f_ss/(1-f_ss)
+    e_ts = f_ts/(1-f_ts)
+
+    periodbins = np.linspace(1, 10, 9+1, endpoint=True)
+    binary_perioddist 
 
 @write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
