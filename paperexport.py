@@ -1197,8 +1197,17 @@ def el_badry_excess():
 
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
     hr.absmag_teff_plot(
-        mcq_cooldwarfs["T_eff [K]"], mcq_cooldwarfs["Corrected K Excess"], 
-        marker=".", color=bc.black, ls="", axis=ax, label="")
+        cooldwarfs["TEFF"], cooldwarfs["Corrected K Excess"], 
+        marker=".", color=bc.black, ls="", axis=ax, label="ASPCAP", zorder=2)
+    hr.absmag_teff_plot(
+        cooldwarfs["T_eff [K]"], cooldwarfs["Corrected Elbadry K Excess"], 
+        marker=".", color=bc.red, ls="", axis=ax, label="El-Badry", zorder=1)
+    for (apoteff, apoex, elbteff, elbex) in zip(
+            cooldwarfs["TEFF"], cooldwarfs["Corrected K Excess"], 
+            cooldwarfs["T_eff [K]"], cooldwarfs["Corrected Elbadry K Excess"]):
+        ax.arrow(apoteff, apoex, (elbteff-apoteff), (elbex-apoex))
+    ax.set_xlabel("Teff (K)")
+    ax.set_ylabel("K Excess")
 
 @write_plot("apogee_rapid_excess")
 def rapid_rotator_bins():

@@ -122,6 +122,27 @@ def apogee_splitter_with_DSEP():
     clean.data["Corrected Phot Teff K Excess"] = np.ma.masked_values(
         clean.data["Corrected Phot Teff K Excess"], -9999.0)
 
+    # Now do a split based solely on the El-Badry temperatures.
+    # Since only a subset of these objects have El-Badry temperatues, I need to
+    # be wary of masked  values.
+    elbadry_teff_indices = ~clean.data["T_eff [K]"].mask
+    clean.data["ElBadry K"] = np.ma.ones(len(clean.data))*-9999.0
+    clean.data["ElBadry K"][elbadry_teff_indices] = np.diag(
+        samp.calc_model_mag_fixed_age_alpha(
+            clean.data["T_eff [K]"][elbadry_teff_indices], 
+            clean.data["[Fe/H] [dex]"][elbadry_teff_indices], "Ks", age=1e9, 
+            model="MIST"))
+    clean.data["ElBadry K"] = np.ma.masked_values(
+        clean.data["ElBadry K"], -9999.0)
+    clean.data["ElBadry K Excess"] = (
+        clean.data["M_K"] - clean.data["ElBadry K"] - 
+        polycorrect(clean.data["[Fe/H] [dex]"]))
+    # Since the El-Badry temperatures should be identical to the APOGEE ones,
+    # use the APOGEE fit instead.
+    clean.data["Corrected ElBadry K Excess"] = (
+        clean.data["ElBadry K Excess"] - tempcorrect(
+            clean.data["T_eff [K]"]))
+
     return clean
 
 @au.memoized
