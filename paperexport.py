@@ -1196,18 +1196,25 @@ def el_badry_excess():
     cooldwarfs = targs.subsample(["Dwarfs", "ElBadry Statistics Teff"])
 
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    singleinds = cooldwarfs["Binarity"] == "Single"
+    singles = cooldwarfs[singleinds]
     hr.absmag_teff_plot(
-        cooldwarfs["TEFF"], cooldwarfs["Corrected K Excess"], 
-        marker=".", color=bc.black, ls="", axis=ax, label="ASPCAP", zorder=2)
+        singles["TEFF"], singles["Corrected K Excess"], 
+        marker=".", color=bc.black, ls="", axis=ax, label="Single Stars", zorder=2)
+    multiples = cooldwarfs[~singleinds]
     hr.absmag_teff_plot(
-        cooldwarfs["T_eff [K]"], cooldwarfs["Corrected Elbadry K Excess"], 
-        marker=".", color=bc.red, ls="", axis=ax, label="El-Badry", zorder=1)
+        multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"], 
+        marker="*", color=bc.red, ls="", axis=ax, label="El-Badry", ms=7)
+    hr.absmag_teff_plot(
+        multiples["TEFF"], multiples["Corrected K Excess"], 
+        marker="*", color=bc.black, ls="", axis=ax, label="ASPCAP", ms=7)
     for (apoteff, apoex, elbteff, elbex) in zip(
-            cooldwarfs["TEFF"], cooldwarfs["Corrected K Excess"], 
-            cooldwarfs["T_eff [K]"], cooldwarfs["Corrected Elbadry K Excess"]):
+            multiples["TEFF"], multiples["Corrected K Excess"], 
+            multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"]):
         ax.arrow(apoteff, apoex, (elbteff-apoteff), (elbex-apoex))
     ax.set_xlabel("Teff (K)")
     ax.set_ylabel("K Excess")
+    ax.legend(loc="lower right")
 
 @write_plot("apogee_rapid_excess")
 def rapid_rotator_bins():
