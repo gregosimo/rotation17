@@ -51,19 +51,21 @@ Phenomenon}
 \email{simonian@astronomy.ohio-state.edu}
 
 \begin{abstract}
-    The \Kepler{} fields have yielded a large data set of photometric rotation
-    periods, many of which rotate more rapidly than expected for a \(> 1\) Gyr
-    population. We use \Gaia{} parallaxes to study the binarity properties of
-    the cool, rapid rotators both with and without spectroscopic
-    characterization with APOGEE\@. We find that rapid rotators with rotation
-    periods less than 7 days have a larger fraction of photometric binaries
-    than the full rotation sample. The period distribution faster than 7 days
-    is also consistent with the eclipsing binary distribution, indicating that
-    the rapid rotators are dominated by tidally-synchronized binaries rather
-    than single-stars obeying traditional angular momentum evolution. The high
-    prevalence of tidally-synchronized binaries indicates that caution should
-    be taken before interpreting rapid rotation in the \Kepler{} field as a
-    signature of youth. This new sample of 168 tidally-synchronized binaries
+    Tens of thousands of rotation periods have been measured in the
+    \Kepler{} fields, including a substantial fraction of rapid rotators. We 
+    use \Gaia{} parallaxes to distinguish photometric binaries (PBs) from
+    single stars on the unevolved lower main sequence, and compare their
+    distribution of rotation properties to those of single stars both with and 
+    without APOGEE spectroscopic characterization. Virtually all stars 
+    with rotation periods less than 7 days are PBs, and the fraction of stars
+    with \(P < 7\) days \gvs{Insert fraction here} is also consistent with the
+    population of short period binaries inferred by \Kepler{} eclipsing binary
+    data after correcting for inclination \gvs{Insert predicted fraction.}
+    This indicates that the rapid rotators are dominated by 
+    tidally-synchronized binaries rather than single-stars obeying traditional 
+    angular momentum evolution. As a result, caution should be taken before 
+    interpreting rapid rotation in the \Kepler{} field as a signature of 
+    youth. This new sample of 168 candidate tidally-synchronized binaries 
     should also be characterized to understand tidal processes in stars.
 \end{abstract}
 \keywords{stars: rotation}
@@ -73,89 +75,73 @@ Phenomenon}
 Rotation is a fundamental property of stars; it impacts their lifetimes, can
 induce mixing, and can serve as a population diagnostic. Stars are also born 
 with a wide range of rotation rates \citep{Attridge92, Herbst00, Henderson12}.
-With a strong dependence on stellar mass. \citet{Kraft67} noted a dichotomy in
-rotation rates among field stars hotter than 6200 K rotating with a wide range
-of \vsini, and those cooler than 6200 K, including the Sun, rotation with
-largely undetectable \vsini. This abrupt transition is due to the onset of
-convective envelopes for lower-mass stars, which enables efficient angular
-momentum loss through magnetized winds \citep{Parker58,Weber67}.
+With a strong dependence on stellar mass. The observed rotation rates are also
+strikingly different in high and low mass stars. \citet{Kraft67} noted a 
+dichotomy in rotation rates among field stars hotter than 6200 K rotating 
+with a wide range of \vsini, and those cooler than 6200 K, including the Sun, 
+rotation with largely undetectable \vsini. This abrupt transition is thought to
+be due to the onset of convective envelopes for lower-mass stars, which 
+enables efficient angular momentum loss through magnetized winds 
+\citep{Parker58,Weber67}.
 
 The strong dependence of angular momentum loss on rotation \citep{Kawaler88}
 leads to the rapid convergence of a wide range of rotation rates to a unique
-value for stars older than 0.5 Gyr \citep{Pinsonneault89}. Rotation is
-therefore a potentially valuable age diagnostic for stellar populations
-\citep{Skumanich72}; this has been used to derive empirical relationships for
-field populations, sometimes referred to as gyrochronology \citep{Barnes07,
-Mamajek08, Meibom09}.  
+mass-dependent value; for solar-type stars convergence is nearly complete by
+0.5 Gyr \citep{Pinsonneault89}. Rotation is therefore an age indicator for 
+stellar populations \citep{Skumanich72}; and correlations between rotation and
+age been used to derive empirical relationships for field populations, 
+sometimes referred to as gyrochronology \citep{Barnes07, Mamajek08, Meibom09}.  
+A full theoretical treatment of gyrochronology requires evolutionary stellar 
+models that include a variety of physical effects (see \citet{Gallet13} for an
+overview). Models of angular momentum evolution have usually been calibrated 
+using rotation periods in star clusters, which have known ages and are easily 
+characterized \citep{Krishnamurthi97, Gallet13, Somers17}. The calibrating 
+clusters are typically young (\(< 1\) Gyr), with the behavior at old ages anchored by the Sun. 
 
-Angular momentum evolution models have usually been calibrated using rotation periods in
-star clusters, which have known ages and are easily characterized
-\citep{Krishnamurthi97, Gallet13, Somers17}. The calibrating clusters are typically
-young (\(< 1\) Gyr), with the behavior at old ages anchored by the Sun. A full 
-theoretical treatment of gyrochronology requires evolutionary stellar models 
-that include a variety of physical effects (see \citet{Gallet13} for an
-overview).
-
-The \Kepler{} satellite \citep{Borucki10,Koch10}, which observed the same
-region of the sky for over four years, has revolutionized our ability to
-measure stellar rotation. Large-scale analyses have extracted rotation periods
-from the light curves of tens of thousands of stars \citep{Nielsen13,
-Reinhold13, Garcia14, McQuillan14} in the field. These rotation periods along 
-with a field gyrochronology are expected to provide insights on the age 
+The \Kepler{} satellite \citep{Borucki10,Koch10}, which observed a single field
+for over four years, has revolutionized our ability to measure stellar 
+rotation in old field populations. Large-scale analyses have extracted 
+rotation periods from the light curves of tens of thousands of field stars
+\citep{Nielsen13, Reinhold13, Garcia14, McQuillan14}. These rotation periods, 
+along with a field gyrochronology, are expected to provide insights on the age 
 distribution of the field, and thus provide more accurate representation of 
 transiting exoplanets.
 
 The new observations of old field stars enabled by \Kepler{} have challenged 
 our theories of angular momentum evolution on multiple fronts. Existing 
 gyrochronological models anchored at the Sun have not been able to explain
-the rotation of field stars with asteroseismic ages \citep{Angus15, 
-VanSaders16}. The \Kepler{} population at long periods shows a sharp
-discontinuity which is not predicted by stellar models \citep{VanSaders18}. 
-Nearby K- and M-dwarfs show a bimodality in the period distribution which has
-no clear explanation in stellar physics \citep{Davenport18}. Additionally,
-there are substantially more rapid rotators than predicted
-A major puzzle to come out of the large sample of rotation period data is that
-around 10\% of the dwarfs observed by \Kepler{} show shorter rotation periods 
-than expected for a 1 Gyr population. There have been signs that the
-\Kepler{} field may have a larger youthful population than previously expected
-\citep{Berger18a}. While the rate of rapid rotators is in potential agreement
-with a larger population of young stars, rapid rotators can also be explained
-by other properties other than youth.
+the relatively rapid rotation of old field stars with ages inferred from
+asteroseismic data \citep{Angus15, VanSaders16}. The \Kepler{} population at 
+long periods shows a sharp drop-off which is not predicted by stellar models 
+\citep{VanSaders18}.  Nearby K- and M-dwarfs show a bimodality in the period 
+distribution which has no clear explanation in stellar physics 
+\citep{Davenport18}. There is also a modest, but real, population of rapid 
+rotators that would be interpreted as young if they were single main sequence 
+stars.
 
+The \Kepler{} field contains a mixture of stellar populations, not all of which
+have been calibrated in clusters. Subgiants, while being rare in the clusters used to calibrate gyrochronology, 
+make up 20\% of \Kepler{} targets \citep{Gaidos13, Berger18b}. Since the 
+subgiant population contains stars expanding off the main sequence from 
+above the Kraft break, they obey a different gyrochronology relation than that 
+calibrated for cluster dwarfs \citep{vanSaders13}. 
 
-As a galactic field population the \Kepler{} field contains heterogeneous
-mixture of stellar populations not compatible with existing gyrochronological
-relations which have been difficult to disentangle using only photometry.
-Subgiants, while being rare in clusters, make up 20\% of \Kepler{} targets
-\citep{Gaidos13, Berger18b}. Since the subgiant population consists of stars
-expanding off the main sequence from above the Kraft break, they obey a
-different gyrochronology relation than that calibrated for dwarfs in clusters
-\citep{vanSaders13}. 
+Another population which has not been calibrated in clusters is
+tidally-synchronized binaries. These binaries have orbital periods short enough
+that tidal interactions force the orbital period to match the rotation period.
+Existing models of tidal theory \citep{Zahn77} predict a strong dependence of 
+the synchronization timescale on period, leading to rapid transition between
+synchronized and unsynchronized systems. Current observations place the
+synchronization period between 5--9 days \citep{Raghavan10}. Understanding the 
+age distribution of the \Kepler{} field at the young end will require 
+characterizing the background population of tidally-synchronized binaries.
 
-The interpretation of gyrochronology will also be affected by binaries,
-particularly in the short-period end. One widespread but minor effect of
-binarity is the inference of incorrect stellar parameters due to the 
-secondary's flux \citep{ElBadry18a,Jackson18}. A strong, but dominating effect
-is the presence of binaries with orbital periods short enough to tidally 
-synchronize the rotation and orbital periods. Such systems would not be 
-expected to follow the field gyrochronology relationship at all.  
-Understanding the age distribution of the \Kepler{} field at the young end 
-will require characterizing the background population of tidally-synchronized 
-binaries.
-
-In addition to providing better ages, a large sample of tidally-synchronized
-binaries would be valuable in and of itself. Existing models of tidal
-theory \citep{Zahn77} predict a strong dependence of synchronization timescale
-on period, leading to an observable cutoff period, below which systems are
-synchronized, and above which the periods are unaffected. 
-
-Tidally-synchronized binaries themselves play a part in a complex web of
-phenomena, and are equally worthy of study. These systems are thought to be
-dynamically-formed through interactions with a third body
-\citep{Tokovinin06, Fabrycky07}. Once formed, they can experience significant
+Tidally-synchronized binaries themselves are in the center of interesting
+dynamical phenomena. These systems are thought to be dynamically-formed 
+through three-body interactions \citep{Tokovinin06, Fabrycky07}. Once formed, they can experience significant
 evolution in orbital period due to angular momentum loss \citep{Andronov06}.
-Depending on the rate of angular momentum loss, they can merge to form contact
-binaries, blue stragglers, or pre-CV systems.
+Depending on the rate of angular momentum loss, they can merge to form blue 
+stragglers or pre-CV systems.
 
 Tidally-synchronized binaries have been difficult to study because they are 
 intrinsically rare and usually require significant spectroscopic resources 
@@ -172,11 +158,12 @@ substantially more luminous than the main sequence due to the expansion of
 their stellar envelopes. Lastly, binaries should be up to twice as luminous as
 the main sequence, extending up to 0.75 mag above the single-star sequence.
 While these populations overlap for hot stars, the subgiants and binaries
-should separate cleanly on the lower main sequence.
+separate cleanly on the lower main sequence.
 
 An additional constraint on the populations comes from the substantial sample
 of spectroscopically-characterized dwarfs from the Apache Point Observatory
-Galactic Evolution Experiment (APOGEE) \citep{Majewski17}. Approximately 5000 dwarfs and subgiants
+Galactic Evolution Experiment (APOGEE) \citep{Majewski17}. A total of 
+approximately 5000 \gvs{Exact number} dwarfs and subgiants
 have been observed in the \Kepler{} field with reliable effective temperature
 and metallicities \citep{Holtzmann18}. This sample will be valuable for
 understanding the importance of metallicity to identify populations of
@@ -226,21 +213,19 @@ photometrically-derived input values from the KIC \citep{Brown11}, but in cases
 where more precise constraints can be found in the literature, such as
 spectroscopic parameters, those are inputted instead.
 
-Instead of using \Teff{} from the KSPC, we opted to use temperatures from
-\citet{Pinsonneault12} to ensure uniformly analyzed temperatures. The
-sophisticated machinery of the KSPC imprints artifacts in the \Teff{}
+The sophisticated machinery of the KSPC imprints artifacts in the \Teff{}
 distribution of cool dwarfs from attempting to stich together the temperature
-scales of \citet{Pinsonneault12} and \citet{Dressing13}. Because our analysis
-requires a well-defined main sequence, we opt to use the \citet{Pinsonneault12}
-temperature scale. Use of the \citet{Pinsonneault12} scale only leads to a 20 K
-systematic uncertainty \citep{Huber17}, which can be more easily corrected for 
-in our analysis.
+scales of \citet{Pinsonneault12} and \citet{Dressing13}. Instead of using
+\Teff{} from the KSPC, we therefore opted to use temperatures from 
+\citet{Pinsonneault12} to ensure uniformly analyzed temperatures; this data is
+close to the KSPC scale globally \citep{Huber17}.
 
-For this paper, we also make use of extinctions and distances from the KSPC\.
-Unlike the temperature, which is fit directly to the grid of models, the
-distance and extinction are inferred from the predicted absolute magnitude and
-a 3D extinction map \citep{Amores05} The extinction is given as \(A_V\), which we
-convert to other bands using the \citep{Cardelli89} extinction law.
+For this paper, we also make use of extinctions from the KSPC\@. The extinction 
+are inferred from the predicted absolute magnitude given KSPC parameters, and
+a 3D extinction map \citep{Amores05}. The extinction is given as \(A_V\), which we
+convert to other bands using the \citep{Cardelli89} extinction law. Distances
+from the KSPC are used purely for illustrative purposes in
+\cref{fig:mcquillan_selection,fig:apogee_selection}.
 
 \subsection{Astrometric Data}
 
@@ -791,6 +776,17 @@ to be driven to circular orbits by Kozai Oscillations and Tidal Friction
 environment. A thorough study of field tidally-synchronized binaries will also
 help understand the merger population in the field.
 
+\begin{figure}[htb]
+    \centering
+    \plotone{ElBadry_Excess}
+    \caption{The sample of APOGEE targets analyzed by \citet{ElBadry18b} for
+    spectroscopic signs of a companion. Black points indicate the DR14 ASPCAP
+values for the targets. Red points indicate the revised temperatures, and the
+K-band luminosity excess derived from the revised temperature and metallicity
+in \citet{ElBadry18b}.}
+    \label{fig:elbadry_excess}
+\end{figure}
+
 One of the surprising results we noted was the abundance of systems with
 luminosity excesses greater twice the single-star luminosity, even up to
 greater than three times the single-star luminosity. One potential
@@ -799,7 +795,15 @@ to be cooler than the actual primary temperature \citep{ElBadry18a}, causing the
 luminosity to be underestimated. As a test, we use temperatures from
 two-component fits that were performed for a subset of the stars in our sample
 with APOGEE DR13 spectra \citep{ElBadry18b}. The revised APOGEE temperatures are
-shown in \gvs{Continue this analysis.}
+shown in \cref{fig:elbadry_excess}.
+
+As seen in the bulk binary sample, the effect of binarity is substantial. The
+inferred primary temperature may be off by several hundred Kelvin at
+intermediate values of the excess, leading to the K-band luminosity excess to
+be overestimated by up to 0.3 mag. The difference in temperature is less severe
+for targets with high luminosity excesses, which is to be expected because the
+two stellar components have similar spectra. However, the effect is still
+non-negligible.
 
 \section{Conclusion}
 \label{sec:conclusions}
