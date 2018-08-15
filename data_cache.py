@@ -280,7 +280,7 @@ def eb_splitter_with_DSEP():
             "Too Cool MetCor", "Right MetCor Teff", "Too Hot MetCor", 
             "No Huber Teff"), teff_crit="MetCor Teff", null_value=np.ma.masked)
     eb_splitter.split_teff(
-        "SDSS-Teff", [4000, 5000], (
+        "SDSS-Teff", [4000, 5250], (
             "Too Cool Statistics", "Right Statistics Teff", 
             "Too Hot Statistics", "No Statistics Teff"), 
         teff_crit="Statistics Teff", null_value=np.ma.masked)
