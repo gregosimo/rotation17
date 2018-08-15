@@ -1443,6 +1443,37 @@ def verify_eb_rapid_rotator_rate():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
     ax.legend(loc="upper left")
+
+@write_plot("vsini_check")
+def vsini_check():
+    '''Plot showing that photometric rapid rotators have high vsini.'''
+    targs = cache.apogee_splitter_with_DSEP()
+    cooldwarfs = targs.subsample(["Dwarfs", "APOGEE Statistics Teff"])
+    mcq = catin.read_McQuillan_catalog()
+    ebs = catin.read_villanova_EBs()
+    
+    mcq_cooldwarfs = au.join_by_id(cooldwarfs, mcq, "kepid", "KIC")
+    eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
+    rapid = np.logical_and(
+        mcq_cooldwarfs["Prot"] < 5, mcq_cooldwarfs["Prot"] > 1)
+    veryrapid = mcq_cooldwarfs["Prot"] < 1
+    slow = np.logical_and(~rapid, ~veryrapid)
+    print(np.count_nonzero(veryrapid))
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    ax.plot(mcq_cooldwarfs[slow]["VSINI"], 
+            mcq_cooldwarfs[slow]["Corrected K Excess"], color=bc.black, 
+            marker=".", ls="", label="P > 5 day")
+    ax.plot(mcq_cooldwarfs[rapid]["VSINI"], 
+            mcq_cooldwarfs[rapid]["Corrected K Excess"], color=bc.violet,
+            marker="o", ls="", ms=8, label="1 day < P < 5 day")
+    ax.plot(mcq_cooldwarfs[veryrapid]["VSINI"], 
+            mcq_cooldwarfs[veryrapid]["Corrected K Excess"], color=bc.blue, 
+            marker=".", ls="", label="P < 1 day")
+    ax.set_xlabel(r"$v \sin i$")
+    ax.set_ylabel("Corrected K Excess")
+    ax.legend(loc="lower right")
+    hr.invert_y_axis(ax)
     
 def tsb_distribution():
     '''Try to measure the tidally-synchronized binary distribution.
