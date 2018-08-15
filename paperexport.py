@@ -1356,10 +1356,10 @@ def calculate_McQuillan_binary_significance(min_P, max_P):
     dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
     # This is the fraction of binaries in the whole sample.
-    full_binaryfrac = (
-        (np.count_nonzero(dwarfs["Corrected K Excess"] < -0.2) +
-         np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.2))/
-        (len(dwarfs) + len(dwarf_ebs)))
+    total_binaries = (
+        np.count_nonzero(dwarfs["Corrected K Excess"] < -0.2) + 
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.2))
+    full_binaryfrac = total_binaries / (len(dwarfs) + len(dwarf_ebs))
     # Number of rapid rotators.
     rapidrot = np.logical_and(
         mcq_dwarfs["Prot"] > min_P, mcq_dwarfs["Prot"] < max_P)
@@ -1380,6 +1380,7 @@ def calculate_McQuillan_binary_significance(min_P, max_P):
     print("Number of rapid binaries: {0:d}".format(rapidbins+rapidebbins))
     print("Number of rapid rotators: {0:d}".format(fullrapid))
     print("Full binary fraction: {0:.2f}".format(full_binaryfrac))
+    print("Total sample: {0:.2f}".format(len(dwarfs)+len(dwarf_ebs)))
     print(rapidsig)
 
 @write_plot("eclipseprob")
