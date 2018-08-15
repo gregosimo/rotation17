@@ -182,21 +182,13 @@ def mcquillan_selection_coordinates():
         dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
         avupcol="av_err1", avdowncol="av_err2")
 
-    f, (ax1, ax2, ax3) = plt.subplots(
-        1,3, figsize=(36,12))
+    f, (ax2, ax3) = plt.subplots(
+        1,2, figsize=(24,12))
     teff_bin_edges = np.arange(4000, 7000, 50)
     mk_bin_edges = np.arange(-7, 8, 0.02)
 
     count_cmap = plt.get_cmap("viridis")
     count_cmap.set_under("white")
-    mcq_kic_hist, xedges, yedges = np.histogram2d(
-        mcq["SDSS-Teff"], mcq["KIC M_K"], bins=(teff_bin_edges, mk_bin_edges))
-    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-    # This is to distinguish 0 in the colormap.
-    im = ax1.imshow(mcq_kic_hist.T, origin="lower", extent=extent,
-               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
-               cmap=count_cmap, norm=Normalize(vmin=1))
-    f.colorbar(im, ax=ax1)
     mcq_gaia_hist, xedges, yedges = np.histogram2d(
         mcq["SDSS-Teff"], mcq["M_K"], bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
@@ -214,27 +206,8 @@ def mcquillan_selection_coordinates():
     im = ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
                cmap=ratio_cmap)
-
-    # Overplot isochrones on the figure.
-    testteff=np.linspace(4000, 6500, 1000)
-    mistiso = mist.MISTIsochrone.isochrone_from_file(0.0)
-    youngks = samp.calc_model_mag_fixed_age_feh_alpha(
-        testteff, 0.0, "Ks", age=1e9)
-    oldks = samp.calc_model_mag_fixed_age_feh_alpha(
-        testteff, 0.0, "Ks", age=9e9)
-    hr.absmag_teff_plot(testteff, youngks, color=bc.blue, marker="", ls="-",
-                        axis=ax3, label="1 Gyr")
-    hr.absmag_teff_plot(testteff, oldks, color=bc.red, marker="", ls="-",
-                        axis=ax3, label="9 Gyr")
-
-
     f.colorbar(im, ax=ax3)
 
-    ax1.set_xlim(7000, 4000)
-    ax1.set_ylim(8, -7)
-    ax1.set_ylabel("KIC $M_K$")
-    ax1.set_xlabel("Pinsonneault et al (2012) Teff (K)")
-    ax1.set_title("Pre-Gaia period detections")
     ax2.set_xlim(7000, 4000)
     ax2.set_ylim(8, -7)
     ax2.set_ylabel("Gaia $M_K$")
@@ -244,7 +217,6 @@ def mcquillan_selection_coordinates():
     ax3.set_ylim(8, -7)
     ax3.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax3.set_title("Post-Gaia detection fraction")
-    plt.legend(loc="upper left")
 
 def isochrone_radius_teff_age():
     '''Plot how the radius changes with age as a function of Teff.'''
