@@ -92,11 +92,6 @@ def missing_gaia_targets():
 def apogee_selection_coordinates():
     '''Show the APOGEE and McQuillan samples in selection coordinates.'''
     clean_apogee = cache.clean_apogee_splitter()
-    catalog.generate_abs_mag_column_with_errors(
-        clean_apogee.data, "K", "K_ERR", "KIC M_K", "KIC M_K_err1", 
-        "KIC M_K_err2", samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist",
-        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
-        avupcol="av_err1", avdowncol="av_err2")
 
     f, (ax1, ax2) = plt.subplots(1,2, figsize=(24, 12), sharex=True, sharey=True)
     cool_dwarfs = clean_apogee.subsample(["APOGEE_KEPLER_COOLDWARF"])
@@ -111,91 +106,65 @@ def apogee_selection_coordinates():
     apogee_hosts = clean_apogee.subsample(["APOGEE_KEPLER_HOST"])
     fullsample = clean_apogee.subsample([])
 
-
-
     hr.absmag_teff_plot(
-        apokasc_giant["TEFF"], apokasc_giant["KIC M_K"], color=bc.green, 
-        marker=".", ls="", label="APOKASC Giant", axis=ax1)
+        apokasc_giant["TEFF"], apokasc_giant["M_K"], color=bc.black,
+        marker=".", ls="", label="", axis=ax1, zorder=1)
     hr.absmag_teff_plot(
-        apokasc_dwarf["TEFF"], apokasc_dwarf["KIC M_K"], color=bc.blue, 
-        marker=".", ls="", label="APOKASC Dwarf", axis=ax1)
+        apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.black, marker=".", 
+        ls="", label="", axis=ax1, zorder=1)
     hr.absmag_teff_plot(
-        apogee_seismic["TEFF"], apogee_seismic["KIC M_K"], color=bc.violet, 
+        apogee_seismic["TEFF"], apogee_seismic["M_K"], color=bc.black, 
         marker=".", ls="", label="Asteroseismic", axis=ax1)
     hr.absmag_teff_plot(
-        cool_dwarfs["TEFF"], cool_dwarfs["KIC M_K"], color=bc.red, marker=".", 
-        ls="", label="Cool Dwarf", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee_EB["TEFF"], apogee_EB["KIC M_K"], color=bc.sky_blue, marker="8", 
-        ls="", label="Eclipsing Binary", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee2_EB["TEFF"], apogee2_EB["KIC M_K"], color=bc.sky_blue, 
-        marker="8", ls="", label="", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee2_koi["TEFF"], apogee2_koi["KIC M_K"], color=bc.purple, 
-        marker="d", ls="", label="KOI", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee2_koi_control["TEFF"], apogee2_koi_control["KIC M_K"],
-        color=bc.purple, marker="d", ls="", label="", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee2_monitor["TEFF"], apogee2_monitor["KIC M_K"], color=bc.purple, 
-        marker="d", ls="", label="RV Monitor", axis=ax1)
-    hr.absmag_teff_plot(
-        apogee_hosts["TEFF"], apogee_hosts["KIC M_K"], color=bc.purple, 
-        marker="d", ls="", label="", axis=ax1)
-
-    hr.absmag_teff_plot(
-        apokasc_giant["TEFF"], apokasc_giant["M_K"], color=bc.green, 
-        marker=".", ls="", label="APOKASC Giant", axis=ax2)
-    hr.absmag_teff_plot(
-        apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.blue, marker=".", 
-        ls="", label="APOKASC Dwarf", axis=ax2)
-    hr.absmag_teff_plot(
-        apogee_seismic["TEFF"], apogee_seismic["M_K"], color=bc.violet, 
-        marker=".", ls="", label="Asteroseismic", axis=ax2)
-    hr.absmag_teff_plot(
-        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.red, marker=".", 
-        ls="", label="Cool Dwarf", axis=ax2)
+        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.brown, marker=".", 
+        ls="", label="Cool Dwarf", axis=ax1, zorder=2)
     hr.absmag_teff_plot(
         apogee_EB["TEFF"], apogee_EB["M_K"], color=bc.sky_blue, marker="8", 
-        ls="", label="Eclipsing Binary", axis=ax2)
+        ls="", label="Eclipsing Binary", axis=ax1, zorder=4)
     hr.absmag_teff_plot(
         apogee2_EB["TEFF"], apogee2_EB["M_K"], color=bc.sky_blue, 
-        marker="8", ls="", label="", axis=ax2)
+        marker="8", ls="", label="", axis=ax1, zorder=4)
     hr.absmag_teff_plot(
         apogee2_koi["TEFF"], apogee2_koi["M_K"], color=bc.purple, 
-        marker="d", ls="", label="KOI", axis=ax2)
+        marker="d", ls="", label="KOI", axis=ax1, zorder=3)
     hr.absmag_teff_plot(
         apogee2_koi_control["TEFF"], apogee2_koi_control["M_K"],
-        color=bc.purple, marker="d", ls="", label="", axis=ax2)
+        color=bc.purple, marker="d", ls="", label="", axis=ax1, zorder=3)
     hr.absmag_teff_plot(
         apogee2_monitor["TEFF"], apogee2_monitor["M_K"], color=bc.purple, 
-        marker="d", ls="", label="", axis=ax2)
+        marker="d", ls="", label="", axis=ax1, zorder=3)
     hr.absmag_teff_plot(
         apogee_hosts["TEFF"], apogee_hosts["M_K"], color=bc.purple, 
-        marker="d", ls="", label="", axis=ax2)
+        marker="d", ls="", label="", axis=ax1, zorder=3)
+
+    teff_bin_edges = np.arange(3500, 7000, 100)
+    mk_bin_edges = np.arange(-8, 8, 0.02)
+    count_cmap = plt.get_cmap("viridis")
+    count_cmap.set_under("white")
+    apogee_hist, xedges, yedges = np.histogram2d(
+        fullsample["TEFF"], fullsample["M_K"], 
+        bins=(teff_bin_edges, mk_bin_edges))
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    im = ax2.imshow(apogee_hist.T, origin="lower", extent=extent,
+               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
+               cmap=count_cmap, norm=Normalize(vmin=1, vmax=10))
+    f.colorbar(im, ax=ax2)
 
     # Add a representative error bar.
     dwarfs = np.logical_and(
         fullsample["TEFF"] < 5500, fullsample["M_K"] > 2.95)
     teff_error=120
-    median_kic_errup = np.median(fullsample["KIC M_K_err1"])
-    median_kic_errdown = np.median(fullsample["KIC M_K_err2"])
+    median_k_errup = np.median(fullsample[dwarfs]["M_K_err1"]) 
+    median_k_errdown = np.median(fullsample[dwarfs]["M_K_err2"])
     ax1.errorbar(
-        [3500], [3.0], yerr=[[median_kic_errdown], [median_kic_errup]],
-        xerr=[teff_error], elinewidth=3)
-    median_k_errup = np.median(fullsample["M_K_err1"]) 
-    median_k_errdown = np.median(fullsample["M_K_err2"])
-    ax2.errorbar(
         [3500], [3.0], yerr=[[median_k_errdown], [median_k_errup]], 
         xerr=teff_error, elinewidth=3)
     ax1.set_xlim(7000, 3000)
-    ax1.set_ylim(8, -9)
+    ax1.set_ylim(8, -8)
     ax1.set_xlabel("APOGEE Teff (K)")
-    ax1.set_ylabel("KIC DR25 M_K")
+    ax1.set_ylabel("Gaia $M_K$")
+    ax1.legend(loc="upper left")
     ax2.set_xlabel("APOGEE Teff (K)")
-    ax2.set_ylabel("Gaia M_K")
-    ax2.legend(loc="upper left")
 
 @write_plot("mcquillan_selection")
 def mcquillan_selection_coordinates():
@@ -245,6 +214,7 @@ def mcquillan_selection_coordinates():
     im = ax3.imshow(mcq_detfrac_hist.T, origin="lower", extent=extent,
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
                cmap=ratio_cmap)
+
     # Overplot isochrones on the figure.
     testteff=np.linspace(4000, 6500, 1000)
     mistiso = mist.MISTIsochrone.isochrone_from_file(0.0)
