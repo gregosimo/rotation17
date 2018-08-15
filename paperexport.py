@@ -39,7 +39,7 @@ import eclipsing_binaries as ebs
 PAPER_PATH = paths.HOME_DIR / "papers" / "rotletter18"
 TABLE_PATH = PAPER_PATH / "tables"
 FIGURE_PATH = PAPER_PATH / "fig"
-PLOT_SUFFIX = "png"
+PLOT_SUFFIX = "pdf"
 
 def build_filepath(toplevel, filename, suffix=PLOT_SUFFIX):
     '''Generate a full path to save a filename.'''
@@ -1226,24 +1226,21 @@ def rapid_rotator_bins():
     
     mcq_cooldwarfs = au.join_by_id(cooldwarfs, mcq, "kepid", "KIC")
     eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
-    periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
+    periodbins = np.flipud(np.array([1, 5, 10]))
     f, axes = plt.subplots(
-        len(periodbins),1, figsize=(12,6*len(periodbins)), sharex=True, 
+        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
         sharey=True)
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
     titles = ["{0:d} day < Prot <= {1:d} day".format(p2, p1) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
-    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
     for i, (title, ax) in enumerate(zip(titles, axes)):
-        mcq_periodbin = mcq_cooldwarfs[mcq_period_indices == i+1]
-        eb_periodbin = eb_cooldwarfs[eb_period_indices == i+1]
-        hr.absmag_teff_plot(
-            mcq_cooldwarfs["TEFF"], mcq_cooldwarfs["Corrected K Excess"], 
-            marker=".", color=bc.black, ls="", axis=ax, label="Full Sample")
+        mcq_periodbin = mcq_cooldwarfs[mcq_period_indices == i]
+        eb_periodbin = eb_cooldwarfs[eb_period_indices == i]
         hr.absmag_teff_plot(
             mcq_periodbin["TEFF"], mcq_periodbin["Corrected K Excess"], 
-            marker="o", color=bc.red, ls="", axis=ax, label="Period in Bin")
+            marker=".", color=bc.black, ls="", axis=ax, label="Period in Bin")
         hr.absmag_teff_plot(
             eb_periodbin["TEFF"], eb_periodbin["Corrected K Excess"],
             marker="*", color=bc.pink, ls="", ms=12, axis=ax, label="EB")
@@ -1251,11 +1248,12 @@ def rapid_rotator_bins():
         ax.set_ylabel("Metallicity-Corrected K Excess")
         ax.set_xlabel("")
         ax.set_title(title)
-        ax.plot([4000, 5000], [-0.2, -0.2], 'k--')
+        ax.plot([4000, 5250], [-0.2, -0.2], 'k--')
+        ax.plot([4000, 5250], [-0.0, -0.0], 'k-', lw=2)
         plt.setp(ax.get_xticklabels(), visible=True)
         axes[0].legend(loc="upper left")
     axes[-1].set_xlabel("APOGEE Teff (K)")
-    axes[-1].set_xlim(5000, 4000)
+    axes[-1].set_xlim(5250, 4000)
     axes[-1].set_ylim(0.3, -1.25)
 
 def plot_teff_prov():
@@ -1277,30 +1275,30 @@ def mcquillan_rapid_rotator_bins():
     dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     eb_dwarfs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
-    periodbins = np.flipud(np.array([1, 3, 5, 7, 9, 11, 13]))
+    periodbins = np.flipud(np.array([1, 5, 10]))
     f, axes = plt.subplots(
-        len(periodbins),1, figsize=(12,6*len(periodbins)), sharex=True, 
+        len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
         sharey=True)
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
     titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
-    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
     for i, (title, ax) in enumerate(zip(titles, axes)):
-        mcq_periodbin = dwarfs[mcq_period_indices == i+1]
-        eb_periodbin = eb_dwarfs[eb_period_indices == i+1]
+        mcq_periodbin = dwarfs[mcq_period_indices == i]
+        eb_periodbin = eb_dwarfs[eb_period_indices == i]
         hr.absmag_teff_plot(
             mcq_periodbin["SDSS-Teff"], mcq_periodbin["Corrected K Excess"], 
-            marker="o", color=bc.red, ls="", axis=ax, zorder=1)
+            marker=".", color=bc.black, ls="", axis=ax, zorder=1)
         hr.absmag_teff_plot(
             eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
             marker="*", color=bc.pink, ls="", ms=12, axis=ax, zorder=2)
         ax.set_ylabel("Teff-Corrected K Excess")
         ax.set_title(title)
-        ax.plot([3500, 6500], [-0.3, -0.3], 'k--', zorder=3)
-        ax.plot([3500, 6500], [-0.0, -0.0], 'k-', zorder=4)
+        ax.plot([3500, 6500], [-0.2, -0.2], 'k--', zorder=3)
+        ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     ax.set_xlabel("Pinsonneault et al (2012) Teff (K)")
-    ax.set_xlim(5000, 4000)
+    ax.set_xlim(5250, 4000)
     ax.set_ylim(0.3, -1.25)
 
 def calculate_APOGEE_binary_significance(min_P, max_P):
