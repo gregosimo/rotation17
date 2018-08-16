@@ -989,6 +989,7 @@ def teff_comparison():
     comparable_dwarfs = dwarfs[~dwarfs["SDSS-Teff"].mask]
                                                       
     ax.plot(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 'k.')
+    ax.plot(flagged_dwarfs["TEFF"], flagged_dwarfs["SDSS-Teff"], 'rx')
     coeff = np.polyfit(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 1)
     poly = np.poly1d(coeff)
     testteffs = np.linspace(4000, 5100, 200)
@@ -996,9 +997,7 @@ def teff_comparison():
     ax.plot(testteffs, testys, 'k-')
     ax.plot(testteffs, testteffs, 'k--')
     scatter = np.std(
-        comparable_dwarfs["TEFF"] - poly(comparable_dwarfs["SDSS-Teff"]))
-    print("The relationship is y = {0:.1f} x + {1:.1f}".format(
-        coeff[0], coeff[1]))
+        flagged_dwarfs["SDSS-Teff"] - poly(flagged_dwarfs["TEFF"]))
     print("The scatter in the relation is {0:4.0f} K".format(scatter))
     ax.set_xlabel("APOGEE Teff (K)")
     ax.set_ylabel("Pinsonneault Teff (K)")
