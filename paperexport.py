@@ -1184,7 +1184,7 @@ def rapid_rotator_bins():
     
     mcq_cooldwarfs = au.join_by_id(cooldwarfs, mcq, "kepid", "KIC")
     eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
-    periodbins = np.flipud(np.array([1, 5, 10]))
+    periodbins = np.flipud(np.array([1, 5, 13]))
     f, axes = plt.subplots(
         len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
         sharey=True)
@@ -1233,18 +1233,51 @@ def mcquillan_rapid_rotator_bins():
     dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     eb_dwarfs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
-    periodbins = np.flipud(np.array([1, 5, 10]))
+    periodbins = np.flipud(np.array([1, 5, 13]))
     f, axes = plt.subplots(
         len(periodbins),1, figsize=(12,12*len(periodbins)), sharex=True, 
         sharey=True)
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
-    titles = ["{0:d} day < Prot <= {1:d} day".format(p1, p2) for (p1, p2) in
+    titles = ["{0:d} day < Prot <= {1:d} day".format(p2, p1) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
     titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
     for i, (title, ax) in enumerate(zip(titles, axes)):
         mcq_periodbin = dwarfs[mcq_period_indices == i]
         eb_periodbin = eb_dwarfs[eb_period_indices == i]
+        hr.absmag_teff_plot(
+            mcq_periodbin["SDSS-Teff"], mcq_periodbin["Corrected K Excess"], 
+            marker=".", color=bc.black, ls="", axis=ax, zorder=1)
+        hr.absmag_teff_plot(
+            eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
+            marker="*", color=bc.pink, ls="", ms=12, axis=ax, zorder=2)
+        ax.set_ylabel("Teff-Corrected K Excess")
+        ax.set_title(title)
+        ax.plot([3500, 6500], [-0.2, -0.2], 'k--', zorder=3)
+        ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
+    ax.set_xlabel("Pinsonneault et al (2012) Teff (K)")
+    ax.set_xlim(5250, 4000)
+    ax.set_ylim(0.3, -1.25)
+
+@write_plot("mcquillan_transition")
+def rapid_rotator_transition():
+    '''Make bins in the transition region of the McQuillan rapid rotators.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    ebs = cache.eb_splitter_with_DSEP()
+    dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    eb_dwarfs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+
+    periodbins = np.array([5, 7, 9, 11, 13])
+    f, axes = plt.subplots(
+        len(periodbins)-1,1, figsize=(12,12*(len(periodbins)-1)), sharex=True, 
+        sharey=True)
+    mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
+    eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
+    titles = ["{0:0.2f} day < Prot <= {1:0.2f} day".format(p1, p2) for (p1, p2) in
+              zip(periodbins[:-1], periodbins[1:])]
+    for i, (title, ax) in enumerate(zip(titles, axes)):
+        mcq_periodbin = dwarfs[mcq_period_indices == i+1]
+        eb_periodbin = eb_dwarfs[eb_period_indices == i+1]
         hr.absmag_teff_plot(
             mcq_periodbin["SDSS-Teff"], mcq_periodbin["Corrected K Excess"], 
             marker=".", color=bc.black, ls="", axis=ax, zorder=1)

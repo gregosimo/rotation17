@@ -680,16 +680,24 @@ age effects from biasing the results, we also only performed statistics in the
     \centering
     \plotone{apogee_rapid_excess}
     \caption{\emph{Top to Bottom:} Vertical displacement of cool APOGEE targets
-        with \citet{McQuillan14} periods \(> 10\) days, between \(5--10\) days, 
+        with \citet{McQuillan14} periods \(> 13\) days, between \(5--13\) days, 
         and between \(1--5\) days. Pink stars denote eclipsing binaries with
     orbital periods within the same ranges.}\label{fig:apogee_rapid_excess}
 \end{figure}
 
 The well-characterized APOGEE sample illustrates well the
 correlation of rapid rotators and binaries, shown in
-\cref{fig:apogee_rapid_excess}. In the period regime between 1--5 days, all of the
-spectroscopic targets are rapid rotators. The fraction of single stars
-increases as the period increases.
+\cref{fig:apogee_rapid_excess}. All of the rapid rotators with periods between
+1--5 days are photometric binaries. This is in contrast to the slow rotators
+with periods greater than 13 days, which have a distinct single star sequence
+along with more luminous binaries. The transitional period region between 5--13
+days has a binary fraction in between the rapid and slow regimes. We do not
+include objects with periods less than 1 day because that sample would be
+contaminated with contact binaries and ellipsoidal variables as well as 
+blended pulsators. The disappearance of the single-star sequence for short
+periods is because angular momentum loss leads to slow rotation in single 
+stars, and so there should not be any single-stars rotating at periods faster 
+than 5 days.
 
 To quantify the significance the binary fraction in each bin, we divide the
 sample into two bins: binaries and single stars, and use a binomial test to
@@ -698,10 +706,10 @@ background rate. For the background rate, we the binary fraction of all APOGEE
 targets with temperatures between 4000--5000 K, which is 0.41\%. 
 
 In order to accurately characterize the tidally-synchronized systems, we
-include the \Kepler{} eclipsing binaries. \citep{McQuillan14} excluded the
-eclipsing binaries from their analysis to avoid contamination from the
-eclipses. However, the eclipse probability for these short-period binaries can
-be as high as 40\% \citep{Kirk16}. Ignoring this population would substantially
+include the \Kepler{} eclipsing binaries which were excluded by 
+\citep{McQuillan14} to avoid contaminating signal from the eclipses. The 
+eclipse probability for these short-period binaries can be as high as 40\% 
+\citep{Kirk16}, hence ignoring this population would substantially
 bias the underlying sample. Because we are only looking at systems with orbital
 periods greater than 1 day, the eclipsing binary sample should only consist of
 detached binaries, and not contact or ellipsoidal systems, which become
@@ -722,20 +730,33 @@ with periods between 5--9 days is a marginal 0.01. For long periods b
     \centering
     \plotone{full_mcquillan_rr_excess}
     \caption{\emph{Top to Bottom:} Vertical displacement of all cool
-        \citet{McQuillan14} targets in period bins \(> 10\) days, \(5--10\)
+        \citet{McQuillan14} targets in period bins \(> 13\) days, \(5--13\)
         days, and \(1--5\) days. Pink stars denote eclipsing binaries with
     orbital periods within the same ranges.}\label{fig:mcq_rapid_excess}
 \end{figure}
 
-Unfortunately, the spectroscopic sample is too small to tell us much else about
-the rapid rotators. To achieve this, we use the photometric sample, which is
-substantially larger. The number of rapid rotators in each period bin is shown
-in \cref{fig:mcq_rapid_excess}. With the substantially larger number of objects
-in each bin, there is a distinct single-star sequence at
-periods less than 9 days, which disappears at shorter periods. This
-disappearance is because angular momentum loss leads to slow rotation in single
-stars, and so there should not be any single-stars rotating at periods faster
-than 5 days.
+Unfortunately, the spectroscopic sample is too small to effectively
+characterize the rapid rotators. For a larger sample, we move to the 
+substantially larger photometric sample. The number of rapid rotators in each 
+period bin is shown in \cref{fig:mcq_rapid_excess}. With the substantially 
+larger number of objects in each bin, the absence of the absence of the
+single-star sequence is significantly starker.
+
+\begin{figure}[htb]
+    \centering
+    \plotone{mcquillan_transition}
+    \caption{Same as \cref{fig:mcq_rapid_excess} except with the period ranges
+    5--7 day, 7--9 day, 9--11 day, 11--13 days.}
+    \label{fig:mcquillan_transition}
+\end{figure}
+
+With a larger sample, we can better understand the transitional period range
+between the synchronized binaries and the single stars for the field. More
+finely binned samples of the transitional region are shown in
+\cref{fig:mcquillan_transition}. The single-star sequence appears in a
+temperature-dependent fashion. The hottest end is rotating more rapidly before
+moving to the coolest end, which is consistent with the overall trend seen in 
+\cref{McQuillan14}.
 
 As a result, the remaining targets at short periods are likely to be
 tidally-synchronized binaries of varying luminosity ratios. Binarity at various
