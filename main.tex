@@ -439,15 +439,27 @@ negligible, the choice of isochrone should not affect our result.
 \begin{figure}[htb]
     \centering
     \plotone{sample_dk}
-    \caption{\emph{Top:} The full APOGEE-\Kepler{} sample with a 1 Gyr MIST
-    isochrone of the matching APOGEE metallicity subtracted from the observed
-K-band luminosity. Marked in red are the dwarf sample, which is drawn to
-excplude the base of the giant branch on the lower main sequence. The brown
-rectangle marks the region of the bottom figure. \emph{Bottom:} a zoom-in on
-the dwarf region of the diagram above. The dashed line marks the line denoting
-equal-luminosity binaries. The 75th percentile of the dwarfs in different
-temperature bins is denoted by the turquoise points. A representative error bar
-derived assuming Gaussian uncertainties is shown on the right.}\label{fig:sample_dk}
+    \caption{Temperature and K luminosity excess above a 1 Gyr MIST isochrone 
+        matched to the APOGEE metallicity for the APOGEE-\Kepler{} sample. 
+        In order to exclude evolved stars while preserving binaries and
+        triples, we define the dwarf sample as targets less than 1.3 magnitudes
+        more luminous than the metallicity-adjusted MIST isochrone. The dwarf 
+        sample is denoted as red points. A representative error bar for the 
+        full APOGEE dwarf sample is shown in the lower left 
+    corner.}\label{fig:sample_dk}
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{ages}
+    \caption{Age-imposed behavior for the APOGEE dwarf sample. The purple
+        line denotes the predicted luminosity excess of a 9 Gyr stellar 
+        population. The dashed line represents the limit for photometric
+        binaries. The 25th percentile of the dwarfs in 15 temperature bins is
+        shown in aquamarine. We draw a temperature threshold for the unevolved
+        lower main sequence at 5250 K. A representative error bar
+derived assuming Gaussian uncertainties is shown on the right.}
+    \label{fig:ages}
 \end{figure}
 
 The vertical displacement of the full APOGEE sample is shown in 
@@ -460,6 +472,34 @@ stars. In order to separate the cool dwarfs from the base of the red giant
 branch, we draw a limit of 1.3 magnitudes more luminous. This limit
 cleanly excludes red giant branch stars while providing generous allowance for
 binaries and potential triple systems.
+
+For hot stars, the increase in luminosity due to age is degenerate with
+increased luminosity due to a binary companion. In order to avoid age effects,
+we choose to restrict ourselves to the unevolved lower main sequence, where age
+effects are small. In order to characterize the effects of age, we compare the
+behavior of the luminosity excesses with predictions from MIST stellar models.
+This comparison is shown in \cref{fig:ages}. 
+
+In order to characterize the behavior of the main sequence, we choose to use
+the 25th percentile of the luminosity excess in each bin. Each temperature bin
+contains a population of both binaries and single stars, with binaries having
+substantially higher luminosity excesses. The 25th percentile statistic
+characterizes the main sequence in a way that is robust to the population of
+binaries. This method has been used in clusters \citep{Mermilliod92} \gvs{Is
+this reference correct?} to define a main sequence, and does so exactly in a
+population which is 50\% binaries and 50\% single stars. Even large departures
+in the binary fraction should generally only affect the zero-point, but not 
+the shape of the main sequence.
+
+The main sequence is generally flat at temperatures cooler than 5000 K with
+an increase in luminosity of less than 0.1 mag cooler than 5200 K. A flat main
+sequence is needed to characterize residual trends in \Teff{}. However, when it
+comes to classifying binaries, slight age evolution will not severely impact
+the results, and given that the number of stars increases dramatically between
+5000 K and 5500 K, the benefit of increased numbers outweighs the slight
+preference for hotter stars.  The trends seen in the data roughly match those 
+predicted by the MIST isochrones. The main sequence is roughly flat cooler 
+than 5000 K, and begins to increase substantially by 5200 K.
 
 \subsection{\Kepler{} Dwarf Metallicity}
 
