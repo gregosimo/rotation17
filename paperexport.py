@@ -633,6 +633,7 @@ def metallicity_corrected_excesses():
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
+    ax1.set_xlim(-0.55, 0.45)
     ax1.legend(loc="upper left")
     residual = coolsamp["K Excess"] - cor_poly(coolsamp["FE_H"])
     singles = residual > np.percentile(residual, 50)
@@ -645,8 +646,6 @@ def metallicity_corrected_excesses():
         coolsamp["FE_H"][binaries], residual[binaries], color=bc.black, 
         marker="o", ls="", label="Binary")
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
-             horizontalalignment="center", verticalalignment="center")
     hr.invert_y_axis(ax2)
     ax2.set_xlabel("[Fe/H]")
     ax2.set_ylabel("Residual")
@@ -689,8 +688,6 @@ def spec_temperature_correction():
     mad = median_absolute_deviation(residual)
     ax2.plot(coolsamp["TEFF"], residual, color=bc.black, marker="o", ls="")
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
-             horizontalalignment="center", verticalalignment="center")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
     ax2.set_xlabel("APOGEE Teff (K)")
@@ -735,8 +732,6 @@ def phot_temperature_correction():
     mad = median_absolute_deviation(residual)
     ax2.plot(coolsamp["SDSS-Teff"], residual, color=bc.black, marker="o", ls="")
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax2.text(0.1, 0.8, "MAD: {0:.3f}".format(mad), transform=ax2.transAxes,
-             horizontalalignment="center", verticalalignment="center")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
     ax2.set_xlabel("Pinsonneault Teff (K)")
@@ -979,7 +974,7 @@ def age_isochrones():
         label="9 Gyr", axis=ax2)
     ax2.plot([7000, 3000], [0, 0], 'k-')
     ax2.plot([7000, 3000], [-0.75, -0.75], 'k--')
-    ax2.plot([5250, 5250], [-1.5, 0.5], 'k:')
+    ax2.plot([5200, 5200], [-1.5, 0.5], 'k:')
     ax2.set_xlim([6500, 3500])
     ax2.set_ylim(0.5, -1.3)
     ax2.set_xlabel("APOGEE Teff (K)")
