@@ -650,10 +650,12 @@ sparsely populated tails.
 After successfully calculating the vertical displacement of the full sample, we
 now attempt to delineate between single and binary stars. As noted before, the
 1-\(\sigma\) uncertainties of the main sequence were 0.09 mag with known
-metallicity, and 0.11 mag when metallicity was unknown. As a result, we set a
-threshold between binaries and single stars of 0.2 mag. In order to avoid
-age effects from biasing the results, we also only performed statistics in the
-4000--5000 K range.
+metallicity, and 0.11 mag when metallicity was unknown. As a result, we use two
+different thresholds to distinguish between binaries and single star. A more
+inclusive approximately 2-\(\sigma\) threshold at -0.2 mag, as well as a more
+conservative threshold at -0.3 mag. In order to prevent age effects from 
+biasing the results, we also only performed statistics in the 4000--5250 K 
+range.
 
 \begin{figure}[htb]
     \centering
@@ -662,7 +664,9 @@ age effects from biasing the results, we also only performed statistics in the
     \caption{\emph{Left to Right:} Vertical displacement of cool APOGEE targets
         with \citet{McQuillan14} periods \(> 13\) days, between \(5--13\) days, 
         and between \(1--5\) days. Pink stars denote eclipsing binaries with
-    orbital periods within the same ranges.}\label{fig:apogee_rapid_excess}
+    orbital periods within the same ranges. The green and purple lines denote
+the inclusive and conservative photometric binary thresholds, 
+respectively.}\label{fig:apogee_rapid_excess}
 \end{figure}
 
 The well-characterized APOGEE sample illustrates well the
@@ -713,7 +717,9 @@ with periods between 5--9 days is a marginal 0.01. For long periods b
     \caption{\emph{Left to Right:} Vertical displacement of all cool
         \citet{McQuillan14} targets in period bins \(> 13\) days, \(5--13\)
         days, and \(1--5\) days. Pink stars denote eclipsing binaries with
-    orbital periods within the same ranges.}\label{fig:mcq_rapid_excess}
+    orbital periods within the same ranges. The green and purple lines denote
+the inclusive and conservative photometric binary thresholds, 
+respectively}\label{fig:mcq_rapid_excess}
 \end{figure}
 
 Unfortunately, the spectroscopic sample is too small to effectively
@@ -743,18 +749,21 @@ moving to the coolest end, which is consistent with the overall trend seen in
 \begin{figure}[htb]
     \centering
     \plotone{binary_fraction}
-    \caption{The photometric binary fraction as a function of period. The
-        dashed line denotes the binary fraction of the full sample analyzed by
-        \citet{McQuillan14}. Error bars are 1-\(\sigma\) binomial confidence 
-    intervals.}
-    \label{fig:binary_fraction}
+    \caption{The photometric binary fraction as a function of period for the
+        two temperature thresholds. The photometric binary fraction with a
+        \(\Delta K < -0.2\) mag threshold is shown in green while the \(\Delta
+        K < -0.3\) mag threshold is shown in purple. The dashed lines denote
+        the binary fraction of the full sample analyzed by \citet{McQuillan14}
+        with both thresholds. Error bars are 1-\(\sigma\) binomial confidence 
+    intervals.}\label{fig:binary_fraction}
 \end{figure}
 
 \Cref{fig:binary_fraction} shows the behavior of binarity at the full range of
 periods reported by \citet{McQuillan14}. The rapid rotators show a uniquely
-high binary fraction not seen in any other period range. As was qualitatively
-shown in \cref{fig:mcquillan_transition}, the binary fraction begins to
-decrease around 7 days. However, it does not fully drop to the mean binarity of
+high binary fraction not seen in any other period range, which is robust to the
+choice of detection threshold. As was qualitatively shown in 
+\cref{fig:mcquillan_transition}, the binary fraction begins to decrease around 
+7 days. However, it does not fully drop to the mean binarity of
 the full sample until rotation periods of 11 days, indicating that
 binaries may still be tidally-synchronized for orbital periods beyond 11 days. 
 
@@ -787,10 +796,52 @@ is shown in \cref{fig:eclipseprob}. The two distribution match to within
 1-\(\sigma\) at periods between 1--7 days, before slowly-rotating single-stars 
 dominate the population.
 
-\gvs{Maybe add some discussion about this\dots}
 With the McQuillan sample, we can crudely characterize the tidally-sychronized
 distribution by treating the short-period end as a combination of two
-populations
+populations with differing photometric binary fractions: a tidally-synchronized
+population and a single-star population. The tidally-synchronized population
+has a photometric binary fraction determined by the mass-ratio distribution;
+systems with bright companions would be classified as photometric binaries 
+while systems with faint companions would be classified as single stars. The
+single-star population consists of the bulk population which evolves according
+to single-star evolution. This population contains both single
+stars as well as non-synchronized binary systems, thus has a substantially 
+lower binary fraction.
+
+Assuming the observed distributions of single stars and binaries are \(N_S(P)\)
+and \(N_B(P)\), we can disentangle the two populations with the expression:
+\begin{align}
+    TS(P) &= (f_{SS} N_S(P) - (1-f_{SS}) N_B(P)) / (f_{SS}-f_{TS}) \\
+    SS(P) &= (f_{TS} N_S(P) - (1-f_{TS}) N_B(P)) / (f_{TS}-f_{SS})
+    \label{eq:synchpop}
+\end{align}
+where \(TS(P)\) and \(SS(P)\) are the inferred tidally-synchronized and
+single-star populations, and \(f_{TS}\) and \(f_{SS}\) are the
+tidally-synchronized and single-star photometric binary fractions. \(f_{TS}\)
+and \(f_{SS}\) measured assuming systems with periods between 1--5 day are representative
+of the tidally-synchronized population, while systems with periods greater than
+15 days are representative of the single-star evolution population.
+
+\begin{figure}[htb]
+    \centering
+    \plotone{tsb_analysis}
+    \caption{Inferred tidally-synchronized and single-star populations as a
+    function of period. The binary-rich synchronized population is shown in red
+while the single-star rich population is shown in blue. The period distribution
+of the full sample is shown in black. Negative counts are due to Poisson 
+fluctuations when modeling the baseline population. Approximate Poisson 
+1-\sigma error bars are given.}\label{fig:tsb_analysis}
+\end{figure}
+
+The inferred populations from \cref{eq:synchpop} are shown in
+\cref{fig:tsb_analysis}. As expected, the tidally-synchronized systems dominate
+the short-period regime while the single-star evolution population dominates
+the long-period regime. We find that the tail of the single-star population
+comes in at around 7 days. Meanwhile, the tidally-synchronized portion of the
+population persists until 11 days, after which it drops off. We interpret the
+drop as being the cutoff period beyond which close binaries cease to be
+synchronized. The cutoff is consistent with the cutoff period noted in
+\cref{fig:binary_fraction}.
 
 \begin{figure}[htb]
     \centering
