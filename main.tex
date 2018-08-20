@@ -791,10 +791,18 @@ To check that the rapid rotators and eclipsing binaries are the same
 population, we model the period distribution of eclipsing binaries using the 
 period distribution of rapid rotators corrected by a geometric factor
 reflecting the probability of eclipses \citep{Kirk16} and the probability of
-viewing starspot modulation \citep{Jackson10}. The comparison between the two
-is shown in \cref{fig:eclipseprob}. The two distribution match to within
-1-\(\sigma\) at periods between 1--7 days, before slowly-rotating single-stars 
-dominate the population.
+viewing starspot modulation \citep{Jackson10,Rebull17}. The comparison between the two
+is shown in \cref{fig:eclipseprob}. 
+
+The predicted distribution of \citet{McQuillan14} rotation periods matches the 
+observed distribution to within 1-\(\sigma\) at periods between 3--7 days. The
+mismatch at the long-period end is due to the overlap with the single-star
+population, which grows with increasing periods. There is also an excess on the
+short-period end, for periods less than 2 days. This excess may be due to
+differences between the geometric correction factor for cool dwarfs with small
+radii, and the average correction factor in \citet{Kirk16}. \gvs{This can
+    hypothetically be modeled by comparing the radii of the full sample to the
+radii of our sample and calculating correction factors.}
 
 With the McQuillan sample, we can crudely characterize the tidally-sychronized
 distribution by treating the short-period end as a combination of two
@@ -830,7 +838,7 @@ of the tidally-synchronized population, while systems with periods greater than
 while the single-star rich population is shown in blue. The period distribution
 of the full sample is shown in black. Negative counts are due to Poisson 
 fluctuations when modeling the baseline population. Approximate Poisson 
-1-\sigma error bars are given.}\label{fig:tsb_analysis}
+1-\(\sigma\) error bars are given.}\label{fig:tsb_analysis}
 \end{figure}
 
 The inferred populations from \cref{eq:synchpop} are shown in
