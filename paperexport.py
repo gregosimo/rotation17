@@ -690,7 +690,7 @@ def spec_temperature_correction():
              marker=".", color=bc.black, ls="", label="Original")
     ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
              label="Binned")
-    testx = np.linspace(4000, 5000, endpoint=True)
+    testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
@@ -704,6 +704,7 @@ def spec_temperature_correction():
     hr.invert_x_axis(ax2)
     ax2.set_xlabel("APOGEE Teff (K)")
     ax2.set_ylabel("Residual")
+    ax2.set_xlim(5250, 4000)
 
 @write_plot("phot_teff_correction")
 def phot_temperature_correction():
@@ -734,7 +735,7 @@ def phot_temperature_correction():
              color=bc.black, ls="", label="Original")
     ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
              label="Binned")
-    testx = np.linspace(4000, 5000, endpoint=True)
+    testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
@@ -748,6 +749,7 @@ def phot_temperature_correction():
     hr.invert_x_axis(ax2)
     ax2.set_xlabel("Pinsonneault Teff (K)")
     ax2.set_ylabel("Residual")
+    ax2.set_xlim(5250, 4000)
 
 def metallicity_corrected_excesses_temperature():
     '''Plot the corrected excesses against temperature.'''
