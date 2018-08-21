@@ -909,6 +909,12 @@ def collapsed_met_histogram():
     nometmodel = fittednomet(inputexcesses)
     ax.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
     ax.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
+    ax.plot(
+        [-0.3, -0.3], [0, 50], marker="", ls="--", color=bc.violet, 
+        lw=3, zorder=3)
+    ax.plot(
+        [-0.2, -0.2], [0, 50], marker="", ls="--", color=bc.algae, 
+        lw=3, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
     ax.set_xlabel("K Excess Distribution")
