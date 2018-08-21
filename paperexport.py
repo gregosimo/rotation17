@@ -166,6 +166,15 @@ def apogee_selection_coordinates():
     ax1.legend(loc="upper left")
     ax2.set_xlabel("APOGEE Teff (K)")
 
+    # Print out the number of objects in each category.
+    print("Number of asteroseismic targets: {0:d}".format(
+        len(apokasc_dwarf) + len(apokasc_giant) + len(apogee_seismic)))
+    print("Number of cool dwarfs: {0:d}".format(len(cool_dwarfs)))
+    print("Number of EBs: {0:d}".format(len(apogee_EB)+len(apogee2_EB)))
+    print("Number of Hosts: {0:d}".format(
+        len(apogee2_koi) + len(apogee2_koi_control) + len(apogee2_monitor) +
+        len(apogee_hosts)))
+
 @write_plot("mcquillan_selection")
 def mcquillan_selection_coordinates():
     mcq = catin.mcquillan_with_stelparms()
