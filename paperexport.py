@@ -1199,38 +1199,41 @@ def rapid_rotator_bins():
     eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
     periodbins = np.flipud(np.array([1, 5, 13]))
     f, axes = plt.subplots(
-        1, len(periodbins), figsize=(12*len(periodbins), 12), sharex=True, 
-        sharey=True)
+        2, 2, figsize=(24, 24), sharex=True, sharey=True)
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
     titles = ["{0:d} day < Prot <= {1:d} day".format(p2, p1) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
     titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
-    for i, (title, ax) in enumerate(zip(titles, axes)):
+    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    for i, (title, ax) in enumerate(zip(titles, np.ravel(axes))):
         mcq_periodbin = mcq_cooldwarfs[mcq_period_indices == i]
         eb_periodbin = eb_cooldwarfs[eb_period_indices == i]
         hr.absmag_teff_plot(
             mcq_periodbin["TEFF"], mcq_periodbin["Corrected K Excess"], 
-            marker=".", color=bc.black, ls="", axis=ax, label="Period in Bin")
+            marker="o", color=bc.black, ls="", axis=ax, label="Period in Bin")
         hr.absmag_teff_plot(
             eb_periodbin["TEFF"], eb_periodbin["Corrected K Excess"],
             marker="*", color=bc.pink, ls="", ms=18, axis=ax, label="EB")
 
         ax.set_ylabel("")
-        ax.set_xlabel("APOGEE Teff (K)")
+        ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.purple, 
+            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
             lw=3)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
             lw=3)
         ax.plot([4000, 5250], [-0.0, -0.0], 'k-', lw=2)
 #       plt.setp(ax.get_yticklabels(), visible=False)
-        axes[0].legend(loc="upper right")
-    axes[0].set_ylabel("Metallicity-Corrected K Excess")
-    axes[0].set_xlim(5250, 4000)
-    axes[0].set_ylim(0.3, -1.25)
+        axes[0][0].legend(loc="upper right")
+    axes[0][0].set_ylabel("Corrected K Excess")
+    axes[1][0].set_ylabel("Corrected K Excess")
+    axes[1][0].set_xlabel("APOGEE Teff (K)")
+    axes[1][1].set_xlabel("APOGEE Teff (K)")
+    axes[0][0].set_xlim(5250, 4000)
+    axes[0][0].set_ylim(0.3, -1.25)
 
 def plot_teff_prov():
     '''Plot the spectroscopic Teff vs photometric teffs.'''
@@ -1253,14 +1256,14 @@ def mcquillan_rapid_rotator_bins():
 
     periodbins = np.flipud(np.array([1, 5, 13]))
     f, axes = plt.subplots(
-        1, len(periodbins), figsize=(12*len(periodbins), 12), sharex=True, 
-        sharey=True)
+        2, 2, figsize=(24, 24), sharex=True, sharey=True)
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
     titles = ["{0:d} day < Prot <= {1:d} day".format(p2, p1) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
     titles.insert(0, "Prot > {0:d} day".format(periodbins[0]))
-    for i, (title, ax) in enumerate(zip(titles, axes)):
+    titles.insert(len(titles), "Prot <= {0:d} day".format(periodbins[-1]))
+    for i, (title, ax) in enumerate(zip(titles, np.ravel(axes))):
         mcq_periodbin = dwarfs[mcq_period_indices == i]
         eb_periodbin = eb_dwarfs[eb_period_indices == i]
         hr.absmag_teff_plot(
@@ -1270,18 +1273,21 @@ def mcquillan_rapid_rotator_bins():
             eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
             marker="*", color=bc.pink, ls="", ms=18, axis=ax, zorder=2)
         ax.set_ylabel("")
-        ax.set_xlabel("Pinsonneault et al (2012) Teff")
+        ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.purple, 
+            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
             lw=3, zorder=3)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
             lw=3, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
-    axes[0].set_ylabel("K Excess")
-    axes[0].set_xlim(5250, 4000)
-    axes[0].set_ylim(0.3, -1.25)
+    axes[0][0].set_ylabel("Corrected K Excess")
+    axes[1][0].set_ylabel("Corrected K Excess")
+    axes[1][0].set_xlabel("Pinsonneault et al (2012) Teff")
+    axes[1][1].set_xlabel("Pinsonneault et al (2012) Teff")
+    axes[0][0].set_xlim(5250, 4000)
+    axes[0][0].set_ylim(0.3, -1.25)
 
 @write_plot("mcquillan_transition")
 def rapid_rotator_transition():
@@ -1312,7 +1318,7 @@ def rapid_rotator_transition():
         ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.purple, 
+            [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
             lw=3, zorder=3)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
