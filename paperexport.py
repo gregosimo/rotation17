@@ -1037,8 +1037,11 @@ def teff_comparison():
     f, ax = plt.subplots(1,1, figsize=(12,12))
     comparable_dwarfs = dwarfs[~dwarfs["SDSS-Teff"].mask]
                                                       
-    ax.plot(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 'k.')
-    ax.plot(flagged_dwarfs["TEFF"], flagged_dwarfs["SDSS-Teff"], 'rx')
+    ax.errorbar(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"],
+                color=bc.black, marker=".", ls="")
+    ax.errorbar(
+        [5200], [4100], yerr=np.median(comparable_dwarfs["TEFF_ERR"]), 
+        xerr=[90], color=bc.black, marker="", ls="")
     coeff = np.polyfit(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 1)
     poly = np.poly1d(coeff)
     testteffs = np.linspace(4000, 5100, 200)
@@ -1046,8 +1049,10 @@ def teff_comparison():
     ax.plot(testteffs, testys, 'k-')
     ax.plot(testteffs, testteffs, 'k--')
     scatter = np.std(
-        flagged_dwarfs["SDSS-Teff"] - poly(flagged_dwarfs["TEFF"]))
+        comparable_dwarfs["SDSS-Teff"] - poly(comparable_dwarfs["TEFF"]))
     print("The scatter in the relation is {0:4.0f} K".format(scatter))
+    print("The typical APOGEE uncertainty is {0:4.0f} K".format(
+        np.median(comparable_dwarfs["TEFF_ERR"])))
     ax.set_xlabel("APOGEE Teff (K)")
     ax.set_ylabel("Pinsonneault Teff (K)")
     ax.set_title("Effective Temperature Comparison")
