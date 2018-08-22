@@ -255,10 +255,15 @@ against \Gaia{} DR2 detections.
 DR2 using both position and G-band flux. Of the successfully cross-matched targets,
 \citet{Berger18b} excluded objects with fractional parallax errors greater than
 0.2, \(\Teff < 3000\) K, \(\logg < 0.1\), and with low quality 2MASS photometry. 
-We converted parallax to distance modulus by using an
-exponentially-decreasing volume density prior with a 1.35 kpc length scale
-\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
-of 0.5 mas \citep{Zinn18}. \gvs{Should we include a table of this?} 
+Because all of our targets have high-quality parallaxes, we use the traditional 
+formulae for deriving distance modulus from parallax instead of the Bayesian 
+method advocated by \citet{Luri18} to reduce computational complexity. We
+include the zero-point offset of 0.05 mas \citep{Zinn18}.
+% Include when this calculation is actually *DONE*.
+%We converted parallax to distance modulus by using an
+%exponentially-decreasing volume density prior with a 1.35 kpc length scale
+%\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
+%of 0.5 mas \citep{Zinn18}. \gvs{Should we include a table of this?} 
 
 \subsection{Photometric Data}
 
@@ -602,14 +607,23 @@ fit, similar to that done for the spectroscopic sample.
 \begin{figure}[htb]
     \centering
     \plotone{excess_hist}
-    \caption{Histogram showing the distribution of vertical displacements for
-        the cool APOGEE sample. The displacements using spectroscopic \Teff{} 
-        and adjusting for metallicity is shown in blue, while the displacements
-        using photometric \Teff{} and fixed metallicity is shown in red. 
-        A double gaussian is fit to the each sample. The primary peak of the 
-        spectroscopic measurements has a width of 0.093 mag, while the primary 
-    peak of the photometric measurements has a width of 0.114 
-mag.}\label{fig:histcompare}
+    \caption{\emph{Left:} Histogram showing the distribution of vertical 
+        displacements with isochrones corresponding to APOGEE metallicities.
+        The blue line denotes the best-fit double-Gaussian model to the
+        distribution of vertical displacements. The red line is a fit to the
+        best-fit double-Gaussian model assuming a single metallicity (see right
+        panel). Conservative and inclusive binary cuts at \(\Delta K < -0.3\)
+        mag and \(\Delta K < -0.2\) mag are shown as violet and green dashed 
+        lines, respectively. The best-fit dispersion of the single-star 
+        Gaussian is 0.085 mag. \emph{Right:} Histogram showing the 
+        distribution of vertical displacements with a \([Fe/H] = 0.08\) 
+        isochrone. The red line denotes the best-fit double-Gaussian model to
+        the distribution of vertical displacements. The blue line is a fit to
+        the best-fit double-Gaussian model for isochrones adjusted for the
+        APOGEE metallicity (see left panel). Conservative and inclusive binary
+        cuts are shown as violet and green dashed lines, respectively. The
+        best-fit dispersion of the single-star Gaussian is 0.113 
+    mag.}\label{fig:histcompare}
 \end{figure}
 
 Now that we have corrected vertical displacements over the 4000--5250 K
@@ -620,7 +634,7 @@ photometric samples over vertical displacement, shown in
 fitting a double Gaussian to each histogram, and taking the width of the
 main-sequence Gaussian as the uncertainty in the vertical displacement in the
 vertical displacement. Our fits indicate that the scatter for the spectroscopic
-sample is 0.09 mag while the scatter for the photometric sample is 0.11 mag.
+sample is 0.085 mag while the scatter for the photometric sample is 0.113 mag.
 The small increase in uncertainty is likely due to the fact that the
 metallicity distribution is heavily clustered around solar, with long but
 sparsely populated tails.

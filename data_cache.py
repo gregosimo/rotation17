@@ -34,8 +34,7 @@ def clean_apogee_splitter():
         clean.data["M_H"] -0.00196400 * (clean.data["SNREV"]-100))
     dwarf_err = np.exp(
         4.58343+ 0.000289796*(clean.data["TEFF"]-4500) -0.2434860 *
-        clean.data["M_H"] -0.00129746 * (clean.data["SNREV"]-100)*0)
-    clean.data["TEFF_ERR"] = np.where(giants, giant_err, dwarf_err)
+        clean.data["M_H"] -0.00129746 * (clean.data["SNREV"]-100))
     return clean
 
 @au.memoized

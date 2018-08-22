@@ -902,13 +902,16 @@ def collapsed_met_histogram():
     targs = cache.apogee_splitter_with_DSEP()
     cooldwarfs = targs.subsample(["Dwarfs", "Cool Noev"])
 
-    f, ax = plt.subplots(1, 1, figsize=(12, 12))
-    arraylist, bins, patches = ax.hist(
-        [cooldwarfs["Corrected K Excess"], cooldwarfs["Corrected K Solar"]], 
-         bins=80, color=[bc.blue, bc.red], alpha=0.5, range=(-1.6, 1.1),
-        label=["[Fe/H] Corrected", "[Fe/H] = 0.08"],  histtype="bar")
-    metarray = arraylist[0]
-    nometarray = arraylist[1]
+    f, (ax1, ax2) = plt.subplots(
+        1, 2, figsize=(24, 12), sharex=True, sharey=True)
+    arr1, bins, patches = ax1.hist(
+        cooldwarfs["Corrected K Excess"], bins=80, color=bc.blue, alpha=0.5,
+        range=(-1.6, 1.1), histtype="bar", label="")
+    arr2, bins, patches = ax2.hist(
+        cooldwarfs["Corrected K Solar"], bins=80, color=bc.red, alpha=0.5,
+        range=(-1.6, 1.1), histtype="bar", label="")
+    metarray = arr1
+    nometarray = arr2
     singlemodel = Gaussian1D(50, 0, 0.1, bounds={"mean": (-1.6, 1.1)})
     binarymodel = Gaussian1D(10, -0.75, 0.1, bounds={"mean": (-1.6, 1.1)})
     floormodel = Const1D(3, bounds={"amplitude": (0, 100)})
@@ -920,19 +923,32 @@ def collapsed_met_histogram():
     fittednomet = fitter(
         dualmodel, (bins[1:]+bins[:-1])/2, nometarray)
     nometmodel = fittednomet(inputexcesses)
-    ax.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
-    ax.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
-    ax.plot(
-        [-0.3, -0.3], [0, 50], marker="", ls="--", color=bc.violet, 
+    ax1.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="",
+            label="[Fe/H] Corrected")
+    ax1.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="",
+            label="[Fe/H] = 0.08")
+    ax2.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
+    ax2.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
+    ax1.plot(
+        [-0.3, -0.3], [0, 52], marker="", ls="--", color=bc.violet, 
         lw=3, zorder=3)
-    ax.plot(
-        [-0.2, -0.2], [0, 50], marker="", ls="--", color=bc.algae, 
+    ax1.plot(
+        [-0.2, -0.2], [0, 52], marker="", ls="--", color=bc.algae, 
+        lw=3, zorder=3)
+    ax2.plot(
+        [-0.3, -0.3], [0, 52], marker="", ls="--", color=bc.violet, 
+        lw=3, zorder=3)
+    ax2.plot(
+        [-0.2, -0.2], [0, 52], marker="", ls="--", color=bc.algae, 
         lw=3, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
-    ax.set_xlabel("K Excess Distribution")
-    ax.set_ylabel("N")
-    ax.legend(loc="upper left")
+    ax1.set_xlabel("K Excess Distribution")
+    ax1.set_ylabel("N")
+    ax2.set_xlabel("K Excess Distribution")
+    ax1.set_ylabel("")
+    ax1.set_ylim(0, 52)
+    ax1.legend(loc="upper left")
 
 @write_plot("sample_dk")
 def K_Excess_hr_diagram():
