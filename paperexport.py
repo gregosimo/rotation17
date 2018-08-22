@@ -1532,7 +1532,6 @@ def verify_eb_rapid_rotator_rate():
     print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
                                                        lower_pred))
 
-@write_plot("vsini_check")
 def vsini_check():
     '''Plot showing that photometric rapid rotators have high vsini.'''
     targs = cache.apogee_splitter_with_DSEP()
