@@ -153,7 +153,8 @@ def apogee_selection_coordinates():
     # Add a representative error bar.
     dwarfs = np.logical_and(
         fullsample["TEFF"] < 5500, fullsample["M_K"] > 2.95)
-    teff_error=120
+    teff_error=np.median(fullsample[dwarfs]["TEFF_ERR"])
+    print(teff_error)
     median_k_errup = np.median(fullsample[dwarfs]["M_K_err1"]) 
     median_k_errdown = np.median(fullsample[dwarfs]["M_K_err2"])
     ax1.errorbar(
@@ -217,13 +218,25 @@ def mcquillan_selection_coordinates():
                cmap=ratio_cmap)
     f.colorbar(im, ax=ax3)
 
+    # Add a representative error bar.
+    stacked_columns = ["SDSS-Teff", "M_K", "M_K_err1", "M_K_err2"]
+    stacked_mcq = vstack([mcq[stacked_columns], nomcq[stacked_columns]])
+    dwarfs = np.logical_and(
+        stacked_mcq["SDSS-Teff"] < 5500, stacked_mcq["M_K"] > 2.95)
+    teff_error=100
+    median_k_errup = np.median(stacked_mcq[dwarfs]["M_K_err1"]) 
+    median_k_errdown = np.median(stacked_mcq[dwarfs]["M_K_err2"])
+    ax2.errorbar(
+        [4200], [7.1], yerr=[[median_k_errdown], [median_k_errup]], 
+        xerr=teff_error, elinewidth=3)
+
     ax2.set_xlim(7000, 4000)
     ax2.set_ylim(8, -7)
     ax2.set_ylabel("Gaia $M_K$")
     ax2.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax2.set_title("Post-Gaia period detections")
     ax3.set_xlim(7000, 4000)
-    ax3.set_ylim(8, -7)
+    ax3.set_ylim(8, -8)
     ax3.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax3.set_title("Post-Gaia detection fraction")
 
@@ -1463,7 +1476,7 @@ def verify_eb_rapid_rotator_rate():
     short_ebs = dwarf_ebs[dwarf_ebs["period"] < 100]
     geo_spline = ebs.read_Kirk_geometric_correction_spline()
     # To translate from eb fraction to rapid fraction.
-    geo_factors = geo_spline(np.log10(short_ebs["period"].filled()))
+    geo_factors = geo_spline(np.log10(short_ebs["period"].filled())) 
     correction_factor = (np.maximum(0, np.sqrt(3)/2 -  geo_factors) / 
                          geo_factors)
     pred_hist, _ = np.histogram(
@@ -1484,6 +1497,19 @@ def verify_eb_rapid_rotator_rate():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
     ax.legend(loc="upper left")
+
+    # Print the predicted number of rapid rotators from the eclipsing binaries.
+    rapid = np.logical_and(short_ebs["period"] > 1, short_ebs["period"] < 7)
+    pred_rapid = np.sum(correction_factor[rapid])
+    pred_num = np.count_nonzero(rapid)
+    scale = pred_rapid / pred_num
+    pred_rate = pred_rapid / totalobjs
+    raw_upper = au.poisson_upper(pred_num, 1) - pred_num
+    raw_lower = au.poisson_lower(pred_num, 1) - pred_num
+    upper_pred = raw_upper * scale / totalobjs
+    lower_pred = raw_lower * scale / totalobjs
+    print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
+                                                       lower_pred))
 
 @write_plot("vsini_check")
 def vsini_check():
