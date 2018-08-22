@@ -430,22 +430,73 @@ def dwarf_metallicity():
     full = cache.apogee_splitter_with_DSEP()
     full_data = full.subsample(["Dwarfs", "APOGEE Statistics Teff"])
 
-    f, ax = plt.subplots(1,1, figsize=(12,12))
+    f, (ax1, ax2) = plt.subplots(1,2, figsize=(24,12), sharex=True)
     minorLocator = AutoMinorLocator()
     xminorLocator = AutoMinorLocator()
-    ax.hist(full_data["FE_H"], cumulative=True, normed=True, bins=200)
-    median = np.median(full_data["FE_H"])
-    ax.yaxis.set_minor_locator(minorLocator)
-    ax.xaxis.set_minor_locator(xminorLocator)
-    ax.plot([-1.25, median], [0.5, 0.5], 'k-', lw=3)
-    ax.plot([median, median], [0.5, 0], 'k-', lw=3)
-    ax.plot([-1.25, -0.14], [0.165, 0.165], 'k-', lw=1)
-    ax.plot([-0.14, -0.14], [0.165, 0], 'k--', lw=1)
-    ax.plot([-1.25, 0.235], [0.835, 0.835], 'k-', lw=1)
-    ax.plot([0.235, 0.235], [0.835, 0], 'k--', lw=1)
-    ax.set_xlabel("APOGEE [Fe/H]")
-    ax.set_ylabel("Cumulative distribution")
-    ax.set_xlim(-1.25, 0.46)
+    ax1.hist(full_data["FE_H"], cumulative=False, normed=False, bins=50)
+    med_loc = 50
+    bottom_1sig = 50-67/2
+    top_1sig = 50+67/2
+    median = np.percentile(full_data["FE_H"], med_loc)
+    bottom_percent = np.percentile(full_data["FE_H"], bottom_1sig)
+    top_percent = np.percentile(full_data["FE_H"], top_1sig)
+    ax1.xaxis.set_minor_locator(xminorLocator)
+    ax1.plot(
+        [median, median], [0, 70], color=bc.black, lw=3, marker="", ls="-")
+    ax1.plot(
+        [bottom_percent, bottom_percent], [0, 70], color=bc.black, lw=1, 
+        marker="", ls="-")
+    ax1.plot(
+        [top_percent, top_percent], [0, 70], color=bc.black, lw=1, 
+        marker="", ls="-")
+    ax1.plot([-1.25, median, median], [med_loc/100, med_loc/100, 0], 'k-', lw=3)
+    ax1.plot([-1.25, bottom_percent, bottom_percent], 
+            [bottom_1sig/100, bottom_1sig/100, 0], 'k-', lw=1)
+    ax1.plot([-1.25, top_percent, top_percent], 
+            [top_1sig/100, top_1sig/100, 0], 'k-', lw=1)
+    ax1.set_xlabel("APOGEE [Fe/H]")
+    ax1.set_ylabel("Metallicity distribution")
+    ax1.set_xlim(-1.25, 0.46)
+
+    metspace = np.linspace(-1.25, 0.46, 20)
+    k_mets = samp.calc_model_mag_fixed_age_alpha(
+        5000, metspace, "Ks", age=1e9)
+    ref_k = samp.calc_model_mag_fixed_age_alpha(
+        5000, median, "Ks", age=1e9)
+    V_mets = samp.calc_model_mag_fixed_age_alpha(
+        5000, metspace, "V", age=1e9)
+    ref_V = samp.calc_model_mag_fixed_age_alpha(
+        5000, median, "V", age=1e9)
+    ax2.plot(metspace, k_mets - ref_k, color=bc.orange, ls="-", marker="",
+             label="Ks")
+    ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
+             label="V")
+    ax2.plot(
+        [median, median], [0.9, -0.3], color=bc.black, lw=3, marker="", ls="-")
+    ax2.plot(
+        [bottom_percent, bottom_percent], [0.9, -0.3], color=bc.black, lw=1, 
+        marker="", ls="-")
+    ax2.plot(
+        [top_percent, top_percent], [0.9, -0.3], color=bc.black, lw=1, 
+        marker="", ls="-")
+    ax2.yaxis.set_minor_locator(minorLocator)
+    hr.invert_y_axis(ax2)
+    ax2.set_xlabel("APOGEE [Fe/H]")
+    ax2.set_ylabel("Vertical displacement")
+
+def k_scatter_from_metallicity():
+    '''Print out the scatter in K from just the Kepler metallicity
+    distribution.'''
+    full = cache.apogee_splitter_with_DSEP()
+    full_data = full.subsample(["Dwarfs", "APOGEE Statistics Teff"])
+    full_data = full_data[full_data["FE_H"] > -0.6]
+
+    k_mets = samp.calc_model_mag_fixed_age_alpha(
+        4500, full_data["FE_H"], "Ks", age=1e9)
+    ref_k = samp.calc_model_mag_fixed_age_alpha(
+        4500, 0.07, "Ks", age=1e9)
+    scatter = np.std(k_mets-ref_k)
+    print(scatter)
 
 def median_absolute_deviation_custom(vals, centerval=None):
     '''Calculate the median absolute deviation about a centerval.
