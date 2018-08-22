@@ -931,16 +931,16 @@ def collapsed_met_histogram():
     ax2.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
     ax1.plot(
         [-0.3, -0.3], [0, 52], marker="", ls="--", color=bc.violet, 
-        lw=3, zorder=3)
+        lw=4, zorder=3)
     ax1.plot(
         [-0.2, -0.2], [0, 52], marker="", ls="--", color=bc.algae, 
-        lw=3, zorder=3)
+        lw=4, zorder=3)
     ax2.plot(
         [-0.3, -0.3], [0, 52], marker="", ls="--", color=bc.violet, 
-        lw=3, zorder=3)
+        lw=4, zorder=3)
     ax2.plot(
         [-0.2, -0.2], [0, 52], marker="", ls="--", color=bc.algae, 
-        lw=3, zorder=3)
+        lw=4, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
     ax1.set_xlabel("K Excess Distribution")
@@ -1261,10 +1261,10 @@ def rapid_rotator_bins():
         ax.set_title(title)
         ax.plot(
             [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
-            lw=3)
+            lw=4)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
-            lw=3)
+            lw=4)
         ax.plot([4000, 5250], [-0.0, -0.0], 'k-', lw=2)
 #       plt.setp(ax.get_yticklabels(), visible=False)
         axes[0][0].legend(loc="upper right")
@@ -1317,10 +1317,10 @@ def mcquillan_rapid_rotator_bins():
         ax.set_title(title)
         ax.plot(
             [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
-            lw=3, zorder=3)
+            lw=4, zorder=3)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
-            lw=3, zorder=3)
+            lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     axes[0][0].set_ylabel("Corrected K Excess")
     axes[1][0].set_ylabel("Corrected K Excess")
@@ -1359,10 +1359,10 @@ def rapid_rotator_transition():
         ax.set_title(title)
         ax.plot(
             [4000, 5250], [-0.3, -0.3], marker="", ls="--", color=bc.violet, 
-            lw=3, zorder=3)
+            lw=4, zorder=3)
         ax.plot(
             [4000, 5250], [-0.2, -0.2], marker="", ls="--", color=bc.algae, 
-            lw=3, zorder=3)
+            lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     axes[1][0].set_xlabel("Pinsonneault et al (2012) Teff (K)")
     axes[1][1].set_xlabel("Pinsonneault et al (2012) Teff (K)")
