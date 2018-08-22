@@ -30,11 +30,11 @@ def clean_apogee_splitter():
     # Add Temperature uncertainties from Holtzmann et al (2018).
     giants = clean.data["LOGG_FIT"] < 2 + 2 / 1500 * (clean.data["TEFF"] - 4500)
     giant_err = np.exp(
-        4.3609 + 0.000604303*(clean.data["TEFF"]-4500) -0.00196400 *
-        clean.data["M_H"] -0.0659445 * (clean.data["SNREV"]-100))
+        4.3609 + 0.000604303*(clean.data["TEFF"]-4500) -0.0659445 *
+        clean.data["M_H"] -0.00196400 * (clean.data["SNREV"]-100))
     dwarf_err = np.exp(
-        4.58343+ 0.000289796*(clean.data["TEFF"]-4500) -0.00129746 *
-        clean.data["M_H"] -0.2434860 * (clean.data["SNREV"]-100)*0)
+        4.58343+ 0.000289796*(clean.data["TEFF"]-4500) -0.2434860 *
+        clean.data["M_H"] -0.00129746 * (clean.data["SNREV"]-100)*0)
     clean.data["TEFF_ERR"] = np.where(giants, giant_err, dwarf_err)
     return clean
 
@@ -179,7 +179,7 @@ def mcquillan_splitter_with_DSEP():
     clean.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
         clean.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
     clean.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
-        clean.data["SDSS-Teff"], 0.0, "Ks", teff_err=150, age=1e9, model="MIST")
+        clean.data["SDSS-Teff"], 0.0, "Ks", teff_err=100, age=1e9, model="MIST")
     clean.data["K Excess"] = clean.data["M_K"] - clean.data["MIST K"]
     clean.data["K Excess Error Down"] = np.sqrt(
         clean.data["M_K_err2"]**2 + clean.data["MIST K Error"]**2)
