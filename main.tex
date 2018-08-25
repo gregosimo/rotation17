@@ -654,8 +654,7 @@ sample is 0.085 mag while the scatter for the photometric sample is 0.113 mag.
         with a blue histogram while the binary population is stacked on top in 
     yellow. \emph{Right:} The same plot as on the left, except the intrinsic
 K-band luminosity is adjusted by the empirical metallicity-dependent correction
-shown in \cref{fig:met_trend}.}
-    \label{fig:met_trend}
+shown in \cref{fig:met_trend}.}\label{fig:mswidth}
 \end{figure}
 
 This modest increase in the scatter for the photometric sample is surprising,
@@ -834,7 +833,54 @@ is shown in \cref{fig:eclipseprob}.
 
 The predicted distribution of \citet{McQuillan14} rotation periods matches the 
 observed distribution to within 1-\(\sigma\) at periods between 1--7 days. This
-result is robust to the poisition of the bin edges.
+result is robust to the position of the bin edges.
+
+\begin{figure}[htb]
+    \centering
+    \plotone{photometric_massratio}
+    \caption{Luminosity excess of a binary with a 0.7 M\(_\sun\), solar
+    metallicity primary as a function of mass ratio using MIST models. The
+dashed lines denote the limit at which the luminosity excess is -0.3 mag.}
+    \label{fig:photometric_massratio}
+\end{figure}
+
+We attempt to generalize our results from just the photometric binaries to the
+full binary population. This generalization requires a mapping between the
+observed photometric binary fraction and the true binary fraction. We use the
+MIST models to predict the fraction of binaries which will be detected as
+photometric binaries under the assumption of a flat mass-ratio distribution
+\citep{Raghavan10}. As noted in \cref{fig:photometric_massratio}, for a 0.7
+solar mass star only mass-ratios greater than 0.7 result in photometric
+binaries, implying that 70\% of the binary population in our sample is not
+detected as a photometric binary. This rough calculation by itself leads to a
+contradiction with the observed short-period photometric binary fraction in 
+\cref{fig:binary_fraction} of 0.75. This contradiction requires that our
+assumption of a flat mass-ratio function cannot hold.
+
+\begin{figure}[htb]
+    \centering
+    \plotone{distance_dist}
+    \caption{Distribution of distances for the photometric binary (blue) and
+    photometric single (red) samples, normalized to the total number of
+photometric binaries and photometric singles, respectively.}
+    \label{fig:distance_dist}
+\end{figure}
+
+While the observed mass-ratio function for short-period systems cannot be flat,
+whether the curvature is intrinsic to the short-period binary population or due
+to the \Kepler{} selection function is not clear. The distribution of 
+distances for the photometric binaries and photometric single stars, shown in
+\cref{fig:distance_dist} show that photometric binaries are overrepresented in
+the sample. If both the photometric binaries and photometric single stars were
+observed in an unbiased way, except for differing luminosity cutoffs, the two
+distributions in \cref{fig:distance_dist} would be identical for nearby stars,
+until the photometric single stars fell below \Kepler{}'s detection threshold.
+The difference in the distributions for even nearby stars implies that the
+\Kepler{} selection function was not uniformly sensitive to both binaries and
+single stars. As a result, more detailed modeling of how binarity affected the
+\Kepler{} selection function is necessary to draw conclusions about the
+mass-ratio distribution of the short-period systems.
+
 
 \section{Discussion}
 \label{sec:discussion}

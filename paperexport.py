@@ -1707,6 +1707,7 @@ def vsini_check():
     ax.legend(loc="lower right")
     hr.invert_y_axis(ax)
 
+@write_plot("distance_dist")
 def binary_single_parallax_distribution():
     '''See if binaries and singles have similar parallax distributions.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -1945,26 +1946,29 @@ def fraction_of_binaries_singles():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("N / N_tot")
 
+@write_plot("photometric_massratio")
 def photometric_binary_limit():
     '''Plot the fraction of mass ratios detected as photometric binaries.'''
-    refmass = 0.9
+    refmass = 0.725
     refmet = 0.00
     minmass = 0.1
-    solmet = mist.MISTIsochrone.isochrone_from_file(0.0)
+    solmet = mist.MISTIsochrone.isochrone_from_file(refmet)
     tab = solmet.iso_table(1e9)
     lowmass = tab[tab[solmet.mass_col] <= refmass]
     qvals = lowmass[solmet.mass_col] / max(lowmass[solmet.mass_col])
     refk = solmet.interpolate_isochrone_cols(
-        1e9, [0.9], solmet.mass_col, mist.band_translation["Ks"])
+        1e9, [refmass], solmet.mass_col, mist.band_translation["Ks"])
     refteff = 10**solmet.interpolate_isochrone_cols(
-        1e9, [0.9], solmet.mass_col, solmet.logteff_col)
+        1e9, [refmass], solmet.mass_col, solmet.logteff_col)
 
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
     combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
     kdiff = combined_k - refk
     ax.plot(qvals, kdiff, marker="o", ls="-", color=bc.black)
+    ax.plot([0, 0.70, 0.70], [-0.3, -0.3, 0], 'k--')
     ax.set_xlabel("Mass ratio")
-    ax.set_ylabel("Magnitude Diff")
+    ax.set_ylabel("Vertical Displacement")
+    hr.invert_y_axis()
 
     
 
