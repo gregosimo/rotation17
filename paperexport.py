@@ -1611,6 +1611,7 @@ def verify_eb_rapid_rotator_rate():
     f, ax = plt.subplots(1, 1, figsize=(12,12))
     # Now bin the EBs
     period_bins, dp = np.linspace(1, 12, 11+1, retstep=True)
+    period_bins = period_bins 
     period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
     eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
     totalobjs = len(dwarfs) + len(dwarf_ebs)
@@ -1639,18 +1640,20 @@ def verify_eb_rapid_rotator_rate():
     radii = masses
     eclipse_prob = ebs.eclipse_probability(dwarf_ebs["period"], radii*1.5, 
                                            masses*1.5)
+    # For empty bins, this is the default eclipse probability.
+    default_probs = ebs.eclipse_probability(period_bin_centers, 0.7, 0.7)
     # To translate from eb fraction to rapid fraction.
     correction_factor = (np.maximum(0, np.sqrt(3)/2 - eclipse_prob) / 
                          eclipse_prob)
+    default_correction = (np.maximum(0, np.sqrt(3)/2 - default_probs) /
+                          default_probs)
     pred_hist, _ = np.histogram(
         dwarf_ebs["period"], bins=period_bins, weights=correction_factor)
     normalized_pred = pred_hist / totalobjs
     scale_factor = np.where(
-        normalized_ebs, normalized_pred / normalized_ebs, 0)
-    pred_upperlim =  eb_upperlim * np.where(
-        scale_factor, scale_factor, period_bin_centers)
-    pred_lowerlim = eb_lowerlim * np.where(
-        scale_factor, scale_factor, period_bin_centers)
+        normalized_ebs, normalized_pred / normalized_ebs, default_correction)
+    pred_upperlim =  eb_upperlim * scale_factor
+    pred_lowerlim = eb_lowerlim * scale_factor
     ax.step(period_bins, np.append(normalized_pred, [0]), where="post", 
             color=bc.red, linestyle=":", 
             label="Predicted Rapid Rotators from EBs")
@@ -1819,6 +1822,61 @@ def binary_fractions_with_period():
     ax.set_ylabel("Photometric Binary Fraction")
     ax.set_xlim(1, 20)
     ax.legend(loc="upper right")
+
+def real_binary_fraction_with_period():
+    '''Calculate the true binary fraction assuming a flat mass-ratio
+    distribution.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    nomcq = cache.mcquillan_nondetections_corrected_splitter()
+    ebs = cache.eb_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarfs = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    generic_columns = ["Corrected K Excess", "parallax"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+    mcq_dwarfs = mcq_dwarfs[1000/mcq_dwarfs["parallax"] < 300]
+    dwarf_ebs = dwarf_ebs[1000/dwarf_ebs["parallax"] < 300]
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    # Create the histograms
+    period_bins = np.arange(1, 51, 2)
+    # These are for the inclusive sample.
+    singles02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= -0.2]
+    binaries02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < -0.2]
+    single_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= -0.2]
+    binary_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < -0.2]
+    binary_rot_hist02, _ = np.histogram(binaries02, bins=period_bins)
+    binary_eb_hist02, _ = np.histogram(binary_ebs02, bins=period_bins)
+    single_rot_hist02, _ = np.histogram(singles02, bins=period_bins)
+    single_eb_hist02, _ = np.histogram(single_ebs02, bins=period_bins)
+    # These are for the conservative sample.
+    singles03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= -0.3]
+    binaries03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < -0.3]
+    single_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= -0.3]
+    binary_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < -0.3]
+    binary_rot_hist03, _ = np.histogram(binaries03, bins=period_bins)
+    binary_eb_hist03, _ = np.histogram(binary_ebs03, bins=period_bins)
+    single_rot_hist03, _ = np.histogram(singles03, bins=period_bins)
+    single_eb_hist03, _ = np.histogram(single_ebs03, bins=period_bins)
+    full_rot_hist, _ = np.histogram(mcq_dwarfs["Prot"], bins=period_bins)
+    full_eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
+
+    # Sum up the binaries, single, and total histograms
+    total_binaries02 = binary_rot_hist02 + binary_eb_hist02
+    total_singles02 = single_rot_hist02 + single_eb_hist02
+    total_binaries03 = binary_rot_hist03 + binary_eb_hist03
+    total_singles03 = single_rot_hist03 + single_eb_hist03
+    total = full_rot_hist + full_eb_hist
+
+    # This is the fraction of binaries which are photometric binaries
+    f_ph03 = 0.3
+    binary_frac = (
+        total_binaries03 / (total_binaries03 + total_singles03) / f_ph03)
+    ax.step(period_bins, np.append(binary_frac, [0]), where="post", 
+            color=bc.red, ls="-", label="Binaries")
+    ax.set_xlabel("Period (day)")
+    ax.set_ylabel("Full binary fraction")
 
 def fraction_of_binaries_singles():
     '''Plot the fraction in each bin of binaries/singles.'''
