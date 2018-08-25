@@ -346,7 +346,7 @@ def artificial_binaries(met_sig, teff_sig):
         mets, 1e9))
     combinedK = sed.sum_binary_mag(kvalues, companionKs)
     # Add an uncertainty to the temperature.
-    teff_errors = np.random.normal(scale=80, size=len(origteffs))
+    teff_errors = np.random.normal(scale=100, size=len(origteffs))
     observed_teffs = origteffs+teff_errors
     inferred_k = samp.calc_model_mag_fixed_age_feh_alpha(
         observed_teffs, 0.0, "Ks", age=1e9)

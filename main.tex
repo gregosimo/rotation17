@@ -558,11 +558,17 @@ distribution of the spectroscopic targets is representative of the full
 \begin{figure}[htb]
     \centering
     \plotone{metallicity}
-    \caption{Metallicity distribution of the \Kepler{} cool dwarfs, selected as
-        having \(4000 \textrm{ K } \le \Teff \le 5250 \textrm{ K }\) and having
-        a luminosity less than 1.3 mag above the single-star sequence. The 
-        median metallicity of the cool dwarf sample is 
-    [Fe/H]=0.08.}\label{fig:metallicity}
+    \caption{\emph{Left:} Metallicity distribution of the \Kepler{} cool 
+        dwarfs, selected as having \(4000 \textrm{ K } \le \Teff \le 5250 
+        \textrm{ K }\) and having a luminosity less than 1.3 mag above the 
+        single-star sequence. The thick black line denotes the median while the
+    thin black lines denote the 83.5 and 16.5 percentiles. \emph{Right:} The
+vertical displacement caused by assuming a median metallicity isochrone. The
+blue line represents the vertical displacement caused by metallicity mismatches
+compared to the median one as predicted by the MIST isochrones. The red line
+denotes the vertical displacement caused by metallicity mismatches after
+correcting for the metallicity-dependent offset of the main sequence relative
+to the MIST isochrones shown in \cref{fig:met_trend}.}\label{fig:metallicity}
 \end{figure}
 
 Because we will mostly be concerned with the cool dwarfs, we check the
@@ -636,9 +642,50 @@ fitting a double Gaussian to each histogram, and taking the width of the
 main-sequence Gaussian as the uncertainty in the vertical displacement in the
 vertical displacement. Our fits indicate that the scatter for the spectroscopic
 sample is 0.085 mag while the scatter for the photometric sample is 0.113 mag.
-The small increase in uncertainty is likely due to the fact that the
-metallicity distribution is heavily clustered around solar, with long but
-sparsely populated tails.
+
+\begin{figure}[htb]
+    \centering
+    \plotone{ms_width}
+    \caption{\emph{Left:} Distribution of vertical displacements for a
+        simulated 50\% binary 1Gyr MIST population by subtracting a median 
+        metallicity isochrone. The temperature uncertainties are assumed to be 
+        100 K, and the metallicity distribution is Gaussian centered on solar 
+        with a dispersion of 0.15 dex. The single star population is shown 
+        with a blue histogram while the binary population is stacked on top in 
+    yellow. \emph{Right:} The same plot as on the left, except the intrinsic
+K-band luminosity is adjusted by the empirical metallicity-dependent correction
+shown in \cref{fig:met_trend}.}
+    \label{fig:met_trend}
+\end{figure}
+
+This modest increase in the scatter for the photometric sample is surprising,
+especially given the strong dependence of K-band magnitude on metallicity shown
+in \cref{fig:metallicity} predicted by the MIST isochrones. We believe that the
+reduced scatter is real, and that the MIST bolometric corrections overestimate 
+the dependence of K-band luminosity on metallicity. We demonstrate this by
+comparing the main sequence width directly predicted by the isochrones to the
+main sequence width from the isochrones flattened by the metallicity correction
+in \cref{fig:met_trend}. We artificially generate a 1 Gyr population using the
+MIST isochrones with \Teff{} distributed uniformly between 4000-5000 K, and
+metallicity distributed normally about solar with a dispersion of 0.15 dex. We
+assume a 50\% binary fraction, with the binaries following a flat mass-ratio
+distribution. We simulate our vertical displacements by adding a temperature 
+error with a width of 100 K and then subtracting a solar-metallicity MIST
+isochrone with the transformed temperature. The resulting distribution of
+vertical displacements is shown in the left panel of \cref{fig:mswidth}. The
+true width of the single-star sequence in this realization is 0.161 while the
+measured width is 0.127. In the right panel, the metallicity-dependent offset
+shown in \cref{fig:met_trend} is added to the MIST isochrones to more
+accurately simulate the K-distribution of the data. With the correction
+applied, the true width of the single star sequence shrinks to 0.097 while the
+measured width shrinks to 0.127. The corrected behavior of the vertical
+displacement with metallicity is shown in the right panel of 
+\cref{fig:metallicity} as a red line. Because the observed scatter in K-band
+luminosity more resembles the right-hand panel in \cref{fig:mswidth} than the
+left-hand panel, we believe that the K-band bolometric corrections impose 
+unphysical metallicity trends for lower main sequence stars.
+
+
 
 
 \section{Results}
@@ -650,8 +697,8 @@ now attempt to delineate between single and binary stars. As noted before, the
 1-\(\sigma\) uncertainties of the main sequence were 0.09 mag with known
 metallicity, and 0.11 mag when metallicity was unknown. As a result, we use two
 different thresholds to distinguish between binaries and single star. A more
-inclusive approximately 2-\(\sigma\) threshold at -0.2 mag, as well as a more
-conservative threshold at -0.3 mag. In order to prevent age effects from 
+inclusive 2-\(\sigma\) threshold at -0.2 mag, as well as a more
+conservative threshold at -0.3 mag. To prevent age effects from 
 biasing the results, we also only performed statistics in the 4000--5250 K 
 range.
 
@@ -668,42 +715,33 @@ range.
     respectively.}\label{fig:apogee_rapid_excess}
 \end{figure}
 
-The well-characterized APOGEE sample illustrates well the
-correlation of rapid rotators and binaries, shown in
+With both binarity thresholds, the well-characterized APOGEE sample 
+illustrates the differences in binarity between slow and rapid rotators. The
+vertical displacements in different period bins are shown in
 \cref{fig:apogee_rapid_excess}. All of the rapid rotators with periods between
-1--5 days are photometric binaries. This is in contrast to the slow rotators
-with periods greater than 13 days, which have a distinct single star sequence
-along with more luminous binaries. The transitional period region between 5--13
-days has a binary fraction in between the rapid and slow regimes. We do not
-include objects with periods less than 1 day because that sample would be
-contaminated with contact binaries and ellipsoidal variables as well as 
-blended pulsators. The disappearance of the single-star sequence for short
-periods is because angular momentum loss leads to slow rotation in single 
-stars, and so there should not be any single-stars rotating at periods faster 
-than 5 days.
+1--5 days are photometric binaries, in contrast to the slow rotators
+with periods greater than 13 days, which have a distinct single star sequence. 
+Angular momentum loss due to stellar winds acting over a billion years is
+expected to deplete the short-period regime of single stars. The transitional 
+periods between 5--13 days have a binary fraction intermediate to the 
+rapid and slow regimes. The bin with periods shorter than 1 day is not expected
+to behave like detached binaries due to contamination from contact binaries,
+ellipsoidal variables and blended pulsators. 
 
-To quantify the significance the binary fraction in each bin, we divide the
-sample into two bins: binaries and single stars, and use a binomial test to
-calculate the chance of getting the observed binary fraction given the
-background rate. For the background rate, we use the binary fraction of all 
-APOGEE targets with temperatures between 4000--5000 K, which is 0.41\%. 
-
-In order to accurately characterize the tidally-synchronized systems, we
-include the \Kepler{} eclipsing binaries which were excluded by 
-\citep{McQuillan14} to avoid contaminating signal from the eclipses. The 
+To quantify the significance the excess binary fraction in the rapid rotators, 
+we compare the photometric binary fraction of the short-period bin to the
+binary fraction of the full sample. In order to accurately characterize the 
+binarity of short-period systems, we include the \Kepler{} eclipsing binaries, 
+which were excluded by \citet{McQuillan14} to avoid contaminating signal from the eclipses. The 
 eclipse probability for these short-period binaries can be as high as 40\% 
-\citep{Kirk16}, hence ignoring this population would substantially
-bias the underlying sample. Because we are only looking at systems with orbital
-periods greater than 1 day, the eclipsing binary sample should only consist of
-detached binaries, and not contact or ellipsoidal systems, which become
-prevalent at periods less than a day. We assume that the eclipsing binaries are
-synchronized, and that the rotation period is identical to the orbital period.
-While this is certainly true at the low-period end, it will not be true at the
-high-period end, where the components should rotate like single stars; 
-however the number of eclipsing binaries is small at long periods, so we will
-neglect this effect.
+\citep{Kirk16}, hence ignoring this population would severely
+bias the underlying sample. We assume that the eclipsing binaries in the
+short-period regime are synchronized, so that the rotation period is identical 
+to the orbital period. 
 
-We find that the binary fraction with periods between 1--5 day is 0.93, which
+We find that the binary fraction for the full APOGEE sample with temperatures
+between 4000--5000 K is 41\%,  while the binary fraction with periods 
+between 1--5 day is 93\%. which
 is significantly different from the binary fraction of the full sample by a
 p-value of less than \(10^4\). The p-value for the binary fraction for stars
 with periods between 5--9 days is a marginal 0.01. For long periods b

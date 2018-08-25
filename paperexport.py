@@ -458,19 +458,29 @@ def dwarf_metallicity():
     ax1.set_ylabel("Metallicity distribution")
     ax1.set_xlim(-1.25, 0.46)
 
+    # Make the empirical metallicity correction.
+    apogee = cache.apogee_splitter_with_DSEP()
+    apo_dwarfs = apogee.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    metcoeff = samp.flatten_MS_metallicity(
+        apo_dwarfs["K Excess"], apo_dwarfs["FE_H"], deg=2)
+    metcorrect = np.poly1d(metcoeff)
+
     metspace = np.linspace(-1.25, 0.46, 20)
     k_mets = samp.calc_model_mag_fixed_age_alpha(
         5000, metspace, "Ks", age=1e9)
+    corrected_k_mets = k_mets + metcorrect(metspace)
     ref_k = samp.calc_model_mag_fixed_age_alpha(
         5000, median, "Ks", age=1e9)
     V_mets = samp.calc_model_mag_fixed_age_alpha(
         5000, metspace, "V", age=1e9)
     ref_V = samp.calc_model_mag_fixed_age_alpha(
         5000, median, "V", age=1e9)
-    ax2.plot(metspace, k_mets - ref_k, color=bc.orange, ls="-", marker="",
+    ax2.plot(metspace, k_mets - ref_k, color=bc.blue, ls="-", marker="",
              label="Ks")
-    ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
-             label="V")
+    ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), color=bc.red, ls="-", marker="",
+             label="Empirical Ks")
+#   ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
+#            label="V")
     ax2.plot(
         [median, median], [0.9, -0.3], color=bc.black, lw=3, marker="", ls="-")
     ax2.plot(
@@ -483,6 +493,7 @@ def dwarf_metallicity():
     hr.invert_y_axis(ax2)
     ax2.set_xlabel("APOGEE [Fe/H]")
     ax2.set_ylabel("Vertical displacement")
+    ax2.set_ylim(0.9, -0.3)
 
 def k_scatter_from_metallicity():
     '''Print out the scatter in K from just the Kepler metallicity
@@ -962,6 +973,7 @@ def scatter_from_teff():
     arr1, bins, patches = ax.hist(
         kdiff, bins=40, color=bc.blue, alpha=0.5, histtype="bar", label="")
 
+@write_plot("ms_width")
 def binary_fit():
     '''What does a forward-modeled binary distribution look like?'''
     binaryfrac = 0.5
@@ -970,12 +982,27 @@ def binary_fit():
     # generate a mask of which targets are binaries and which ones aren't.
     binaries = bintable["Binary Probability"] <= binaryfrac
     # Kdiff will either 
-    kvalue = np.where(binaries, bintable["Combined K"], bintable["Primary K"])
-    kdiff = kvalue - bintable["Inferred K"]
+    combined_k = np.where(binaries, bintable["Combined K"], bintable["Primary K"])
 
-    f, ax = plt.subplots(1, 1)
-    arr, bins, patches = ax.hist(
-        [kdiff[~binaries], kdiff[binaries]], bins=80, 
+    # Make the empirical metallicity correction.
+    apogee = cache.apogee_splitter_with_DSEP()
+    apo_dwarfs = apogee.subsample(["Dwarfs", "APOGEE MetCor Teff"])
+    metcoeff = samp.flatten_MS_metallicity(
+        apo_dwarfs["K Excess"], apo_dwarfs["FE_H"], deg=2)
+    metcorrect = np.poly1d(metcoeff)
+    # This correction will remove the trend in the isochrones.
+    kvalue = combined_k + metcorrect(bintable["[Fe/H]"])
+
+    kdiff_theoretical = combined_k - bintable["Inferred K"] 
+    kdiff_empirical = kvalue - bintable["Inferred K"] - metcorrect(0)
+
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 12))
+    theo_arr, bins, patches = ax1.hist(
+        [kdiff_theoretical[~binaries], kdiff_theoretical[binaries]], bins=60, 
+        color=[bc.blue, bc.orange], alpha=0.5, histtype="barstacked", 
+        label=["Singles", "Binaries"])
+    emp_arr, bins, patches = ax2.hist(
+        [kdiff_empirical[~binaries], kdiff_empirical[binaries]], bins=60, 
         color=[bc.blue, bc.orange], alpha=0.5, histtype="barstacked", 
         label=["Singles", "Binaries"])
     singlemodel = Gaussian1D(60, 0, 0.1, bounds={
@@ -984,33 +1011,26 @@ def binary_fit():
         "mean": (-1.5, 0.0), "stddev":(0.01, 0.5)})
     dualmodel = singlemodel+binarymodel
     fitter = fitting.SLSQPLSQFitter()
-    fittedmet = fitter(dualmodel, (bins[1:]+bins[:-1])/2, arr[1])
+    theoryfitter = fitter(dualmodel, (bins[1:]+bins[:-1])/2, theo_arr[1])
+    empfitter = fitter(dualmodel, (bins[1:]+bins[:-1])/2, emp_arr[1])
+    print(theoryfitter)
+    print(empfitter)
+
     inputexcesses = np.linspace(-1.0, 0.5, 200)
-    metmodel = fittedmet(inputexcesses)
-    ax.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="",
+    theorymodel = theoryfitter(inputexcesses)
+    empmodel = empfitter(inputexcesses)
+    ax1.plot(inputexcesses, theorymodel, color=bc.blue, ls="-", lw=3, marker="",
             label="[Fe/H] Corrected")
-    # Try sigma clipping.
-    clipped = sigma_clip(kdiff, sigma_lower=2, sigma_upper=1000)
-    print("Fitted Single width: {0:.03f}".format(fittedmet.stddev_0.value))
-    print("True Single Width: {0:.03f}".format(np.std(kdiff[~binaries])))
-    print(arr)
-
-    f, ax = plt.subplots(1, 1)
-    ax.hist(kdiff[binaries], bins=80, color=bc.orange, alpha=0.5)
-    fittedbinary = Gaussian1D(
-        amplitude=fittedmet.amplitude_1.value, mean=fittedmet.mean_1.value,
-        stddev=fittedmet.stddev_1.value)
-    binarymodel = fittedbinary(inputexcesses)
-    ax.plot(inputexcesses, binarymodel, color=bc.blue, ls="-", lw=3, marker="",
-            label="Binaries")
-
-    f, ax = plt.subplots(1, 1)
-    arr, bins, patches = ax.hist(
-        [clipped[~binaries], clipped[binaries]], bins=80, 
-        color=[bc.blue, bc.orange], alpha=0.5, histtype="barstacked", 
-        label=["Singles", "Binaries"])
-    print("Clipped Width: {0:.03f}".format(np.ma.std(clipped)))
-
+    ax2.plot(inputexcesses, empmodel, color=bc.blue, ls="-", lw=3, marker="",
+            label="[Fe/H] Corrected")
+    print("Theoretical Fitted Single width: {0:.03f}".format(
+        theoryfitter.stddev_0.value))
+    print("True Theoretical Single Width: {0:.03f}".format(
+        np.std(kdiff_theoretical[~binaries])))
+    print("Empirical Fitted Single width: {0:.03f}".format(
+        empfitter.stddev_0.value))
+    print("True Empirical Single Width: {0:.03f}".format(
+        np.std(kdiff_empirical[~binaries])))
 
 @write_plot("excess_hist")
 def collapsed_met_histogram():
@@ -1502,7 +1522,7 @@ def calculate_APOGEE_binary_significance(min_P, max_P):
     ebs = catin.read_villanova_EBs()
     dwarfebs = au.join_by_id(dwarfs, ebs, "kepid", "KIC")
     # We only want detached systems
-    dwarfebs = dwarfebs[dwarfebs["morph"] < 0.55]
+    dwarfebs = dwarfebs[dwarfebs["period"] > 1]
 
     # The fraction of binaries in the full sample.
     full_binaryfrac = (
@@ -1709,7 +1729,8 @@ def binary_single_parallax_distribution():
 
     bin_hist, bins, patches = ax.hist(
         [1/singles["parallax"]*1000, 1/binaries["parallax"]*1000], bins=parallax_bins, 
-        color=[bc.red, bc.blue], label=["Single", "Binary"], cumulative=False, 
+        color=[bc.red, bc.blue], 
+        label=["Photometric Single", "Photometric Binary"], cumulative=False, 
         histtype="step", normed=True)
     ax.set_xlabel("Distance (pc)")
     ax.set_ylabel("N (< d) / N")
@@ -1863,6 +1884,8 @@ def fraction_of_binaries_singles():
                 yerr=[normalized_singles_lower, normalized_singles_upper],
                 color=bc.blue, ls="", marker="")
     ax.legend(loc="lower right")
+    ax.set_xlabel("Period (day)")
+    ax.set_ylabel("N / N_tot")
 
 def photometric_binary_limit():
     '''Plot the fraction of mass ratios detected as photometric binaries.'''
