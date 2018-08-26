@@ -749,12 +749,15 @@ To quantify the significance the excess binary fraction in the rapid rotators,
 we compare the photometric binary fraction of the short-period bin to the
 binary fraction of the full sample. In order to accurately characterize the 
 binarity of short-period systems, we include the \Kepler{} eclipsing binaries, 
-which were excluded by \citet{McQuillan14} to avoid contaminating signal from the eclipses. The 
-eclipse probability for these short-period binaries can be as high as 40\% 
+which were excluded by \citet{McQuillan14} to avoid contaminating signal from 
+the eclipses. The shortest-period systems are expected to be synchronized, so
+we assume that the rotational period is identical to the orbital period. 
+The eclipse probability for these short-period binaries can be as high as 40\% 
 \citep{Kirk16}, hence ignoring this population would severely
-bias the underlying sample. We assume that the eclipsing binaries in the
-short-period regime are synchronized, so that the rotation period is identical 
-to the orbital period. 
+bias the underlying sample. For systems where the orbital period is too long
+for synchronization, this assumption would break down and the orbital period
+distribution would behave differently from the rotational period distribution.
+We will perform a check for this effect further below.
 
 We find that the binary fraction for the full APOGEE sample with temperatures
 between 4000--5000 K is 41\%,  while the binary fraction with periods 
@@ -901,10 +904,19 @@ modulations would not be detected for these highly-inclined systems
 population of eclipsing binaries, we predict the period distribution of 
 non-eclipsing binaries in \cref{fig:eclipseprob}. 
 
-The two populations match well below 7 days, supporting our hypothesis that the
-rotational period distribution is consistent with the orbital period
-distribution for short-period systems. This property is highly suggestive of a
-tidally-synchronized binary population.
+The two period distributions match well below 7 days, indicating
+that the rotational period distribution is reflects the orbital period
+distribution for the eclipsing binaries. The period at which the data diverges
+from the prediction is also similar to the period where the binary fraction 
+drops in \cref{fig:binary_fraction}. The concordance of these two periods 
+suggests that the short-period systems are mostly binaries following a 
+rotational period distribution compatible with the eclipsing binaries, while 
+the long-period systems become dominated by single stars following a different 
+period distribution. Our physical interpretation for this phenomenon is that the
+short-period systems are tidally-synchronized binaries, which remain 
+synchronized at least through an orbital period of 7 days. At periods longer
+than 7 days, the sample becomes dominated by a rapidly-rotating tail of single
+stars and wide binaries following single-star angular momentum evolution.
 
 \begin{figure}[htb]
     \centering
