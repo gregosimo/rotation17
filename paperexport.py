@@ -14,6 +14,7 @@ from astropy.table import Table, vstack
 from astropy.io import ascii
 from astropy.stats import median_absolute_deviation, sigma_clip
 from astropy.modeling import models, fitting
+from astropy.io import ascii
 import statop as stat
 import functools
 import scipy
@@ -86,7 +87,7 @@ def missing_gaia_targets():
     hr.logg_teff_plot(missing_gaia["teff"], missing_gaia["logg"], marker=".",
                         color=bc.green, ls="")
 
-def write_rapid_rotator_table_latex():
+def write_rapid_rotator_tables():
     '''Write the table of rapid rotators.
     
     This is the abridged latex table that will go into the paper.'''
@@ -119,13 +120,35 @@ def write_rapid_rotator_table_latex():
         latex_tablefoot, "units": {
             r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
             r"$\Delta K$": "mag", "$P_{rot}$": "day"}}
+    latex_colnames = (
+            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
+            "$P_{rot}$")
     colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f"}
     latex_table.write(
         str(TABLE_PATH / "table1.tex"), format="ascii.aastex", 
-        latexdict=latexdict, overwrite=True, names=(
-            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
-            "$P_{rot}$"), formats=colformats)
+        latexdict=latexdict, overwrite=True, names=latex_colnames, 
+        formats=colformats)
 
+    # Write the full table.
+    ascii_colnames = (
+            "KIC", "APOGEE_ID", "Teff", "K", "MK", "DELTA_K", "Prot")
+    comments=[
+        "KIC - The Kepler Input Catalog ID for the star",
+        "APOGEE_ID - The APOGEE_ID if this star was observed in APOGEE. "
+            "The APOGEE_ID is equivalent to the 2MASS ID",
+        "Teff - The effective temperature from Pinsonneault et al (2012)",
+        "K - The 2MASS K-band apparent magnitude",
+        "MK - The 2MASS K-band absolute magnitude derived from Gaia parallaxes",
+        "DELTA_K - The vertical displacement above the median-metallicity "
+            "MIST isochrone as derived in this work."]
+    rapid_table_abridged.meta["comments"] = comments
+    colformats = {"Teff": "g", "MK": ".3f", "DELTA_K": ".3f"}
+    badformat = [(ascii.masked, "", "APOGEE_ID")]
+    rapid_table_abridged.write(
+        str(TABLE_PATH / "table1.txt"), format="ascii.fixed_width",
+        names=ascii_colnames, overwrite=True, fill_values=badformat)
+
+    return rapid_table
 
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
