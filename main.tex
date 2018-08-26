@@ -305,7 +305,7 @@ Secondly, the height of the first peak must be larger than a temperature- and
 period-dependent threshold. In order to reduce contamination from pulsators, 
 \citet{McQuillan14} only considered periods between 0.2--70 days.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{mcquillan_selection}
     \caption{\emph{Left:} \Teff-\(M_K\) density plot of the sample of
@@ -316,7 +316,7 @@ period-dependent threshold. In order to reduce contamination from pulsators,
         \emph{Right:} The variation in the \citet{McQuillan14} period 
         detection fraction across the \Teff-\(M_K\) 
     diagram.}\label{fig:mcquillan_selection}
-\end{figure}
+\end{figure*}
 
 The \citet{McQuillan14} sample is shown in a \Teff-\(M_K\)
 diagram in \cref{fig:mcquillan_selection}. One of the new results enabled by 
@@ -366,7 +366,7 @@ from our analysis. A substantially larger fraction of targets (14\%) have the
 of these spectra indicated that the fits reasonably resembled the underlying 
 spectra. We included all targets with the \STARWARN{} quality flag enabled.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{apogee_selection}
     \caption{\emph{Left:} \Teff-\(M_K\) diagram for the APOGEE observations of
@@ -379,7 +379,7 @@ spectra. We included all targets with the \STARWARN{} quality flag enabled.
         full APOGEE sample. To preserve the dynamic range of the dwarf 
         sequence, the red clump was allowed to saturate. The bin size is 100 K
     horizontally and 0.02 mag vertically.}\label{fig:apogee_selection}
-\end{figure}
+\end{figure*}
 
 \Cref{fig:apogee_selection} shows all \Kepler{} targets with observed
 spectroscopic temperatures in the APOGEE DR14, color-coded by observing
@@ -564,7 +564,7 @@ representative of the full sample. We do this by assuming that metallicity
 distribution of the spectroscopic targets is representative of the full 
 \Kepler{} field. 
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{metallicity}
     \caption{\emph{Left:} Metallicity distribution of the \Kepler{} cool 
@@ -579,7 +579,7 @@ predicted by the MIST isochrones. The red line denotes the vertical
 displacement caused by metallicity mismatches after correcting for the 
 metallicity-dependent offset of the main sequence relative to the MIST 
 isochrones shown in \cref{fig:met_trend}.}\label{fig:metallicity}
-\end{figure}
+\end{figure*}
 
 Because we will mostly be concerned with the cool dwarfs, we check the
 metallicity distribution of dwarfs cooler than 5250 K, which is the 
@@ -620,7 +620,7 @@ using the photometric temperatures yields the points in \cref{fig:photuncor}.
 This sample still has a trend with temperature, that we remove using a linear
 fit, similar to that done for the spectroscopic sample.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{excess_hist}
     \caption{\emph{Left:} Histogram showing the distribution of vertical 
@@ -640,7 +640,7 @@ fit, similar to that done for the spectroscopic sample.
         cuts are shown as violet and green dashed lines, respectively. The
         best-fit dispersion of the single-star Gaussian is 0.113 
     mag.}\label{fig:histcompare}
-\end{figure}
+\end{figure*}
 
 Now that we have corrected vertical displacements over the 4000--5250 K
 temperature range, we can now compare the main-sequence scatter for the two
@@ -652,7 +652,7 @@ main-sequence Gaussian as the uncertainty in the vertical displacement in the
 vertical displacement. Our fits indicate that the scatter for the spectroscopic
 sample is 0.085 mag while the scatter for the photometric sample is 0.113 mag.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{ms_width}
     \caption{\emph{Left:} Distribution of vertical displacements for a
@@ -664,7 +664,7 @@ sample is 0.085 mag while the scatter for the photometric sample is 0.113 mag.
     yellow. \emph{Right:} The same plot as on the left, except the intrinsic
 K-band luminosity is adjusted by the empirical metallicity-dependent correction
 shown in \cref{fig:met_trend}.}\label{fig:mswidth}
-\end{figure}
+\end{figure*}
 
 This modest increase in the scatter for the photometric sample is surprising,
 especially given the strong dependence of K-band magnitude on metallicity shown
@@ -719,7 +719,7 @@ conservative threshold at -0.39 mag. To prevent age effects from
 biasing the results, we only performed statistics in the 4000--5250 K 
 range.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \epsscale{1.2}
     \plotone{apogee_rapid_excess}
@@ -730,7 +730,7 @@ range.
         green and purple lines denote the inclusive and conservative 
         photometric binary thresholds, 
     respectively.}\label{fig:apogee_rapid_excess}
-\end{figure}
+\end{figure*}
 
 For both binarity thresholds, the well-characterized APOGEE sample 
 illustrates the differences in binarity between slow and rapid rotators. The
@@ -765,7 +765,7 @@ with periods between 5--13 days is a marginal 0.005. For the long-period
 interval of 13--17 days, the p-value is 0.09, indicating a binary fraction
 representative of the full sample.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \epsscale{1.2}
     \plotone{full_mcquillan_rr_excess}
@@ -776,7 +776,7 @@ representative of the full sample.
         green and purple lines denote the inclusive and conservative 
         photometric binary thresholds, 
     respectively}\label{fig:mcq_rapid_excess}
-\end{figure}
+\end{figure*}
 
 While the spectroscopic sample can show trends between rotation and binarity in
 large bins, the substantially larger photometric sample is needed to 
@@ -785,14 +785,14 @@ in each period bin is shown in \cref{fig:mcq_rapid_excess}. With the
 substantially larger number of objects in each bin, the absence of the
 single-star sequence in the rapid rotators is starker.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \epsscale{1.2}
     \plotone{mcquillan_transition}
     \caption{Same as \cref{fig:mcq_rapid_excess} except with the period ranges
     5--7 day, 7--9 day, 9--11 day, 11--13 days.}
     \label{fig:mcquillan_transition}
-\end{figure}
+\end{figure*}
 
 The appearance of the single-star sequence is shown in
 \cref{fig:mcquillan_transition}. The single-star sequence appears in the
@@ -801,7 +801,7 @@ that hotter stars in the field rotate more quickly than the cooler stars
 is consistent with the overall trend in temperature seen in 
 \citet{McQuillan14}.
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plotone{binary_fraction}
     \caption{\emph{Top Left:} The photometric binary fraction as a function of 
@@ -819,7 +819,7 @@ is consistent with the overall trend in temperature seen in
         Same as the previous plot, except with the more conservative vertical
         displacement threshold. Error bars are 1-\(\sigma\) Poisson confidence 
     intervals.}\label{fig:binary_fraction}
-\end{figure}
+\end{figure*}
 
 In order to understand the low-period edge of the single-star population, as
 well as the cutoff period for the tidally-synchronized binaries, we need to
