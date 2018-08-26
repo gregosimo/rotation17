@@ -1,5 +1,5 @@
 % aastex6.1 will be released as part of TeXLive 2017 around June 1. 
-\documentclass[manuscript]{aastex6}
+\documentclass[twocolumn]{aastex6}
 
 % Make the underscore behave correctly.
 \usepackage[T1]{fontenc}
@@ -39,15 +39,14 @@
 
 \newcommand{\gvs}{\authorcomment1}
 
-\shorttitle{Comparison of Rotation Measurements in \Kepler{}}
+\shorttitle{Rapid Rotator Binarity}
 \shortauthors{Simonian et al.}
 \begin{document}
 
 \title{Rapid Rotation in the \Kepler{} Field: Not a Single Star
 Phenomenon}
-\author{Gregory V. Simonian; Marc H. Pinsonneault; Donald M. Terndrup}
-\affil{Department of Astronomy, The Ohio State University}
-\affil{140 West 18th Avenue, Columbus, OH 43210}
+\author{Gregory V. A. Simonian; Marc H. Pinsonneault; Donald M. Terndrup}
+\affil{Department of Astronomy, The Ohio State University \\ 140 West 18th Avenue, Columbus, OH 43210}
 \email{simonian@astronomy.ohio-state.edu}
 
 \begin{abstract}
@@ -69,7 +68,7 @@ Phenomenon}
     tidally-synchronized binaries will help further understand 
     tidal processes in stars.
 \end{abstract}
-\keywords{stars: rotation}
+\keywords{binaries: close, stars: late-type, stars: rotation}
 
 \section{Introduction}
 
@@ -307,6 +306,7 @@ period-dependent threshold. In order to reduce contamination from pulsators,
 
 \begin{figure*}[htb]
     \centering
+    \epsscale{1.1}
     \plotone{mcquillan_selection}
     \caption{\emph{Left:} \Teff-\(M_K\) density plot of the sample of
         \citet{McQuillan14} period detections. A binary sequence is clearly 
@@ -368,6 +368,7 @@ spectra. We included all targets with the \STARWARN{} quality flag enabled.
 
 \begin{figure*}[htb]
     \centering
+    \epsscale{1.1}
     \plotone{apogee_selection}
     \caption{\emph{Left:} \Teff-\(M_K\) diagram for the APOGEE observations of
         \Kepler{} targets. Asteroseismic targets are shown as black dots. The
@@ -464,7 +465,7 @@ inclusion limits for binaries and potential triple systems.
         line denotes the predicted luminosity excess of a 9 Gyr solar
         composition isochrone. The dashed line represents the limit for 
         photometric binaries. The 25th percentile of the dwarfs in 15 
-        temperature bins is shown in green. We draw a temperature threshold 
+        temperature bins is shown in brown. We draw a temperature threshold 
         for the unevolved lower main sequence at 5250 K. A representative 
         error bar assuming Gaussian uncertainties is shown in the lower right
     corner.}
@@ -628,8 +629,8 @@ fit, similar to that done for the spectroscopic sample.
         The blue line denotes the best-fit double-Gaussian model to the
         distribution of vertical displacements. The red line is a fit to the
         best-fit double-Gaussian model assuming a single metallicity (see right
-        panel). Conservative and inclusive photometric binary thresholds at \(\Delta K < -0.3\)
-        mag and \(\Delta K < -0.2\) mag are shown as violet and green dashed 
+        panel). Conservative and inclusive photometric binary thresholds at 
+        \(\Delta K < -0.39\) mag and \(\Delta K < -0.26\) mag are shown as violet and green dashed 
         lines, respectively. The best-fit dispersion of the single-star 
         Gaussian is 0.085 mag. \emph{Right:} Histogram showing the 
         distribution of vertical displacements with a \([Fe/H] = 0.08\) 
@@ -809,11 +810,11 @@ is consistent with the overall trend in temperature seen in
     \plotone{binary_fraction}
     \caption{\emph{Top Left:} The photometric binary fraction as a function of 
         period for the inclusive photometric binary threshold (\(\Delta K <
-        -0.2\) mag). The photometric binary fraction
+        -0.26\) mag). The photometric binary fraction
         for the full sample analyzed by \citet{McQuillan14} is shown as the
         dotted line. Error bars are \(1 \sigma\) binomial confidence
         intervals. \emph{Top Right:} Same as the previous plot, except using
-        the more conservative threshold (\(\Delta K < -0.3\) mag). \emph{Bottom
+        the more conservative threshold (\(\Delta K < -0.39\) mag). \emph{Bottom
         left:} The period distribution of the photometric binary (solid green) 
         and photometric single (dashed purple) samples, each normalized by the 
         total number of photometric binaries and photometric single stars 
@@ -873,10 +874,10 @@ the conservative threshold.
     \centering
     \plotone{eclipseprob}
     \caption{Comparison of rapid rotator period distribution and eclipsing
-    binary. The period distribution of the \citep{McQuillan14} sample is shown
+    binary. The period distribution of the \citet{McQuillan14} sample is shown
 as a blue solid histogram, while the period distribution of the eclipsing binaries
 is shown as the red histogram. The predicted EB distribution assuming the
-\citep{McQuillan14} sample consists of binaries inclined enough to show
+\citet{McQuillan14} sample consists of binaries inclined enough to show
 starspot modulation, but not inclined enough to eclipse. Error bars represent
 1-\(\sigma\) Poisson confidence intervals.}\label{fig:eclipseprob}
 \end{figure}
@@ -921,9 +922,9 @@ stars and wide binaries following single-star angular momentum evolution.
 \begin{figure}[htb]
     \centering
     \plotone{photometric_massratio}
-    \caption{Luminosity excess of a binary with a 0.7 M\(_\sun\), solar
+    \caption{Vertical displacement of a binary with a 0.7 M\(_\sun\), solar
     metallicity primary as a function of mass ratio using MIST models. The
-dashed lines denote the limit at which the luminosity excess is -0.3 mag.}
+dashed lines denote the limit at which the luminosity excess is -0.39 mag.}
     \label{fig:photometric_massratio}
 \end{figure}
 
@@ -1038,6 +1039,7 @@ find that the rapid rotators are consistent with being synchronized,
 non-eclipsing binary systems showing starspot modulation, up to periods of 7
 days.
 
+\onecolumngrid
 \input{tables/table1}
 
 Our hypothesis that the rapid rotators are tidally-synchronized systems can be
@@ -1065,13 +1067,6 @@ sparsely-calibrated NIR region.
 \acknowledgments
 
 G.S, M.P. and D.T acknowledge support from NASA ADP Grant NNX15AF13G. 
-
-This work made use of the IPython package \citep{PER-GRA:2007}. This research
-made use of SciPy \citep{jones_scipy_2001}. This research made use of NumPy
-\citep{van2011numpy}. This research made use of matplotlib, a Python library for
-publication quality graphics \citep{Hunter:2007}. This research made use of
-Astropy, a community-developed core Python package for Astronomy
-\citep{astropy}.
 Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P.
 Sloan Foundation, the U.S. Department of Energy Office of Science, and the
 Participating Institutions. SDSS-IV acknowledges support and resources from the
@@ -1099,6 +1094,11 @@ from the Two Micron All Sky Survey, which is a joint project of the University
 of Massachusetts and the Infrared Processing and Analysis Center/California
 Institute of Technology, funded by the National Aeronautics and Space
 Administration and the National Science Foundation. 
+
+\facility{Kepler, Gaia, CTIO:2MASS, ARC}
+
+\software{MIST \citep{Choi16}, Astropy \citep{astropy}, IPython \citep{PER-GRA:2007}, Scipy
+\citep{jones_scipy_2001}, NumPy \citep{van2011numpy}, Matplotlib \citep{Hunter:2007} }
 
 \bibliographystyle{aasjournal}
 \bibliography{references}

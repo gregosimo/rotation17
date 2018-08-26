@@ -110,11 +110,11 @@ def write_rapid_rotator_tables():
     latex_table = rapid_table_abridged[:latex_length]
     latex_caption = "Kepler Rapid Rotators\label{tab:rapidrot}"
     latex_tablefoot = (
-        r"""All objects in \citet{McQuillan14} with periods between 1--7 
+        r"""\tablecomments{All objects in \citet{McQuillan14} with periods between 1--7 
         days and 4000 K < $\Teff{}$ < 5250 K. For objects with APOGEE
         observations, their APOGEE ID is given. This table is published in its
         entirety in the machine-readable format. A portion is
-        shown here for guidance regarding its form and content.""")
+        shown here for guidance regarding its form and content.}""")
     latexdict = {
         "col_align": "llccccc", "caption": latex_caption, "tablefoot":
         latex_tablefoot, "units": {
@@ -221,7 +221,7 @@ def apogee_selection_coordinates():
         [3500], [3.0], yerr=[[median_k_errdown], [median_k_errup]], 
         xerr=teff_error, elinewidth=3)
     ax1.set_xlim(7000, 3000)
-    ax1.set_ylim(8, -8)
+    ax1.set_ylim(8.2, -8)
     ax1.set_xlabel("APOGEE Teff (K)")
     ax1.set_ylabel("Gaia $M_K$")
     ax1.legend(loc="upper left")
@@ -253,7 +253,7 @@ def mcquillan_selection_coordinates():
         avupcol="av_err1", avdowncol="av_err2")
 
     f, (ax2, ax3) = plt.subplots(
-        1,2, figsize=(24,12))
+        1,2, figsize=(24, 12))
     teff_bin_edges = np.arange(4000, 7000, 50)
     mk_bin_edges = np.arange(-7, 8, 0.02)
 
@@ -291,14 +291,15 @@ def mcquillan_selection_coordinates():
         xerr=teff_error, elinewidth=3)
 
     ax2.set_xlim(7000, 4000)
-    ax2.set_ylim(8, -7)
+    ax2.set_ylim(8.2, -8)
     ax2.set_ylabel("Gaia $M_K$")
     ax2.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax2.set_title("Post-Gaia period detections")
     ax3.set_xlim(7000, 4000)
-    ax3.set_ylim(8, -8)
+    ax3.set_ylim(8.2, -8)
     ax3.set_xlabel("Pinsonneault et al (2012) Teff (K)")
     ax3.set_title("Post-Gaia detection fraction")
+    plt.setp(ax3.get_yticklabels(), visible=False)
 
 def isochrone_radius_teff_age():
     '''Plot how the radius changes with age as a function of Teff.'''
@@ -524,14 +525,14 @@ def dwarf_metallicity():
     corrected_k_mets = k_mets + metcorrect(metspace)
     ref_k = samp.calc_model_mag_fixed_age_alpha(
         5000, median, "Ks", age=1e9)
-    V_mets = samp.calc_model_mag_fixed_age_alpha(
-        5000, metspace, "V", age=1e9)
-    ref_V = samp.calc_model_mag_fixed_age_alpha(
-        5000, median, "V", age=1e9)
+#   V_mets = samp.calc_model_mag_fixed_age_alpha(
+#       5000, metspace, "V", age=1e9)
+#   ref_V = samp.calc_model_mag_fixed_age_alpha(
+#       5000, median, "V", age=1e9)
     ax2.plot(metspace, k_mets - ref_k, color=bc.blue, ls="-", marker="",
-             label="Ks")
-    ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), color=bc.red, ls="-", marker="",
-             label="Empirical Ks")
+             label="MIST Ks", lw=5)
+    ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), 
+             color=bc.orange, ls="-", marker="", label="Empirical Ks", lw=5)
 #   ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
 #            label="V")
     ax2.plot(
@@ -542,11 +543,13 @@ def dwarf_metallicity():
     ax2.plot(
         [top_percent, top_percent], [0.9, -0.3], color=bc.black, lw=1, 
         marker="", ls="-")
+    ax2.plot([-1.25, 0.5], [0.0, 0.0], 'k--')
     ax2.yaxis.set_minor_locator(minorLocator)
     hr.invert_y_axis(ax2)
     ax2.set_xlabel("APOGEE [Fe/H]")
     ax2.set_ylabel("Vertical displacement")
     ax2.set_ylim(0.9, -0.3)
+    ax2.legend(loc="center left")
 
 def k_scatter_from_metallicity():
     '''Print out the scatter in K from just the Kepler metallicity
@@ -821,7 +824,7 @@ def spec_temperature_correction():
     testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
+    ax1.set_ylabel("[Fe/H]-corrected K Excess")
     ax1.set_ylim(0.3, -1.2)
     ax1.legend(loc="upper left")
     residual = coolsamp["Partly Corrected K Excess"] - cor_poly(coolsamp["TEFF"])
@@ -861,10 +864,10 @@ def phot_temperature_correction():
     
     ax1.plot(coolsamp["SDSS-Teff"], coolsamp["Solar K Excess"], marker=".", 
              color=bc.black, ls="", label="Original")
-    ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+    ax1.plot(med_teff, percentiles, marker="o", color="red", ls="",
              label="Binned")
     testx = np.linspace(4000, 5250, endpoint=True)
-    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
@@ -1035,7 +1038,8 @@ def binary_fit():
     # generate a mask of which targets are binaries and which ones aren't.
     binaries = bintable["Binary Probability"] <= binaryfrac
     # Kdiff will either 
-    combined_k = np.where(binaries, bintable["Combined K"], bintable["Primary K"])
+    combined_k = np.where(
+        binaries, bintable["Combined K"], bintable["Primary K"])
 
     # Make the empirical metallicity correction.
     apogee = cache.apogee_splitter_with_DSEP()
@@ -1050,11 +1054,11 @@ def binary_fit():
     kdiff_empirical = kvalue - bintable["Inferred K"] - metcorrect(0)
 
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 12))
-    theo_arr, bins, patches = ax1.hist(
+    theo_arr, theo_bins, patches = ax1.hist(
         [kdiff_theoretical[~binaries], kdiff_theoretical[binaries]], bins=60, 
         color=[bc.blue, bc.orange], alpha=0.5, histtype="barstacked", 
         label=["Singles", "Binaries"])
-    emp_arr, bins, patches = ax2.hist(
+    emp_arr, emp_bins, patches = ax2.hist(
         [kdiff_empirical[~binaries], kdiff_empirical[binaries]], bins=60, 
         color=[bc.blue, bc.orange], alpha=0.5, histtype="barstacked", 
         label=["Singles", "Binaries"])
@@ -1062,20 +1066,27 @@ def binary_fit():
         "mean": (-0.5, 0.5), "stddev": (0.01, 0.5)})
     binarymodel = Gaussian1D(15, -0.75, 0.1, bounds={
         "mean": (-1.5, 0.0), "stddev":(0.01, 0.5)})
+    newsinglemodel = Gaussian1D(60, 0, 0.1, bounds={
+        "mean": (-0.5, 0.5), "stddev": (0.01, 0.5)})
+    newbinarymodel = Gaussian1D(15, -0.75, 0.1, bounds={
+        "mean": (-1.5, 0.0), "stddev":(0.01, 0.5)})
     dualmodel = singlemodel+binarymodel
+    newdualmodel = newsinglemodel+newbinarymodel
     fitter = fitting.SLSQPLSQFitter()
-    theoryfitter = fitter(dualmodel, (bins[1:]+bins[:-1])/2, theo_arr[1])
-    empfitter = fitter(dualmodel, (bins[1:]+bins[:-1])/2, emp_arr[1])
+    newfitter = fitting.SLSQPLSQFitter()
+    theoryfitter = fitter(dualmodel, (theo_bins[1:]+theo_bins[:-1])/2, theo_arr[1])
+    empfitter = newfitter(newdualmodel, (emp_bins[1:]+emp_bins[:-1])/2, emp_arr[1])
     print(theoryfitter)
     print(empfitter)
+    print(theo_arr[1])
 
     inputexcesses = np.linspace(-1.0, 0.5, 200)
     theorymodel = theoryfitter(inputexcesses)
     empmodel = empfitter(inputexcesses)
     ax1.plot(inputexcesses, theorymodel, color=bc.blue, ls="-", lw=3, marker="",
-            label="[Fe/H] Corrected")
+            label="")
     ax2.plot(inputexcesses, empmodel, color=bc.blue, ls="-", lw=3, marker="",
-            label="[Fe/H] Corrected")
+            label="")
     print("Theoretical Fitted Single width: {0:.03f}".format(
         theoryfitter.stddev_0.value))
     print("True Theoretical Single Width: {0:.03f}".format(
@@ -1084,10 +1095,11 @@ def binary_fit():
         empfitter.stddev_0.value))
     print("True Empirical Single Width: {0:.03f}".format(
         np.std(kdiff_empirical[~binaries])))
-    ax1.set_xlabel(r"$M_K(MIST; [Fe/H]) - M_K(MIST; 0.0)$")
-    ax2.set_xlabel(r"$(M_K(MIST; [Fe/H]) + C([Fe/H])) - M_K(MIST; 0.0)$")
+    ax1.set_xlabel(r"$M_K(MIST) - M_K(MIST; [Fe/H]=0.0)$")
+    ax2.set_xlabel(r"$(M_K(MIST) + C([Fe/H])) - M_K(MIST; [Fe/H]=0.0)$")
     ax1.set_ylabel("N")
     ax2.set_ylabel("")
+    ax1.legend(loc="upper left")
 
 def single_star_scatter_fit_relation():
     '''Plot the relationship between the single star scatter and fit.
@@ -1225,9 +1237,9 @@ def collapsed_met_histogram():
         lw=4, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
-    ax1.set_xlabel("K Excess Distribution")
+    ax1.set_xlabel("Corrected K Excess")
     ax1.set_ylabel("N")
-    ax2.set_xlabel("K Excess Distribution")
+    ax2.set_xlabel("Corrected K Excess")
     ax1.set_ylabel("")
     ax1.set_ylim(0, 100)
     ax1.legend(loc="upper left")
@@ -1292,8 +1304,8 @@ def age_isochrones():
             tablebin["K Excess"], 100-25)
         med_teff[ind-1] = np.mean(tablebin["TEFF"])
     hr.absmag_teff_plot(
-        med_teff, percentiles, marker="o", color=bc.algae, ls="-", 
-        label="25th percentile")
+        med_teff, percentiles, marker="o", color=bc.brown, ls="-", 
+        label="25th percentile", lw=2)
     # Now include a MIST isochrone.
     teffvals = np.linspace(3500, 6500, 200)
     youngks = samp.calc_model_mag_fixed_age_feh_alpha(
@@ -1302,14 +1314,14 @@ def age_isochrones():
         teffvals, 0.00, "Ks", age=9e9)
     hr.absmag_teff_plot(
         teffvals, oldks-youngks, marker="", color=bc.purple, ls="-", 
-        label="9 Gyr", axis=ax2)
+        label="9 Gyr", axis=ax2, lw=2)
     ax2.plot([7000, 3000], [0, 0], 'k-')
     ax2.plot([7000, 3000], [-0.75, -0.75], 'k--')
     ax2.plot([5250, 5250], [-1.5, 0.5], 'k:')
     ax2.set_xlim([6500, 3500])
     ax2.set_ylim(0.5, -1.3)
     ax2.set_xlabel("APOGEE Teff (K)")
-    ax2.set_ylabel("K Excess")
+    ax2.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
 
 @write_plot("Teff_relation")
 def teff_comparison():
@@ -1322,11 +1334,11 @@ def teff_comparison():
     ax.errorbar(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"],
                 color=bc.black, marker=".", ls="")
     ax.errorbar(
-        [5200], [4100], yerr=np.median(comparable_dwarfs["TEFF_ERR"]), 
+        [5100], [4100], yerr=np.median(comparable_dwarfs["TEFF_ERR"]), 
         xerr=[90], color=bc.black, marker="", ls="")
     coeff = np.polyfit(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 1)
     poly = np.poly1d(coeff)
-    testteffs = np.linspace(4000, 5100, 200)
+    testteffs = np.linspace(4000, 5250, 200)
     testys = poly(testteffs)
     ax.plot(testteffs, testys, 'k-')
     ax.plot(testteffs, testteffs, 'k--')
@@ -1337,7 +1349,7 @@ def teff_comparison():
         np.median(comparable_dwarfs["TEFF_ERR"])))
     ax.set_xlabel("APOGEE Teff (K)")
     ax.set_ylabel("Pinsonneault Teff (K)")
-    ax.set_title("Effective Temperature Comparison")
+    ax.set_xlim(4000, 5250)
 
 def teff_comparison_mcquillan():
     '''Compare Huber vs Pinsonneault Teffs for the full McQuillan sample.'''
@@ -1488,7 +1500,7 @@ def el_badry_excess():
     targs = cache.apogee_splitter_with_DSEP()
     cooldwarfs = targs.subsample(["Dwarfs", "ElBadry Statistics Teff"])
 
-    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    f, ax = plt.subplots(1, 1, figsize=(14, 12))
     singleinds = cooldwarfs["Binarity"] == "Single"
     singles = cooldwarfs[singleinds]
     hr.absmag_teff_plot(
@@ -1506,7 +1518,7 @@ def el_badry_excess():
             multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"]):
         ax.arrow(apoteff, apoex, (elbteff-apoteff), (elbex-apoex))
     ax.set_xlabel("Teff (K)")
-    ax.set_ylabel("K Excess")
+    ax.set_ylabel("Corrected K Excess")
     ax.legend(loc="lower right")
 
 @write_plot("apogee_rapid_excess")
@@ -1536,7 +1548,7 @@ def rapid_rotator_bins():
             marker="o", color=bc.black, ls="", axis=ax, label="Period in Bin")
         hr.absmag_teff_plot(
             eb_periodbin["TEFF"], eb_periodbin["Corrected K Excess"],
-            marker="*", color=bc.pink, ls="", ms=18, axis=ax, label="EB")
+            marker="*", color=bc.pink, ls="", ms=24, axis=ax, label="EB")
 
         ax.set_ylabel("")
         ax.set_xlabel("")
@@ -1593,7 +1605,7 @@ def mcquillan_rapid_rotator_bins():
             marker=".", color=bc.black, ls="", axis=ax, zorder=1)
         hr.absmag_teff_plot(
             eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
-            marker="*", color=bc.pink, ls="", ms=18, axis=ax, zorder=2)
+            marker="*", color=bc.pink, ls="", ms=24, axis=ax, zorder=2)
         ax.set_ylabel("")
         ax.set_xlabel("")
         ax.set_title(title)
@@ -1635,7 +1647,7 @@ def rapid_rotator_transition():
             marker=".", color=bc.black, ls="", axis=ax, zorder=1)
         hr.absmag_teff_plot(
             eb_periodbin["SDSS-Teff"], eb_periodbin["Corrected K Excess"], 
-            marker="*", color=bc.pink, ls="", ms=18, axis=ax, zorder=2)
+            marker="*", color=bc.pink, ls="", ms=24, axis=ax, zorder=2)
         ax.set_ylabel("")
         ax.set_xlabel("")
         ax.set_title(title)
@@ -1807,6 +1819,7 @@ def verify_eb_rapid_rotator_rate():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
     ax.legend(loc="upper left")
+    ax.set_xlim(1, 12)
 
     # Print the predicted number of rapid rotators from the eclipsing binaries.
     rapid = np.logical_and(dwarf_ebs["period"] > 1, dwarf_ebs["period"] < 7)
@@ -1870,7 +1883,7 @@ def binary_single_parallax_distribution():
     volumelim = fullsamp[np.logical_and(
         1000/fullsamp["parallax"] < np.inf, 1000/fullsamp["parallax"] > 0)]
 
-    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    f, ax = plt.subplots(1, 1, figsize=(14, 12))
     parallax_bins = np.linspace(1, 1700, 100)
     binaries = volumelim[volumelim["Corrected K Excess"] < -0.3]
     singles = volumelim[volumelim["Corrected K Excess"] >= -0.3]
@@ -1882,7 +1895,7 @@ def binary_single_parallax_distribution():
         histtype="step", normed=True)
     ax.set_xlabel("Distance (pc)")
     ax.set_ylabel("N (< d) / N")
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper right")
     ax.set_title("Full Mcquillan Distance Distribution")
 
 def apogee_binary_fraction():
@@ -2124,19 +2137,19 @@ def binary_fractions_with_period():
 
     period_mids = (period_bins[1:] + period_bins[:-1])/2
     ax1.step(period_bins, np.append(frac02, [0]), where="post", 
-            color=bc.black, ls="-", label="")
+            color=bc.black, ls="-", label="", lw=3)
     ax1.errorbar(period_bins[:-1]+dp/2, frac02,
                 yerr=[frac_lowers02, frac_uppers02],
                 color=bc.black, ls="", marker="")
     ax2.step(period_bins, np.append(frac03, [0]), where="post", 
-            color=bc.black, ls="-", label="")
+            color=bc.black, ls="-", label="", lw=3)
     ax2.errorbar(period_bins[:-1]+dp/2, frac03,
                 yerr=[frac_lowers03, frac_uppers03],
                 color=bc.black, ls="", marker="")
     ax1.plot([1, 50], [fullsamp_frac02, fullsamp_frac02], ls=":", marker="",
-            color=bc.black)
+            color=bc.black, lw=3)
     ax2.plot([1, 50], [fullsamp_frac03, fullsamp_frac03], ls=":", marker="",
-            color=bc.black)
+            color=bc.black, lw=3)
     ax1.set_xlabel("")
     ax1.set_ylabel("Photometric Binary Fraction")
     ax1.set_xlim(1, 21)
@@ -2175,9 +2188,9 @@ def binary_fractions_with_period():
         summed_singles03)
 
     ax3.step(period_bins, np.append(normalized_binaries02, [0]), where="post", 
-            color=bc.algae, ls="-", label="Binaries")
+            color=bc.algae, ls="-", label="Binaries", lw=3)
     ax3.step(period_bins, np.append(normalized_singles02, [0]), where="post", 
-            color=bc.purple, linestyle="--", label="Singles")
+            color=bc.purple, linestyle="--", label="Singles", lw=3)
     ax3.errorbar(period_bins[:-1]+dp/2-dp/10, normalized_binaries02,
                 yerr=[normalized_binaries_lower02, normalized_binaries_upper02],
                 color=bc.algae, ls="", marker="")
@@ -2185,9 +2198,9 @@ def binary_fractions_with_period():
                 yerr=[normalized_singles_lower02, normalized_singles_upper02],
                 color=bc.purple, ls="", marker="")
     ax4.step(period_bins, np.append(normalized_binaries03, [0]), where="post", 
-            color=bc.algae, ls="-", label="Binaries")
+            color=bc.algae, ls="-", label="Binaries", lw=3)
     ax4.step(period_bins, np.append(normalized_singles03, [0]), where="post", 
-            color=bc.purple, linestyle="--", label="Singles")
+            color=bc.purple, linestyle="--", label="Singles", lw=3)
     ax4.errorbar(period_bins[:-1]+dp/2-dp/10, normalized_binaries03,
                 yerr=[normalized_binaries_lower03, normalized_binaries_upper03],
                 color=bc.algae, ls="", marker="")
@@ -2324,7 +2337,7 @@ def fraction_of_binaries_singles():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("N / N_tot")
 
-@write_plot("photometric_massratio")
+@ write_plot("photometric_massratio")
 def photometric_binary_limit():
     '''Plot the fraction of mass ratios detected as photometric binaries.'''
     refmass = 0.725
@@ -2342,10 +2355,10 @@ def photometric_binary_limit():
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
     combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
     kdiff = combined_k - refk
-    ax.plot(qvals, kdiff, marker="o", ls="-", color=bc.black)
+    ax.plot(qvals, kdiff, marker="", ls="-", color=bc.black)
     ax.plot([0, 0.772, 0.772], [-0.39, -0.39, 0], 'k--')
-    ax.set_xlabel("Mass ratio")
-    ax.set_ylabel("Vertical Displacement")
+    ax.set_xlabel("Mass ratio (q)")
+    ax.set_ylabel(r"$M_K(MIST: M_1+M_2) - M_K(MIST; M_1)$")
     hr.invert_y_axis()
 
     
