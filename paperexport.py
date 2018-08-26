@@ -86,6 +86,46 @@ def missing_gaia_targets():
     hr.logg_teff_plot(missing_gaia["teff"], missing_gaia["logg"], marker=".",
                         color=bc.green, ls="")
 
+def write_rapid_rotator_table_latex():
+    '''Write the table of rapid rotators.
+    
+    This is the abridged latex table that will go into the paper.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    mcq_rapid_dwarfs = mcq_dwarfs[np.logical_and(
+        mcq_dwarfs["Prot"] > 1, mcq_dwarfs["Prot"] < 5)]
+    apo = catin.read_dr14_allStar()
+    rapid_table = catalog.join_by_2MASS_key(
+        mcq_rapid_dwarfs, apo, "tm_designation", "APOGEE_ID", join_type="left")
+    abridged_cols = [
+        "kepid", "APOGEE_ID", "SDSS-Teff", "kmag", "M_K", "Corrected K Excess",
+        "Prot"]
+    rapid_table_abridged = rapid_table[abridged_cols]
+    rapid_table_abridged.sort("kepid")
+
+    # Write the LaTeX table.
+    # The latex label will be abridged.
+    latex_length = 10
+    latex_table = rapid_table_abridged[:latex_length]
+    latex_caption = "Kepler Rapid Rotators\label{tab:rapidrot}"
+    latex_tablefoot = (
+        r"""All objects in \citet{McQuillan14} with periods between 1--7 
+        days and 4000 K < $\Teff{}$ < 5250 K. For objects with APOGEE
+        observations, their APOGEE ID is given. This table is published in its
+        entirety in the machine-readable format. A portion is
+        shown here for guidance regarding its form and content.""")
+    latexdict = {
+        "col_align": "llccccc", "caption": latex_caption, "tablefoot":
+        latex_tablefoot, "units": {
+            r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
+            r"$\Delta K$": "mag", "$P_{rot}$": "day"}}
+    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f"}
+    latex_table.write(
+        str(TABLE_PATH / "table1.tex"), format="ascii.aastex", 
+        latexdict=latexdict, overwrite=True, names=(
+            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
+            "$P_{rot}$"), formats=colformats)
+
 
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
