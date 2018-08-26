@@ -106,7 +106,7 @@ def write_rapid_rotator_tables():
 
     # Write the LaTeX table.
     # The latex label will be abridged.
-    latex_length = 10
+    latex_length = 5
     latex_table = rapid_table_abridged[:latex_length]
     latex_caption = "Kepler Rapid Rotators\label{tab:rapidrot}"
     latex_tablefoot = (
@@ -147,8 +147,6 @@ def write_rapid_rotator_tables():
     rapid_table_abridged.write(
         str(TABLE_PATH / "table1.txt"), format="ascii.fixed_width",
         names=ascii_colnames, overwrite=True, fill_values=badformat)
-
-    return rapid_table
 
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
@@ -376,7 +374,6 @@ def isochrone_difference_metallicity():
     ax.set_ylabel("MIST Ks - DSEP Ks (mag)")
     ax.legend(loc="upper left")
 
-@write_plot("mist_hr")
 def mist_iso_hr_test():
     '''Plot the HR diagram with MIST isochrones overlayed.'''
     full = cache.clean_apogee_splitter()
@@ -408,7 +405,6 @@ def mist_iso_hr_test():
     ax.set_ylim(6, 2.5)
     ax.legend(loc="lower left")
 
-@write_plot("mist_uncertainties")
 def mist_uncertainties():
     '''Plot the uncertainty in Ks due to [Fe/H] uncertainty.'''
     f, ax = plt.subplots(1, 1, figsize=(12,12))
@@ -456,7 +452,6 @@ def mist_uncertainties():
     ax.set_ylabel(r"$M_K$ error")
     ax.legend(loc="upper left")
 
-@write_plot("mist_teff_uncertainty")
 def mist_teff_uncertainty():
     '''Plot the uncertainty in Ks due to Teff uncertainty.'''
     f, ax = plt.subplots(1, 1, figsize=(12,12))
@@ -771,10 +766,10 @@ def metallicity_corrected_excesses():
     
     ax1.plot(coolsamp["FE_H"], coolsamp["K Excess"], marker=".", color=bc.black,
              ls="", label="Original")
-    ax1.plot(med_met, percentiles, marker="o", color=bc.red, ls="",
+    ax1.plot(med_met, percentiles, marker="o", color="red", ls="",
              label="Binned")
     testx = np.linspace(-1.0, 0.5, 100, endpoint=True)
-    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
@@ -821,10 +816,10 @@ def spec_temperature_correction():
     
     ax1.plot(coolsamp["TEFF"], coolsamp["Partly Corrected K Excess"], 
              marker=".", color=bc.black, ls="", label="Original")
-    ax1.plot(med_teff, percentiles, marker="o", color=bc.red, ls="",
+    ax1.plot(med_teff, percentiles, marker="o", color="red", ls="",
              label="Binned")
     testx = np.linspace(4000, 5250, endpoint=True)
-    ax1.plot(testx, cor_poly(testx), color=bc.red, linestyle="-", label="Fit")
+    ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
@@ -1247,7 +1242,7 @@ def K_Excess_hr_diagram():
     f, ax1 = plt.subplots(1, 1, figsize=(12, 12))
     hr.absmag_teff_plot(
         dwarfs["TEFF"], dwarfs["K Excess"], 
-        marker=".", color=bc.red, ls="", 
+        marker=".", color=bc.violet, ls="", 
         label="MS + Binaries", axis=ax1, zorder=1)
     hr.absmag_teff_plot(
         fullsamp["TEFF"], fullsamp["K Excess"], 
@@ -1258,7 +1253,7 @@ def K_Excess_hr_diagram():
         3700, 1.4, yerr=[
             [np.median(dwarfs["K Excess Error Down"])], 
             [np.median(dwarfs["K Excess Error Up"])]], 
-        xerr=np.median(dwarfs["TEFF_ERR"]), color=bc.red, ls="", label="", 
+        xerr=np.median(dwarfs["TEFF_ERR"]), color=bc.violet, ls="", label="", 
         axis=ax1)
     minorLocator = AutoMinorLocator()
     ax1.yaxis.set_minor_locator(minorLocator)
@@ -1502,10 +1497,10 @@ def el_badry_excess():
     multiples = cooldwarfs[~singleinds]
     hr.absmag_teff_plot(
         multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"], 
-        marker="*", color=bc.red, ls="", axis=ax, label="El-Badry", ms=7)
+        marker="*", color=bc.violet, ls="", axis=ax, label="El-Badry", ms=11)
     hr.absmag_teff_plot(
         multiples["TEFF"], multiples["Corrected K Excess"], 
-        marker="*", color=bc.black, ls="", axis=ax, label="ASPCAP", ms=7)
+        marker="*", color=bc.black, ls="", axis=ax, label="ASPCAP", ms=11)
     for (apoteff, apoex, elbteff, elbex) in zip(
             multiples["TEFF"], multiples["Corrected K Excess"], 
             multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"]):
