@@ -170,14 +170,14 @@ def apogee_selection_coordinates():
         apokasc_giant["TEFF"], apokasc_giant["M_K"], color=bc.black,
         marker=".", ls="", label="", axis=ax1, zorder=1)
     hr.absmag_teff_plot(
-        apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.black, marker=".", 
-        ls="", label="", axis=ax1, zorder=1)
-    hr.absmag_teff_plot(
         apogee_seismic["TEFF"], apogee_seismic["M_K"], color=bc.black, 
         marker=".", ls="", label="Asteroseismic", axis=ax1)
     hr.absmag_teff_plot(
+        apokasc_dwarf["TEFF"], apokasc_dwarf["M_K"], color=bc.brown, marker=".", 
+        ls="", label="", axis=ax1, zorder=2)
+    hr.absmag_teff_plot(
         cool_dwarfs["TEFF"], cool_dwarfs["M_K"], color=bc.brown, marker=".", 
-        ls="", label="Cool Dwarf", axis=ax1, zorder=2)
+        ls="", label="Dwarfs", axis=ax1, zorder=2)
     hr.absmag_teff_plot(
         apogee_EB["TEFF"], apogee_EB["M_K"], color=bc.sky_blue, marker="8", 
         ls="", label="Eclipsing Binary", axis=ax1, zorder=4)
@@ -229,8 +229,9 @@ def apogee_selection_coordinates():
 
     # Print out the number of objects in each category.
     print("Number of asteroseismic targets: {0:d}".format(
-        len(apokasc_dwarf) + len(apokasc_giant) + len(apogee_seismic)))
-    print("Number of cool dwarfs: {0:d}".format(len(cool_dwarfs)))
+        len(apokasc_giant) + len(apogee_seismic)))
+    print("Number of dwarfs: {0:d}".format(
+        len(apokasc_dwarf) + len(cool_dwarfs)))
     print("Number of EBs: {0:d}".format(len(apogee_EB)+len(apogee2_EB)))
     print("Number of Hosts: {0:d}".format(
         len(apogee2_koi) + len(apogee2_koi_control) + len(apogee2_monitor) +
@@ -240,17 +241,6 @@ def apogee_selection_coordinates():
 def mcquillan_selection_coordinates():
     mcq = catin.mcquillan_with_stelparms()
     nomcq = catin.mcquillan_nondetections_with_stelparms()
-
-    catalog.generate_abs_mag_column_with_errors(
-        mcq, "kmag", "kmag_err", "KIC M_K", "KIC M_K_err1", "KIC M_K_err2", 
-        samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist", 
-        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
-        avupcol="av_err1", avdowncol="av_err2")
-    catalog.generate_abs_mag_column_with_errors(
-        nomcq, "kmag", "kmag_err", "KIC M_K", "KIC M_K_err1", "KIC M_K_err2", 
-        samp.AV_to_AK, samp.AV_err_to_AK_err, distcol="dist", 
-        dist_up_col="dist_err1", dist_down_col="dist_err2", avcol="av",
-        avupcol="av_err1", avdowncol="av_err2")
 
     f, (ax2, ax3) = plt.subplots(
         1,2, figsize=(24, 12))
