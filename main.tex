@@ -1,5 +1,5 @@
 % aastex6.1 will be released as part of TeXLive 2017 around June 1. 
-\documentclass[twocolumn]{aastex6}
+\documentclass[manuscript]{aastex6}
 
 % Make the underscore behave correctly.
 \usepackage[T1]{fontenc}
@@ -150,11 +150,14 @@ of the observational state of tidal interactions is given in \citet{Mazeh08}.
 Most observations efforts to understand stellar tides have focused on 
 measuring the ``cut-off period'' for orbital circularization \citep{Mayor84},
 which usually requires intense spectroscopic monitoring to derive orbits.
-Recent observations using the \Kepler{} field eclipsing binaries place the 
-circularization period at around 5 days for stars with convective envelopes 
-\citep{VanEylen16}. However, the \Kepler{} rotation dataset will produce the
-first large, unbiased sample to study synchronization as opposed to
-circularization. 
+
+The largest homogenous study of synchronicity to date measured starspot 
+variability in the eclipsing binary sample \citep{Lurie17}, which found a
+cutoff in synchronicity at 10 days, in agreement with previous studies. A novel
+result found in their sample was the existence of a population of
+subsynchronous rotators (around 15\%) with orbital periods between 2--10 days.
+Confirmation of this finding may provide unexpected results in the theory of
+three-body interactions.
 
 The availability of \Gaia{} DR2 parallaxes \citep{Gaia18,Lindegren18} has
 enabled us to better characterize sources of rapid rotation beyond what is
@@ -722,7 +725,7 @@ range.
 
 \begin{figure*}[htb]
     \centering
-    \epsscale{1.2}
+    \epsscale{1.1}
     \plotone{apogee_rapid_excess}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of cool 
         APOGEE targets with \citet{McQuillan14} periods \(> 13\) days, between 
@@ -771,7 +774,7 @@ representative of the full sample.
 
 \begin{figure*}[htb]
     \centering
-    \epsscale{1.2}
+    \epsscale{1.1}
     \plotone{full_mcquillan_rr_excess}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of all 
         cool \citet{McQuillan14} targets in period bins \(> 13\) days, 
@@ -791,7 +794,7 @@ single-star sequence in the rapid rotators is starker.
 
 \begin{figure*}[htb]
     \centering
-    \epsscale{1.2}
+    \epsscale{1.1}
     \plotone{mcquillan_transition}
     \caption{Same as \cref{fig:mcq_rapid_excess} except with the period ranges
     5--7 day, 7--9 day, 9--11 day, 11--13 days.}
@@ -965,11 +968,30 @@ single stars. As a result, more detailed modeling of how binarity affected the
 \Kepler{} selection function is necessary to draw conclusions about the
 mass-ratio distribution of the short-period systems.
 
+
 We validate many of these trends by revisiting them in the smaller, but more
 well-characterized spectroscopic sample. The spike in the binary fraction
 between 1--7 days (top rows of \cref{fig:binary_fraction}) can be seen in the 
 spectroscopic sample as well as the dropoff in photometric single stars at
-short periods (bottom rows of \cref{fig:binary_fraction}).
+short periods (bottom rows of \cref{fig:binary_fraction}). However, the
+spectroscopic sample is so small that all rotational periods end up being
+consistent with the orbital period distribution of eclipsing binaries because
+the binomial error bars are too large.
+
+Under the assumption that the rapid rotators with rotation periods less than 7
+days are tidally-synchronized binaries, while longer-period systems contain a
+mix of synchronized binaries and single stars, we can infer a lower limit
+to the synchronization period of 7 days. The original formulation by
+\citep{Zahn77} included an expression for the synchronization timescale for a
+binary system given as \(t_{sync} = 10^4 ((1+q)/2q)^2 P^4 / R^6\) where \(t_{sync}\) is
+in years, \(q\) is the mass-ratio, \(P\) is in days, and \(R\) is the radius in
+solar radii. For a 4 Gyr old equal-mass field binary, this
+corresponds to a synchronization period of 15 days, which is well within the
+constraints. \citet{Claret97} revisited the formulation of \citet{Zahn77} and
+instead advocated substituting a different expression for the apsidal motion 
+constant which made tidal dissipation on the main sequence a factor of 5
+smaller. The new expression corresponds to a synchronization period of 10 days,
+which is also consistent with our findings.
 
 \begin{figure}[htb]
     \centering
@@ -1031,14 +1053,13 @@ rotators. At periods longer than 7 days, the rapidly rotating tail of the
 single-star population grows more numerous before dominating the sample at
 periods longer than 9 days. 
 
-We propose that the excess of binaries among rapid rotators is a sign of
-tidally-synchronized binaries dominating the short-period of the rotation
+We propose that the excess of binaries among rapid rotators is a sign that
+tidally-synchronized binaries dominate the short-period end of the rotation
 distribution. When comparing the rotational period distribution of the rapid 
 rotators to the orbital period distribution of \Kepler{} eclipsing binaries, we
 find that the rapid rotators are consistent with being synchronized, 
 non-eclipsing binary systems showing starspot modulation, up to periods of 7
 days.
-
 
 Our hypothesis that the rapid rotators are tidally-synchronized systems can be
 readily tested using time-resolved moderate-resolution spectroscopy. A binary
@@ -1048,12 +1069,24 @@ RV-derived orbital period should be identical to the photmetric rotation
 period. A list of the rapid rotators with 1 day < \(P_{rot}\) < 7 day, along
 with relevant information is shown in \cref{tab:rapidrot}.
 
+Assuming that the rapid rotators are tidally-synchronized systems, we find a
+lower limit to the synchronization period of 7 days imposed by the rapid tail
+of the population experiencing single-star angular momentum evolution, which is
+consistent with most current theories of stellar tides. To derive a more
+stringent upper limit, either the rapidly-rotating tail of the single-star
+distribution needs to be modeled and subtracted, or stars undergoing 
+single-star angular momentum evolution need to be excluded. The latter can be
+done with either radial velocity monitoring to measure radial velocity
+variability and to confirm the orbital period, or by measuring rotation periods
+for the eclipsing binaries, as done by \citet{Lurie17}.
+
 A substantial population of tidally-synchronized binaries in the short-period 
 regime requires that care be taken before interpreting short rotational 
 periods as being signatures of youth in the \Kepler{} field. Questions of 
 youth in the \Kepler{} field will either have to use different methodologies 
 that don't rely on rotation- or activity-age relations, or will have to
-model the population of tidally-synchronized background to subtract it away. 
+model the population of tidally-synchronized binaries as a background to 
+subtract . 
 
 We also note that the K-band bolometric corrections in the MIST isochrones
 overpredict the dependence on metallicity, even near solar metallicity. We

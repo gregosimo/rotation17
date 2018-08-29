@@ -1745,6 +1745,95 @@ def calculate_McQuillan_binary_significance(min_P, max_P):
     print("Total sample: {0:.2f}".format(len(dwarfs)+len(dwarf_ebs)))
     print(rapidsig)
 
+def eb_rapid_rotator_rate_apogee():
+    '''Compare the rate of EBs to the rate of rapid rotators.'''
+    apo = cache.apogee_splitter_with_DSEP()
+    apo_dwarfs = apo.subsample(["Dwarfs", "APOGEE Statistics Teff"])
+    mcq = catin.read_McQuillan_catalog()
+    nomcq = catin.read_McQuillan_nondetections()
+    eb_split = catin.read_villanova_EBs()
+    mcq_dwarfs = au.join_by_id(apo_dwarfs, mcq, "kepid", "KIC")
+    nomcq_dwarfs = au.join_by_id(apo_dwarfs, nomcq, "kepid", "KIC")
+    dwarf_ebs = au.join_by_id(apo_dwarfs, eb_split, "kepid", "KIC")
+    generic_columns = ["kepid", "Corrected K Excess"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    # We only want detached systems
+    dwarf_ebs = dwarf_ebs[dwarf_ebs["period"] > 1]
+
+    # Check the intersection between the two samples.
+    dwarfs = au.filter_column_from_subtable(
+        dwarfs, "kepid", dwarf_ebs["kepid"])
+
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    # Now bin the EBs
+    period_bins, dp = np.linspace(1, 22, 3+1, retstep=True)
+    period_bins = period_bins 
+    period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
+    eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
+    totalobjs = len(dwarfs) + len(dwarf_ebs)
+    normalized_ebs = eb_hist / totalobjs
+    eb_upperlim = (au.poisson_upper(eb_hist, 1) - eb_hist) / totalobjs
+    eb_lowerlim = (eb_hist - au.poisson_lower(eb_hist, 1)) / totalobjs
+    ax.step(period_bins, np.append(normalized_ebs, [0]), where="post", 
+            color=bc.red, ls="-", label="EBs", alpha=0.5)
+    ax.set_xscale("linear")
+
+    # Bin the rapid rotators
+    rapid_hist, _ = np.histogram(mcq_dwarfs["Prot"], bins=period_bins)
+    normalized_rapid = rapid_hist / totalobjs 
+    rapid_upperlim = (au.poisson_upper(rapid_hist, 1) - rapid_hist) / totalobjs
+    rapid_lowerlim = (rapid_hist - au.poisson_lower(rapid_hist, 1)) / totalobjs
+    ax.step(period_bins, np.append(normalized_rapid, [0]), where="post", color=bc.blue,
+            ls="-", label="Rapid rotators")
+    ax.errorbar(period_bin_centers, normalized_rapid, 
+            yerr=[rapid_lowerlim, rapid_upperlim], marker="", ls="", 
+            color=bc.blue, capsize=5)
+
+    # To calculate the eclipse probability, I need masses and radii.
+    masses = samp.calc_model_over_feh_fixed_age_alpha(
+        np.log10(dwarf_ebs["TEFF"]), mist.MISTIsochrone.logteff_col,
+        mist.MISTIsochrone.mass_col, 0.08, 1e9)
+    radii = masses
+    eclipse_prob = ebs.eclipse_probability(dwarf_ebs["period"], radii*1.5, 
+                                           masses*1.5)
+    # For empty bins, this is the default eclipse probability.
+    default_probs = ebs.eclipse_probability(period_bin_centers, 0.7, 0.7)
+    # To translate from eb fraction to rapid fraction.
+    correction_factor = (np.maximum(0, np.sqrt(3)/2 - eclipse_prob) / 
+                         eclipse_prob)
+    default_correction = (np.maximum(0, np.sqrt(3)/2 - default_probs) /
+                          default_probs)
+    pred_hist, _ = np.histogram(
+        dwarf_ebs["period"], bins=period_bins, weights=correction_factor)
+    normalized_pred = pred_hist / totalobjs
+    scale_factor = np.where(
+        normalized_ebs, normalized_pred / normalized_ebs, default_correction)
+    pred_upperlim =  eb_upperlim * scale_factor
+    pred_lowerlim = eb_lowerlim * scale_factor
+    ax.step(period_bins, np.append(normalized_pred, [0]), where="post", 
+            color=bc.red, linestyle=":", 
+            label="Predicted Rapid Rotators from EBs")
+    ax.errorbar(period_bin_centers, normalized_pred, 
+            yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
+            color=bc.red, capsize=5)
+    ax.set_xlabel("Period (day)")
+    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.legend(loc="upper left")
+    ax.set_xlim(1, 12)
+
+    # Print the predicted number of rapid rotators from the eclipsing binaries.
+    rapid = np.logical_and(dwarf_ebs["period"] > 1, dwarf_ebs["period"] < 7)
+    pred_rapid = np.sum(correction_factor[rapid])
+    pred_num = np.count_nonzero(rapid)
+    scale = pred_rapid / pred_num
+    pred_rate = pred_rapid / totalobjs
+    raw_upper = au.poisson_upper(pred_num, 1) - pred_num
+    raw_lower = au.poisson_lower(pred_num, 1) - pred_num
+    upper_pred = raw_upper * scale / totalobjs
+    lower_pred = raw_lower * scale / totalobjs
+    print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
+                                                       lower_pred))
 @write_plot("eclipseprob")
 def verify_eb_rapid_rotator_rate():
     '''Compare the rate of EBs to the rate of rapid rotators.'''
