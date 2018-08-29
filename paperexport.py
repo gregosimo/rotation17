@@ -746,6 +746,7 @@ def metallicity_corrected_excesses():
     percentiles = np.zeros(len(metallicity_bin_edges)-1)
     med_met = np.zeros(len(metallicity_bin_edges)-1)
     weights = np.zeros(len(metallicity_bin_edges)-1)
+    mads = np.zeros(len(metallicity_bin_edges)-1)
     # I want ind to start at 1 and end right before the binedges length.
     # metallicity_bin_edges[ind] denotes the high index.
     for ind in range(1, len(metallicity_bin_edges)):
@@ -754,12 +755,16 @@ def metallicity_corrected_excesses():
             tablebin["K Excess"], 100-25)
         med_met[ind-1] = np.mean(tablebin["FE_H"])
         weights[ind-1] = len(tablebin)
+        median = np.percentile(tablebin["K Excess"], 50)
+        singles = tablebin[tablebin["K Excess"] > median]
+        mads[ind-1] = np.median(
+            np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_met, percentiles, 2)
     cor_poly = np.poly1d(cor_coeff)
     
     ax1.plot(coolsamp["FE_H"], coolsamp["K Excess"], marker=".", color=bc.black,
              ls="", label="Original")
-    ax1.plot(med_met, percentiles, marker="o", color="red", ls="",
+    ax1.errorbar(med_met, percentiles, marker="o", color="red", ls="", yerr=mads,
              label="Binned")
     testx = np.linspace(-1.0, 0.5, 100, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
@@ -797,6 +802,7 @@ def spec_temperature_correction():
         coolsamp["TEFF"], teff_bin_edges)
     percentiles = np.zeros(len(teff_bin_edges)-1)
     med_teff = np.zeros(len(teff_bin_edges)-1)
+    mads = np.zeros(len(teff_bin_edges)-1)
     # I want ind to start at 1 and end right before the binedges length.
     # teff_bin_edges[ind] denotes the high index.
     for ind in range(1, len(teff_bin_edges)):
@@ -804,13 +810,17 @@ def spec_temperature_correction():
         percentiles[ind-1] = np.percentile(
             tablebin["Partly Corrected K Excess"], 100-25)
         med_teff[ind-1] = np.mean(tablebin["TEFF"])
+        median = np.percentile(tablebin["K Excess"], 50)
+        singles = tablebin[tablebin["K Excess"] > median]
+        mads[ind-1] = np.median(
+            np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_teff, percentiles, 1)
     cor_poly = np.poly1d(cor_coeff)
     
     ax1.plot(coolsamp["TEFF"], coolsamp["Partly Corrected K Excess"], 
              marker=".", color=bc.black, ls="", label="Original")
-    ax1.plot(med_teff, percentiles, marker="o", color="red", ls="",
-             label="Binned")
+    ax1.errorbar(med_teff, percentiles, marker="o", color="red", ls="",
+             label="Binned", yerr=mads)
     testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
@@ -842,6 +852,7 @@ def phot_temperature_correction():
         coolsamp["SDSS-Teff"], teff_bin_edges)
     percentiles = np.zeros(len(teff_bin_edges)-1)
     med_teff = np.zeros(len(teff_bin_edges)-1)
+    mads = np.zeros(len(teff_bin_edges)-1)
     # I want ind to start at 1 and end right before the binedges length.
     # teff_bin_edges[ind] denotes the high index.
     for ind in range(1, len(teff_bin_edges)):
@@ -849,13 +860,17 @@ def phot_temperature_correction():
         percentiles[ind-1] = np.percentile(
             tablebin["Solar K Excess"], 100-25)
         med_teff[ind-1] = np.mean(tablebin["SDSS-Teff"])
+        median = np.percentile(tablebin["K Excess"], 50)
+        singles = tablebin[tablebin["K Excess"] > median]
+        mads[ind-1] = np.median(
+            np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_teff, percentiles, 1)
     cor_poly = np.poly1d(cor_coeff)
     
     ax1.plot(coolsamp["SDSS-Teff"], coolsamp["Solar K Excess"], marker=".", 
              color=bc.black, ls="", label="Original")
-    ax1.plot(med_teff, percentiles, marker="o", color="red", ls="",
-             label="Binned")
+    ax1.errorbar(med_teff, percentiles, marker="o", color="red", ls="",
+             label="Binned", yerr=mads)
     testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
@@ -1288,14 +1303,19 @@ def age_isochrones():
     teff_bin_indices = np.digitize(dwarfs["TEFF"], teff_bin_edges)
     percentiles = np.zeros(len(teff_bin_edges)-1)
     med_teff = np.zeros(len(teff_bin_edges)-1)
+    mads = np.zeros(len(teff_bin_edges)-1)
     for ind in range(1, len(teff_bin_edges)):
         tablebin = dwarfs[teff_bin_indices == ind]
         percentiles[ind-1] = np.percentile(
             tablebin["K Excess"], 100-25)
         med_teff[ind-1] = np.mean(tablebin["TEFF"])
+        median = np.percentile(tablebin["K Excess"], 50)
+        singles = tablebin[tablebin["K Excess"] > median]
+        mads[ind-1] = np.median(
+            np.abs(singles["K Excess"] - percentiles[ind-1]))
     hr.absmag_teff_plot(
         med_teff, percentiles, marker="o", color=bc.brown, ls="-", 
-        label="25th percentile", lw=2)
+        label="25th percentile", lw=2, yerr=mads)
     # Now include a MIST isochrone.
     teffvals = np.linspace(3500, 6500, 200)
     youngks = samp.calc_model_mag_fixed_age_feh_alpha(
