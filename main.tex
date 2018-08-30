@@ -582,15 +582,17 @@ distribution of the spectroscopic targets is representative of the full
     \caption{\emph{Left:} Metallicity distribution of the \Kepler{} cool 
         dwarfs, selected as having \(\Teff < 5250 \textrm{ K }\) and having 
         a luminosity less than 1.3 mag above the single-star sequence. The 
-        thick black line denotes the median while the thin black lines denote 
-        the \(1\sigma\) confidence intervals. \emph{Right:} The vertical 
-        displacement caused by assuming a single metallicity isochrone. The
-blue line represents the vertical displacement imposed by a metallicity 
-mismatches compared to a [Fe/H] = 0.8 dex isochrone for a 5000 K star as 
-predicted by the MIST isochrones. The orange line denotes the vertical 
+        thick black line denotes the median metallicity while the thin black 
+        lines denote the 1-\(\sigma\) confidence intervals. \emph{Right:} The 
+        vertical displacement caused by assuming a single metallicity isochrone. 
+        The blue line represents the vertical displacement predicted by the
+        MIST isochrones imposed by a metallicity mismatch with a [Fe/H] = 0.08 
+        dex isochrone for a 5000 K star. The orange line denotes the vertical 
 displacement caused by metallicity mismatches after correcting for the 
 metallicity-dependent offset of the main sequence relative to the MIST 
-isochrones shown in \cref{fig:met_trend}.}\label{fig:metallicity}
+isochrones shown in \cref{fig:met_trend}. Because the sample is so sparse
+at metallicities below -0.3 dex, the corrections at the metal-poor tail are not 
+expected capture the behavior of the K-band at low metallicity.}\label{fig:metallicity}
 \end{figure*}
 
 Because we will mostly be concerned with the cool dwarfs, we check the
@@ -599,7 +601,10 @@ temperature range of our sample. The metallicity distribution for that
 sample is shown in \cref{fig:metallicity}. The median metallicity is 
 0.08, consistent with that observed for planet hosts by 
 the California \Kepler{} survey \citep{Petigura17}.  We therefore treat the \([Fe/H] =
-0.08\) isochrone as the base isochrone for the photometric sample.
+0.08\) isochrone as the base isochrone for the photometric sample. However, the
+metallicity of the base isochrone does not substantially affect the analysis
+because any zero-point offset will be subtracted off in the following
+correction.
 
 \begin{figure}[htb]
     \centering
@@ -700,7 +705,9 @@ The primary reason for the reduction in the width of the main sequence is that
 the low-metallicity objects are not permitted at large, positive vertical
 displacements, which can be seen in the right panel of \cref{fig:metallicity}.
 The empirical corrections cause the K-band magnitude to vary much more weakly
-at low metallicities than predicted by the MIST isochrones.
+at low metallicities than predicted by the MIST isochrones. We note that the
+models predict the bolometric corrections in the K-band behave similarly to
+those in the V-band with metallicity.
 
 
 \begin{figure*}[htb]
