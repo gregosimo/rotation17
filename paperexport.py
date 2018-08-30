@@ -153,7 +153,7 @@ def apogee_selection_coordinates():
     '''Show the APOGEE and McQuillan samples in selection coordinates.'''
     clean_apogee = cache.clean_apogee_splitter()
 
-    f, (ax1, ax2) = plt.subplots(1,2, figsize=(24, 12), sharex=True, sharey=True)
+    f, (ax1, ax2) = plt.subplots(1,2, figsize=(24, 12))
     cool_dwarfs = clean_apogee.subsample(["APOGEE_KEPLER_COOLDWARF"])
     apokasc_dwarf = clean_apogee.subsample(["APOGEE2_APOKASC_DWARF"])
     apokasc_giant = clean_apogee.subsample(["APOGEE2_APOKASC_GIANT"])
@@ -205,10 +205,11 @@ def apogee_selection_coordinates():
         fullsample["TEFF"], fullsample["M_K"], 
         bins=(teff_bin_edges, mk_bin_edges))
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+    asp = (extent[1]-extent[0])/(extent[3]-extent[2])
     im = ax2.imshow(apogee_hist.T, origin="lower", extent=extent,
-               aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
-               cmap=count_cmap, norm=Normalize(vmin=1, vmax=10))
+               aspect="auto", cmap=count_cmap, norm=Normalize(vmin=1, vmax=10))
     f.colorbar(im, ax=ax2)
+
 
     # Add a representative error bar.
     dwarfs = np.logical_and(
@@ -218,14 +219,17 @@ def apogee_selection_coordinates():
     median_k_errup = np.median(fullsample[dwarfs]["M_K_err1"]) 
     median_k_errdown = np.median(fullsample[dwarfs]["M_K_err2"])
     ax1.errorbar(
-        [3500], [3.0], yerr=[[median_k_errdown], [median_k_errup]], 
+        [4200], [7.1], yerr=[[median_k_errdown], [median_k_errup]], 
         xerr=teff_error, elinewidth=3)
-    ax1.set_xlim(7000, 3000)
+    ax1.set_xlim(7000, 3500)
     ax1.set_ylim(8.2, -8)
-    ax1.set_xlabel("APOGEE Teff (K)")
+    ax1.set_xlabel("$T_{eff}$ (K)")
     ax1.set_ylabel("Gaia $M_K$")
     ax1.legend(loc="upper left")
-    ax2.set_xlabel("APOGEE Teff (K)")
+    ax2.set_ylabel("Gaia $M_K$")
+    ax2.set_xlim(7000, 3500)
+    ax2.set_ylim(8.2, -8)
+    ax2.set_xlabel("$T_{eff}$ (K)")
 
     # Print out the number of objects in each category.
     print("Number of asteroseismic targets: {0:d}".format(
@@ -281,15 +285,16 @@ def mcquillan_selection_coordinates():
         xerr=teff_error, elinewidth=3)
 
     ax2.set_xlim(7000, 4000)
-    ax2.set_ylim(8.2, -8)
+    ax2.set_ylim(8.2, -6)
     ax2.set_ylabel("Gaia $M_K$")
-    ax2.set_xlabel("Pinsonneault et al (2012) Teff (K)")
-    ax2.set_title("Post-Gaia period detections")
+    ax2.set_xlabel(r"$T_{eff}$ (K)")
+    ax2.set_title("Period detection density")
+    ax3.set_ylabel("Gaia $M_K$")
     ax3.set_xlim(7000, 4000)
-    ax3.set_ylim(8.2, -8)
-    ax3.set_xlabel("Pinsonneault et al (2012) Teff (K)")
-    ax3.set_title("Post-Gaia detection fraction")
-    plt.setp(ax3.get_yticklabels(), visible=False)
+    ax3.set_ylim(8.2, -6)
+    ax3.set_xlabel(r"$T_{eff}$ (K)")
+    ax3.set_title("Detection fraction")
+    plt.setp(ax3.get_yticklabels(), visible=True)
 
 def isochrone_radius_teff_age():
     '''Plot how the radius changes with age as a function of Teff.'''
@@ -509,6 +514,7 @@ def dwarf_metallicity():
     metcorrect = np.poly1d(metcoeff)
 
     metspace = np.linspace(-1.25, 0.46, 20)
+    badmet = metspace < -0.3
     k_mets = samp.calc_model_mag_fixed_age_alpha(
         5000, metspace, "Ks", age=1e9)
     corrected_k_mets = k_mets + metcorrect(metspace)
@@ -520,7 +526,7 @@ def dwarf_metallicity():
 #       5000, median, "V", age=1e9)
     ax2.plot(metspace, k_mets - ref_k, color=bc.blue, ls="-", marker="",
              label="MIST Ks", lw=5)
-    ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), 
+    ax2.plot(metspace[~badmet], corrected_k_mets[~badmet] - (ref_k + metcorrect(median)), 
              color=bc.orange, ls="-", marker="", label="Empirical Ks", lw=5)
 #   ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
 #            label="V")
