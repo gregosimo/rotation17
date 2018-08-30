@@ -39,7 +39,7 @@ maintex = $(mainfile).tex
 
 bibfile = references.bib
 
-revision = main_mnras.tex
+revision = main_v2.tex
 
 all: $(mainfile).pdf
 

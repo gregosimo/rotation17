@@ -327,34 +327,33 @@ def eb_splitter_with_DSEP():
     return clean_ebs
 
 @au.memoized
-def artificial_binaries(met_sig, teff_sig):
+def artificial_binaries(teff_sig):
     np.random.seed(82218)
     origteffs = np.linspace(4000, 5000, 1000)
-    mets = np.minimum(np.random.normal(scale=0.15, size=len(origteffs)), 0.5)
-    kvalues = np.diag(samp.calc_model_mag_fixed_age_alpha(
-        origteffs, mets, "Ks", age=1e9)).copy()
+    kvalues = samp.calc_model_mag_fixed_age_feh_alpha(
+        origteffs, 0.0, "Ks", age=1e9)
     binaryrand = np.random.uniform(size=len(origteffs))
     massratios = np.random.uniform(size=len(origteffs))
     # Convert primary teffs to masses, then multiply by the massratio.
     binarymasses = np.maximum(
-        massratios * np.diag(samp.calc_model_over_feh_fixed_age_alpha(
+        massratios * samp.calc_model_over_feh_fixed_age_alpha(
             np.log10(origteffs), mist.MISTIsochrone.logteff_col,
-            mist.MISTIsochrone.mass_col, mets, 1e9)), 0.1)
+            mist.MISTIsochrone.mass_col, 0.0, 1e9), 0.1)
     # Convert secondary mass to K-band luminosity.
-    companionKs = np.diag(samp.calc_model_over_feh_fixed_age_alpha(
+    companionKs = samp.calc_model_over_feh_fixed_age_alpha(
         binarymasses, mist.MISTIsochrone.mass_col, mist.band_translation["Ks"],
-        mets, 1e9))
+        0.0, 1e9)
     combinedK = sed.sum_binary_mag(kvalues, companionKs)
     # Add an uncertainty to the temperature.
-    teff_errors = np.random.normal(scale=100, size=len(origteffs))
+    teff_errors = np.random.normal(scale=teff_sig, size=len(origteffs))
     observed_teffs = origteffs+teff_errors
     inferred_k = samp.calc_model_mag_fixed_age_feh_alpha(
         observed_teffs, 0.0, "Ks", age=1e9)
 
     bintable = Table([
-        origteffs, mets, kvalues, binaryrand, massratios, binarymasses,
+        origteffs, kvalues, binaryrand, massratios, binarymasses,
         companionKs, combinedK, observed_teffs, inferred_k], names=(
-            "Orig Teff", "[Fe/H]", "Primary K", "Binary Probability", "q",
+            "Orig Teff", "Primary K", "Binary Probability", "q",
             "Secondary Mass", "Secondary K", "Combined K", "Observed Teff",
             "Inferred K"))
     return bintable
