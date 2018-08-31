@@ -100,7 +100,7 @@ def write_rapid_rotator_tables():
         mcq_rapid_dwarfs, apo, "tm_designation", "APOGEE_ID", join_type="left")
     abridged_cols = [
         "kepid", "APOGEE_ID", "SDSS-Teff", "kmag", "M_K", "Corrected K Excess",
-        "Prot"]
+        "Prot", "FE_H"]
     rapid_table_abridged = rapid_table[abridged_cols]
     rapid_table_abridged.sort("kepid")
 
@@ -119,11 +119,12 @@ def write_rapid_rotator_tables():
         "col_align": "llccccc", "caption": latex_caption, "tablefoot":
         latex_tablefoot, "units": {
             r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
-            r"$\Delta K$": "mag", "$P_{rot}$": "day"}}
+            r"$\Delta K$": "mag", "$P_{rot}$": "day", "[Fe/H]": "dex"}}
     latex_colnames = (
             "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
-            "$P_{rot}$")
-    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f"}
+            "$P_{rot}$", "[Fe/H]")
+    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f",
+                  "[Fe/H]": ".2f"}
     latex_table.write(
         str(TABLE_PATH / "table1.tex"), format="ascii.aastex", 
         latexdict=latexdict, overwrite=True, names=latex_colnames, 
@@ -131,7 +132,7 @@ def write_rapid_rotator_tables():
 
     # Write the full table.
     ascii_colnames = (
-            "KIC", "APOGEE_ID", "Teff", "K", "MK", "DELTA_K", "Prot")
+            "KIC", "APOGEE_ID", "Teff", "K", "MK", "DELTA_K", "Prot", "[Fe/H]")
     comments=[
         "KIC - The Kepler Input Catalog ID for the star",
         "APOGEE_ID - The APOGEE_ID if this star was observed in APOGEE. "
@@ -140,13 +141,16 @@ def write_rapid_rotator_tables():
         "K - The 2MASS K-band apparent magnitude",
         "MK - The 2MASS K-band absolute magnitude derived from Gaia parallaxes",
         "DELTA_K - The vertical displacement above the median-metallicity "
-            "MIST isochrone as derived in this work."]
+            "MIST isochrone as derived in this work.",
+        "[Fe/H] - The APOGEE iron abundance if this star was observed in "
+            "APOGEE."]
     rapid_table_abridged.meta["comments"] = comments
-    colformats = {"Teff": "g", "MK": ".3f", "DELTA_K": ".3f"}
-    badformat = [(ascii.masked, "", "APOGEE_ID")]
+    colformats = {"Teff": "g", "MK": ".3f", "DELTA_K": ".3f", "[Fe/H]": ".2f"}
+    badformat = [(ascii.masked, "", ("APOGEE_ID", "[FE_H]"))]
     rapid_table_abridged.write(
         str(TABLE_PATH / "table1.txt"), format="ascii.fixed_width",
-        names=ascii_colnames, overwrite=True, fill_values=badformat)
+        names=ascii_colnames, overwrite=True, fill_values=badformat,
+        formats=colformats)
 
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
