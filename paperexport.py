@@ -1226,6 +1226,8 @@ def collapsed_met_histogram():
 
     f, (ax1, ax2) = plt.subplots(
         1, 2, figsize=(24, 12), sharex=True, sharey=True)
+    incl_limit = -0.2
+    cons_limit = -0.3
     arr1, bins, patches = ax1.hist(
         cooldwarfs["Corrected K Excess"], bins=60, color=bc.blue, alpha=0.5,
         range=(-1.6, 1.1), histtype="bar", label="")
@@ -1253,16 +1255,16 @@ def collapsed_met_histogram():
     ax2.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
     ax2.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
     ax1.plot(
-        [-0.41, -0.41], [0, 100], marker="", ls="--", color=bc.violet, 
+        [cons_limit, cons_limit], [0, 100], marker="", ls="--", color=bc.violet, 
         lw=4, zorder=3)
     ax1.plot(
-        [-0.28, -0.28], [0, 100], marker="", ls="--", color=bc.algae, 
+        [incl_limit, incl_limit], [0, 100], marker="", ls="--", color=bc.algae, 
         lw=4, zorder=3)
     ax2.plot(
-        [-0.41, -0.41], [0, 100], marker="", ls="--", color=bc.violet, 
+        [cons_limit, cons_limit], [0, 100], marker="", ls="--", color=bc.violet, 
         lw=4, zorder=3)
     ax2.plot(
-        [-0.28, -0.28], [0, 100], marker="", ls="--", color=bc.algae, 
+        [incl_limit, incl_limit], [0, 100], marker="", ls="--", color=bc.algae, 
         lw=4, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
@@ -1568,6 +1570,8 @@ def rapid_rotator_bins():
     periodbins = np.flipud(np.array([1.5, 7, 10]))
     f, axes = plt.subplots(
         2, 2, figsize=(24, 24), sharex=True, sharey=True)
+    incl_limit = -0.2
+    cons_limit = -0.3
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
     titles = ["{0:g} day < Prot <= {1:g} day".format(p2, p1) for (p1, p2) in
@@ -1588,10 +1592,10 @@ def rapid_rotator_bins():
         ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.41, -0.41], marker="", ls="--", color=bc.violet, 
+            [4000, 5250], [cons_limit, cons_limit], marker="", ls="--", color=bc.violet, 
             lw=4)
         ax.plot(
-            [4000, 5250], [-0.28, -0.28], marker="", ls="--", color=bc.algae, 
+            [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4)
         ax.plot([4000, 5250], [-0.0, -0.0], 'k-', lw=2)
 #       plt.setp(ax.get_yticklabels(), visible=False)
@@ -1625,6 +1629,8 @@ def mcquillan_rapid_rotator_bins():
     periodbins = np.flipud(np.array([1.5, 7, 10]))
     f, axes = plt.subplots(
         2, 2, figsize=(24, 24), sharex=True, sharey=True)
+    incl_limit = -0.2
+    cons_limit = -0.3
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
     titles = ["{0:g} day < Prot <= {1:g} day".format(p2, p1) for (p1, p2) in
@@ -1644,10 +1650,10 @@ def mcquillan_rapid_rotator_bins():
         ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.41, -0.41], marker="", ls="--", color=bc.violet, 
+            [4000, 5250], [cons_limit, cons_limit], marker="", ls="--", color=bc.violet, 
             lw=4, zorder=3)
         ax.plot(
-            [4000, 5250], [-0.28, -0.28], marker="", ls="--", color=bc.algae, 
+            [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     axes[0][0].set_ylabel("Corrected K Excess")
@@ -1669,6 +1675,8 @@ def rapid_rotator_transition():
     f, axes = plt.subplots(
         2, 2, figsize=(24,24), sharex=True, 
         sharey=True)
+    incl_limit = -0.2
+    cons_limit = -0.3
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
     titles = ["{0:0d} day < Prot <= {1:0d} day".format(p1, p2) for (p1, p2) in
@@ -1686,10 +1694,10 @@ def rapid_rotator_transition():
         ax.set_xlabel("")
         ax.set_title(title)
         ax.plot(
-            [4000, 5250], [-0.41, -0.41], marker="", ls="--", color=bc.violet, 
+            [4000, 5250], [cons_limit, cons_limit], marker="", ls="--", color=bc.violet, 
             lw=4, zorder=3)
         ax.plot(
-            [4000, 5250], [-0.28, -0.28], marker="", ls="--", color=bc.algae, 
+            [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     axes[1][0].set_xlabel("Pinsonneault et al (2012) Teff (K)")
@@ -1713,15 +1721,17 @@ def calculate_APOGEE_binary_significance(min_P, max_P):
     dwarfebs = au.join_by_id(dwarfs, ebs, "kepid", "KIC")
     # We only want detached systems
     dwarfebs = dwarfebs[dwarfebs["period"] > 1]
+    incl_limit = -0.2
+    cons_limit = -0.3
 
     # The fraction of binaries in the full sample.
     full_binaryfrac_inclusive = (
-        (np.count_nonzero(fulldwarfs["Corrected K Excess"] < -0.28) +
-         np.count_nonzero(dwarfebs["Corrected K Excess"] < -0.28)) / 
+        (np.count_nonzero(fulldwarfs["Corrected K Excess"] < incl_limit) +
+         np.count_nonzero(dwarfebs["Corrected K Excess"] < incl_limit)) / 
         (len(fulldwarfs) + len(dwarfebs)))
     full_binaryfrac_conservative = (
-        (np.count_nonzero(fulldwarfs["Corrected K Excess"] < -0.41) +
-         np.count_nonzero(dwarfebs["Corrected K Excess"] < -0.41)) / 
+        (np.count_nonzero(fulldwarfs["Corrected K Excess"] < cons_limit) +
+         np.count_nonzero(dwarfebs["Corrected K Excess"] < cons_limit)) / 
         (len(fulldwarfs) + len(dwarfebs)))
     # Index rapid rotators in the period bin.
     rapidrot = np.logical_and(
@@ -1731,14 +1741,14 @@ def calculate_APOGEE_binary_significance(min_P, max_P):
         dwarfebs["period"] > min_P, dwarfebs["period"] < max_P)
     # Number of rapid rotators showing binary excesses
     rapidbins_inclusive = np.count_nonzero(
-        dwarfmcq["Corrected K Excess"][rapidrot] < -0.28)
+        dwarfmcq["Corrected K Excess"][rapidrot] < incl_limit)
     rapidbins_conservative = np.count_nonzero(
-        dwarfmcq["Corrected K Excess"][rapidrot] < -0.41)
+        dwarfmcq["Corrected K Excess"][rapidrot] < cons_limit)
     # Number of ebs in the period bin showing binary excesses
     rapidebbins_inclusive = np.count_nonzero(
-        dwarfebs["Corrected K Excess"][rapidebs] < -0.28)
+        dwarfebs["Corrected K Excess"][rapidebs] < incl_limit)
     rapidebbins_conservative = np.count_nonzero(
-        dwarfebs["Corrected K Excess"][rapidebs] < -0.41)
+        dwarfebs["Corrected K Excess"][rapidebs] < cons_limit)
     fullrapid = np.count_nonzero(rapidrot) + np.count_nonzero(rapidebs)
     rapidsig_inclusive = scipy.stats.binom_test(
         rapidbins_inclusive+rapidebbins_inclusive, fullrapid, 
@@ -2137,6 +2147,8 @@ def binary_single_parallax_distribution():
     parallax_bins = np.linspace(1, 1700, 100)
     binaries = volumelim[volumelim["Corrected K Excess"] < -0.3]
     singles = volumelim[volumelim["Corrected K Excess"] >= -0.3]
+    print("Single median: {0:.0f}".format(np.median(1/singles["parallax"]*1000)))
+    print("Binary median: {0:.0f}".format(np.median(1/binaries["parallax"]*1000)))
 
     bin_hist, bins, patches = ax.hist(
         [1/singles["parallax"]*1000, 1/binaries["parallax"]*1000], bins=parallax_bins, 
@@ -2321,23 +2333,26 @@ def binary_fractions_with_period():
     dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
     f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(
-        2, 2, figsize=(24, 24), sharex=True)
+        2, 2, figsize=(24, 24), sharex=True)    
+    incl_limit = -0.2
+    cons_limit = -0.3
+
     # Create the histograms
     period_bins, dp = np.linspace(1.5, 21.5, 20+1, retstep=True, endpoint=True)
     # These are for the inclusive sample.
-    singles02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= -0.28]
-    binaries02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < -0.28]
-    single_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= -0.28]
-    binary_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < -0.28]
+    singles02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= incl_limit]
+    binaries02 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < incl_limit]
+    single_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= incl_limit]
+    binary_ebs02 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < incl_limit]
     binary_rot_hist02, _ = np.histogram(binaries02, bins=period_bins)
     binary_eb_hist02, _ = np.histogram(binary_ebs02, bins=period_bins)
     single_rot_hist02, _ = np.histogram(singles02, bins=period_bins)
     single_eb_hist02, _ = np.histogram(single_ebs02, bins=period_bins)
     # These are for the conservative sample.
-    singles03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= -0.41]
-    binaries03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < -0.41]
-    single_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= -0.41]
-    binary_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < -0.41]
+    singles03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] >= cons_limit]
+    binaries03 =  mcq_dwarfs["Prot"][mcq_dwarfs["Corrected K Excess"] < cons_limit]
+    single_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] >= cons_limit]
+    binary_ebs03 = dwarf_ebs["period"][dwarf_ebs["Corrected K Excess"] < cons_limit]
     binary_rot_hist03, _ = np.histogram(binaries03, bins=period_bins)
     binary_eb_hist03, _ = np.histogram(binary_ebs03, bins=period_bins)
     single_rot_hist03, _ = np.histogram(singles03, bins=period_bins)
@@ -2347,21 +2362,21 @@ def binary_fractions_with_period():
 
     # The total number of binaries and singles in the full sample.
     summed_binaries02 = (
-        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < -0.28) + 
-        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.28) + 
-        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < -0.28))
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < incl_limit) + 
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < incl_limit) + 
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < incl_limit))
     summed_singles02 = (
-        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] >= -0.28) + 
-        np.count_nonzero(dwarf_ebs["Corrected K Excess"] >= -0.28) + 
-        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] >= -0.28))
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] >= incl_limit) + 
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] >= incl_limit) + 
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] >= incl_limit))
     summed_binaries03 = (
-        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < -0.41) + 
-        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < -0.41) + 
-        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < -0.41))
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < cons_limit) + 
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < cons_limit) + 
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < cons_limit))
     summed_singles03 = (
-        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] >= -0.41) + 
-        np.count_nonzero(dwarf_ebs["Corrected K Excess"] >= -0.41) + 
-        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] >= -0.41))
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] >= cons_limit) + 
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] >= cons_limit) + 
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] >= cons_limit))
 
     # The binary fraction for the full sample
     fullsamp_frac02 = (summed_binaries02 /
@@ -2405,8 +2420,8 @@ def binary_fractions_with_period():
     ax1.set_xlim(1.5, 21.5)
     ax1.set_ylim(0, 1)
     ax2.set_ylim(0, 1)
-    ax1.set_title(r"$\Delta K < -0.28$ mag")
-    ax2.set_title(r"$\Delta K < -0.41$ mag")
+    ax1.set_title(r"$\Delta K < {0:g}$ mag".format(incl_limit))
+    ax2.set_title(r"$\Delta K < {0:g}$ mag".format(cons_limit))
 
     normalized_binaries02 = total_binaries02 / summed_binaries02
     normalized_binaries_upper02 = (
@@ -2474,6 +2489,8 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
     ebs = cache.eb_splitter_with_DSEP()
     mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+    incl_limit = -0.2
+    cons_limit = -0.3
 
     mcq_rapid = mcq_dwarfs[
         np.logical_and(mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] < 7)]
@@ -2482,7 +2499,7 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
 
     # Fraction of inclusive binaries that are photometric binaries.
     num_inclusive_mcq_binaries = np.count_nonzero(
-        mcq_rapid["K Excess"] < -0.28) 
+        mcq_rapid["K Excess"] < incl_limit) 
     inclusive_mcq_fraction = num_inclusive_mcq_binaries / len(mcq_rapid)
     inclusive_mcq_fraction_upper = au.binomial_upper(
         num_inclusive_mcq_binaries, len(mcq_rapid)) - inclusive_mcq_fraction
@@ -2490,7 +2507,7 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
         num_inclusive_mcq_binaries, len(mcq_rapid)) 
     # Fraction of inclusive EBs that are photometric binaries.
     num_inclusive_ebs_binaries = np.count_nonzero(
-        ebs_rapid["K Excess"] < -0.28) 
+        ebs_rapid["K Excess"] < incl_limit) 
     inclusive_ebs_fraction = num_inclusive_ebs_binaries / len(ebs_rapid)
     inclusive_ebs_fraction_upper = au.binomial_upper(
         num_inclusive_ebs_binaries, len(ebs_rapid)) - inclusive_ebs_fraction
@@ -2499,7 +2516,7 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
 
     # Fraction of conservative binaries that are photometric binaries.
     num_conservative_mcq_binaries = np.count_nonzero(
-        mcq_rapid["K Excess"] < -0.41) 
+        mcq_rapid["K Excess"] < cons_limit) 
     conservative_mcq_fraction = num_conservative_mcq_binaries / len(mcq_rapid)
     conservative_mcq_fraction_upper = au.binomial_upper(
         num_conservative_mcq_binaries, len(mcq_rapid)) - conservative_mcq_fraction
@@ -2507,7 +2524,7 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
         num_conservative_mcq_binaries, len(mcq_rapid)) 
     # Fraction of conservative EBs that are photometric binaries.
     num_conservative_ebs_binaries = np.count_nonzero(
-        ebs_rapid["K Excess"] < -0.41) 
+        ebs_rapid["K Excess"] < cons_limit) 
     conservative_ebs_fraction = num_conservative_ebs_binaries / len(ebs_rapid)
     conservative_ebs_fraction_upper = au.binomial_upper(
         num_conservative_ebs_binaries, len(ebs_rapid)) - conservative_ebs_fraction
@@ -2719,12 +2736,15 @@ def photometric_binary_limit():
         1e9, [refmass], solmet.mass_col, solmet.logteff_col)
 
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    incl_limit = -0.2
+    cons_limit = -0.3
+
     combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
     kdiff = combined_k - refk
     ax.plot(qvals, kdiff, marker="", ls="-", color=bc.black)
-    ax.plot([0, 0.787, 0.787], [-0.41, -0.41, 0], color=bc.violet, ls="--",
+    ax.plot([0, 0.702, 0.702], [cons_limit, cons_limit, 0], color=bc.violet, ls="--",
             marker="")
-    ax.plot([0, 0.684, 0.684], [-0.28, -0.28, 0], color=bc.algae, ls="--",
+    ax.plot([0, 0.593, 0.593], [incl_limit, incl_limit, 0], color=bc.algae, ls="--",
             marker="")
     ax.set_xlabel("Mass ratio (q)")
     ax.set_ylabel(r"$M_K(MIST: M_1+M_2) - M_K(MIST; M_1)$")

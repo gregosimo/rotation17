@@ -781,8 +781,8 @@ range.
     \epsscale{1.1}
     \plotone{apogee_rapid_excess}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of cool 
-        APOGEE targets with \citet{McQuillan14} periods \(> 15\) days, between 
-        \(7--15\) days, \(1.5--7\) days, and less than 1.5 days. Pink stars denote 
+        APOGEE targets with \citet{McQuillan14} periods \(> 10\) days, between 
+        \(7--10\) days, \(1.5--7\) days, and less than 1.5 days. Pink stars denote 
         eclipsing binaries with orbital periods within the same ranges. The 
         green and purple lines denote the inclusive and conservative 
         photometric binary thresholds, 
@@ -827,15 +827,15 @@ We will perform a check for this effect further below.
 
 We find that the photometric binary fraction with the inclusive and conservative 
 threshold for the full APOGEE sample with temperatures between 4000--5250 K is 
-36\% and 26\%, respectively. For the bin with rotational periods between 
+38\% and 23\%, respectively. For the bin with rotational periods between 
 1.5--7 days the binary fraction using the inclusive and conservative cuts is
 71\% and 67\%, which are larger than the binary fraction of all cool APOGEE 
-dwarfs by a p-value of \(4 \times 10^4\) and \(10^4\), respectively. The binary 
-fraction for stars with periods between 7--15 days is 40\% and 36\% for the
-inclusive and conservative cuts; they are marginally excluded with p-values
-of 0.15 and 0.03. For the long-period interval of 15--19 days, the binary 
-fractions for the inclusive and conservative thresholds are 34\% and 29\% with 
-p-value of 0.3 for both, indicating that the binary fraction is representative 
+dwarfs by a p-value of \(5 \times 10^4\) and \(4 \times 10^4\), respectively. 
+The binary fraction for stars with periods between 7--10 days is 48\% for both 
+the inclusive and conservative cuts; they are marginally excluded with p-values
+of 0.24 and 0.01. For a long-period interval from 10--15 days, the binary 
+fractions for the inclusive and conservative thresholds 37\% for both with 
+p-value of 0.7 and 0.3, indicating that the binary fraction is representative 
 of the full sample.
 
 \begin{figure*}[htb]
@@ -843,8 +843,8 @@ of the full sample.
     \epsscale{1.1}
     \plotone{full_mcquillan_rr_excess}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of all 
-        cool \citet{McQuillan14} targets in period bins \(> 15\) days, 
-        \(7--15\) days, \(1.5--7\) days, and less than 1.5 days. Pink stars 
+        cool \citet{McQuillan14} targets in period bins \(> 10\) days, 
+        \(7--10\) days, \(1.5--7\) days, and less than 1.5 days. Pink stars 
         denote eclipsing binaries with orbital periods within the same ranges. 
         The green and purple lines denote the inclusive and conservative 
         photometric binary thresholds, 
@@ -880,17 +880,17 @@ is consistent with the overall trend in temperature seen in
     \plotone{binary_fraction}
     \caption{\emph{Top Left:} The photometric binary fraction as a function of 
         period for the inclusive photometric binary threshold (\(\Delta K <
-        -0.28\) mag). The photometric binary fraction
+        -0.2\) mag). The photometric binary fraction
         for the full sample analyzed by \citet{McQuillan14} is shown as the
         dotted line. Error bars are 1-\(\sigma\) binomial confidence
         intervals. \emph{Top Right:} Same as the previous plot, except using
-        the more conservative threshold (\(\Delta K < -0.41\) mag). \emph{Bottom
+        the more conservative threshold (\(\Delta K < -0.3\) mag). \emph{Bottom
         left:} The period distribution of the photometric binary (solid green) 
         and photometric single (dashed purple) samples, each normalized by the 
         total number of photometric binaries and photometric single stars 
         analyzed by \citet{McQuillan14}, respectively, using the inclusive
         photometric binary threshold. Error bars are 1-\(\sigma\) Poisson 
-        confidence intervals.\emph{Bottom Right:}
+        confidence intervals. \emph{Bottom Right:}
         Same as the previous plot, except with the more conservative vertical
         displacement threshold.}\label{fig:binary_fraction}
 \end{figure*}
@@ -935,11 +935,11 @@ likely low mass-ratio systems. This interpretation of the photometric singles
 in the rapid rotators is supported by comparing the photometric binary 
 fraction of the eclipsing binaries to that of the rapid rotators. The 
 photometric binary fraction of the eclipsing binaries with orbital periods 
-between 1.5--7 days is \(76^{+9}_{-11}\%\) with the inclusive threshold and 
-\(69^{+9}_{-11}\%\) with the conservative threshold, while the photometric 
+between 1.5--7 days is \(83^{+7}_{-10}\%\) with the inclusive threshold and 
+\(76^{+8}_{-11}\%\) with the conservative threshold, while the photometric 
 binary fraction of the rapid rotators with rotation periods between 1.5--7
-days is \(60^{+3.4}_{-3.6}\%\) with the inclusive threshold and
-\(53^{+3.6}_{-3.6}\%\) with the conservative threshold.  Given the
+days is \(67^{+3.3}_{-3.5}\%\) with the inclusive threshold and
+\(59^{+3.6}_{-3.6}\%\) with the conservative threshold.  Given the
 uncertainties, the two photometric binary fractions are just outside of one 
 sigma away from each other.
 
@@ -1003,19 +1003,18 @@ observed photometric binary fraction and the true binary fraction. We use the
 MIST models to predict the fraction of binaries which will be detected as
 photometric binaries under the assumption of a flat mass-ratio distribution
 \citep{Raghavan10}. As illustrated in \cref{fig:photometric_massratio}, for a 
-0.7 solar mass star only mass-ratios greater than 0.79 result in photometric
+0.7 solar mass star only mass-ratios greater than 0.70 result in photometric
 binaries according to the conservative binarity threshold, implying that only
 30\% of the binary population in our sample should be detected as a photometric 
 binary. This rough calculation by itself is incompatible with the observed 
-short-period photometric binary fraction in \cref{fig:binary_fraction} of 0.6
-\gvs{Revise this}. 
+short-period photometric binary fraction in \cref{fig:binary_fraction} of 0.75
 This contradiction requires that our assumption of a flat mass-ratio function 
-cannot hold, or that there are selection effects in the sample. We checked that
-the average distance of the photometric binaries is larger than that of the
-photometric singles, consistent with photometric binaries being detected to a
-larger volume than photometric singles. Attempting to reconstruct the
-instrinsic mass-ratio distribution of tidally-synchronized binaries is beyond
-the scope of this analysis.
+cannot hold, or that there are selection effects in the sample. We find that
+the median distance of the photometric single stars is 509 pc, while the median
+distance of the photometric binaries is 653 pc, consistent with photometric 
+binaries being detected to a larger volume than photometric singles. Attempting 
+to reconstruct the instrinsic mass-ratio distribution of tidally-synchronized 
+binaries is beyond the scope of this analysis.
 
 We validate many of these trends by revisiting them in the smaller, but more
 well-characterized spectroscopic sample. The spike in the binary fraction
