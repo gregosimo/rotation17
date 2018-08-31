@@ -1903,10 +1903,11 @@ def eclipsing_binary_inferred_distribution():
     # range, then impose a K-band cut, and THEN calculate K-band luminosity 
     # excess.
     fullsamp = catin.stelparms_triple_KIC()
-    roughsamp = fullsamp[
+    teffsamp = fullsamp[~fullsamp["SDSS-Teff"].mask]
+    roughsamp = teffsamp[
         np.logical_and(np.logical_and(
-            fullsamp["SDSS-Teff"] < 5250, fullsamp["SDSS-Teff"] > 4000),
-                       fullsamp["M_K"] > 1)]
+            teffsamp["SDSS-Teff"] < 5250, teffsamp["SDSS-Teff"] > 4000),
+                       teffsamp["M_K"] > 1)]
     coolsplitter = split.KeplerSplitter(roughsamp)
     coolsplitter.split_photometric_quality(
         "kmag", "kmag_err", splitnames=("K Detection", "Blend", "Bad K"),
@@ -1914,9 +1915,9 @@ def eclipsing_binary_inferred_distribution():
     coolsplitter.split_Gaia()
     clean_splitter = coolsplitter.split_subsample(["K Detection", "In Gaia"])
     clean_splitter.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
-        clean_ebs.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
-    clean_splitter.data["K Excess"] = (clean_ebs.data["M_K"] - 
-                                  clean_ebs.data["MIST K"])
+        clean_splitter.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
+    clean_splitter.data["K Excess"] = (clean_splitter.data["M_K"] - 
+                                  clean_splitter.data["MIST K"])
     clean_splitter.split_mag("K Excess", -1.2, splitnames=("Not Dwarfs", "Dwarfs"),
                         null_value=None)
     fullnum = clean_splitter.subsample_len(["Dwarfs"])
@@ -1932,6 +1933,9 @@ def eclipsing_binary_inferred_distribution():
     eb_lowerlim = (eb_hist - au.poisson_lower(eb_hist, 1)) / fullnum
     ax.step(period_bins, np.append(normalized_ebs, [0]), where="post", 
             color=bc.red, ls="-", label="EBs")
+    ax.errorbar(period_bin_centers, normalized_ebs, 
+            yerr=[eb_lowerlim, eb_upperlim], marker="", ls="", 
+            color=bc.red, capsize=5)
 
     # Now infer the total population of binaries.
     # To calculate the eclipse probability, I need masses and radii.
@@ -1944,27 +1948,25 @@ def eclipsing_binary_inferred_distribution():
     # For empty bins, this is the default eclipse probability.
     default_probs = ebs.eclipse_probability(period_bin_centers, 0.7, 0.7)
     # To translate from eb fraction to rapid fraction.
-    correction_factor = (np.maximum(0, 0.92 - eclipse_prob) / 
-                         eclipse_prob)
-    default_correction = (np.maximum(0, 0.92 - default_probs) /
-                          default_probs)
+    correction_factor = 1 / eclipse_prob
+    default_correction = 1 / default_probs
     pred_hist, _ = np.histogram(
         dwarf_ebs["period"], bins=period_bins, weights=correction_factor)
-    normalized_pred = pred_hist / totalobjs
+    normalized_pred = pred_hist / fullnum
     scale_factor = np.where(
         normalized_ebs, normalized_pred / normalized_ebs, default_correction)
     pred_upperlim =  eb_upperlim * scale_factor
     pred_lowerlim = eb_lowerlim * scale_factor
     ax.step(period_bins, np.append(normalized_pred, [0]), where="post", 
-            color=bc.red, linestyle=":", 
+            color=bc.black, linestyle=":", 
             label="Predicted Rapid Rotators from EBs")
     ax.errorbar(period_bin_centers, normalized_pred, 
             yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
-            color=bc.red, capsize=5)
+            color=bc.black, capsize=5)
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
     ax.legend(loc="upper left")
-    ax.set_xlim(1, 12)
+    ax.set_xlim(1.5, 12.5)
     
 
 @write_plot("eclipseprob")
@@ -2041,7 +2043,7 @@ def verify_eb_rapid_rotator_rate():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("# in period bin / Full Teff Sample")
     ax.legend(loc="upper left")
-    ax.set_xlim(1, 12)
+    ax.set_xlim(1.5, 12.5)
 
     # Print the predicted number of rapid rotators from the eclipsing binaries.
     rapid = np.logical_and(dwarf_ebs["period"] > 1, dwarf_ebs["period"] < 7)

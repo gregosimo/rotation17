@@ -723,40 +723,47 @@ which seems to be contradicted by the empirical corrections.
     \plotone{ebdist}
     \caption{The observed period distribution of all eclipsing binaries with
     \Teff{} < 5250 K from \citet{Pinsonneault12} and vertical displacement less
-than 1.3 mag is shown in red. The period distribution of all binaries inferred
-from the eclipsing binaries is shown in black.}
-    \label{fig:ebdist}
+than 1.3 mag is shown in red. The period distribution of the full binary
+distribution inferred from the eclipsing binaries is shown in black. The
+normalization factor is the total number of Kepler cool dwarfs. Error bars
+represent 1-\(\sigma\) Poisson confidence intervals.}\label{fig:ebdist}
 \end{figure}
 
 The most fundamental sample for understanding binarity in the \Kepler{} field
-is the \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16}. Due to
+is the \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16}. With
 \Kepler{}'s continuous monitoring and a long baseline of 4 years, the eclipsing 
-binary sample for orbital periods on the order of 20 days should be complete.
+binary sample for orbital periods on the order of 20 days should be complete
+\citep{Kirk16}.
 Whether a binary is observed to eclipse or not depends solely on its geometry,
 with an eclipse probability for circular orbits given as \((R_1 + R_2)/a\), where \(R_1\) and 
 \(R_2\) are the primary and secondary radii, and \(a\) is the semimajor axis of
 the orbit. Given the period distribution of the eclipsing binaries, as well as
 assumptions about the masses and radii of the component stars, the period
 distribution of the full binary sample can be derived using just the eclipse
-probability, assuming circular orbits. An estimate of the orbital period distribution for all
-short-period \Kepler{} binaries on the unevolved lower main sequence is shown in 
-\cref{fig:ebdist}, assuming radii and masses inferred from \Teff{} using MIST
-isochrones, and a representative mass-ratio of 0.5, which is expected of a flat
-mass-ratio distribution, and that most short-period systems have circularized
-\citep{Raghavan10,VanEylen16}.
+probability. This expression assumes circular orbits, which is justified because
+short-period, low-mass systems are overwhelmingly observed to be circularized
+\citep{Raghavan10,VanEylen16}. To simplify the calculation, we
+assume that the secondaries are half as massive as the primaries, which is
+generally consistent with a flat mass-ratio distribution \citep{Raghavan10}. 
+More massive secondaries would reduce the predicted number of non-eclipsing 
+systems. Given these assumptions, an estimate of the orbital period distribution 
+for all short-period \Kepler{} binaries on the unevolved lower main sequence is 
+shown in \cref{fig:ebdist}, assuming radii and masses inferred from \Teff{} 
+using MIST isochrones.
 
-The eclipsing binaries make up almost 40\% of the total population of
-binaries on the short-period end, hence are not a negligible segment of the
+The eclipsing binaries range from making up almost 15\% of the total population 
+of binaries in the in the shortest-period bin in \cref{fig:ebdist} to 6\% in the 
+longest-period bin, hence are not a negligible segment of the
 population. \citet{McQuillan14} excluded eclipsing binaries from their analysis
 of rotation in the \Kepler{} field due to concerns that the eclipse signal would
 dominate the period. In order to obtain an unbiased view of the binary
 population at short periods, we include the \Kepler{} eclipsing binaries in our
 statistical analysis. This treatment assumes that orbital period is identical
 to the rotation period, which should certainly be true for synchronized
-systems, but we address the question of synchronicity directly later on.
+systems; we address the question of synchronicity directly later on.
 
 After successfully calculating the vertical displacement of the full sample, we
-now attempt to delineate between single and binary stars. As noted in the
+now attempt to distinguish between single and binary stars. As noted in the
 previous section, the 1-\(\sigma\) uncertainties of the single-star sequence 
 were 0.086 mag with known metallicity, and 0.117 mag when metallicity was unknown. 
 To implement a uniform photometric binary cut for both the spectroscopic and
@@ -941,38 +948,29 @@ sigma away from each other.
     \caption{Comparison of rapid rotator period distribution and eclipsing
     binary. The period distribution of the \citet{McQuillan14} sample is shown
 as a blue solid histogram, while the period distribution of the eclipsing binaries
-is shown as the red histogram. The predicted EB distribution assuming the
-\citet{McQuillan14} sample consists of binaries inclined enough to show
-starspot modulation, but not inclined enough to eclipse. Error bars represent
-1-\(\sigma\) Poisson confidence intervals.}\label{fig:eclipseprob}
+is shown as the red histogram. Both distributions are normalized to the total
+number of objects analyzed by McQuillan and in the EB catalog. The predicted EB 
+distribution assuming the \citet{McQuillan14} sample consists of binaries 
+inclined enough to show starspot modulation, but not inclined enough to eclipse. 
+Error bars represent 1-\(\sigma\) Poisson confidence 
+intervals.}\label{fig:eclipseprob}
 \end{figure}
 
 The short-period rapid rotators also behave like a population of non-eclipsing
 binaries, providing further evidence that the rotation period and orbital
 periods are identical. We test the assumption of synchronicity by comparing the
 rapid rotator population to the non-eclipsing population predicted by the
-eclipsing binaries. The probability of a given binary being oriented in such a
-way that it will eclipse is \((R_1 + R_2)/a\), where \(R_1\) and \(R_2\) are
-the primary and secondary radii, which we infer using the MIST isochrones, 
-and \(a\) is the semimajor axis of the orbit, which can be derived from the
-orbital period and isochrone masses using Kepler's third law.
-This expression assumes circular orbits, which is justified because
-short-period, low-mass systems are overwhelmingly observed to be circularized
-\citep{Raghavan10,VanEylen16}. We also assume a detection efficiency of 100\%
-for eclipsing systems, which is justified for short-period systems based on 
-\Kepler{}'s duty cycle \citep{Kirk16}. To simplify the calculation, we
-assume that the secondaries are half as massive as the primaries, which is
-generally consistent with a flat mass-ratio distribution \citep{Raghavan10}. 
-More massive secondaries would reduce the predicted number of non-eclipsing 
-systems. We also correct the rotational period distribution for inclination
-effects. K2 observations of the Pleiades found that 8\% of the sample did not
-show variations due to starspots \citep{Rebull17}, which is similar to the
-fraction of objects previously found to have inclinations too high to show
-starspots \citep{Jackson10}. Since rotation periods in the Pleiades are on the
-order of several days, comparable to the rotation periods in this sample, we
-treat 8\% of the total sample as being unobservable to starspot periods. Given 
-these assumptions, and the observed population of eclipsing binaries, we predict 
-the period distribution of non-eclipsing binaries in \cref{fig:eclipseprob}. 
+eclipsing binaries. We predict the population of rapid rotators using the same
+assumptions as used in \cref{fig:ebdist}. We additionally correct the rotational 
+period distribution for inclination effects. K2 observations of the Pleiades 
+found that 8\% of the sample did not show variations due to starspots 
+\citep{Rebull17}, which is similar to the fraction of objects previously found 
+to have inclinations too high to show starspots \citep{Jackson10}. Since 
+rotation periods in the Pleiades are on the order of several days, comparable to 
+the rotation periods in this sample, we treat 8\% of the total sample as being 
+unobservable to starspot periods. Given these assumptions, and the observed 
+population of eclipsing binaries, we predict the period distribution of 
+non-eclipsing binaries in \cref{fig:eclipseprob}. 
 
 The two period distributions match well up to 7 days, indicating
 that the rotational period distribution is reflects the orbital period
