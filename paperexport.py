@@ -94,7 +94,7 @@ def write_rapid_rotator_tables():
     mcq = cache.mcquillan_corrected_splitter()
     mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     mcq_rapid_dwarfs = mcq_dwarfs[np.logical_and(
-        mcq_dwarfs["Prot"] > 1, mcq_dwarfs["Prot"] < 5)]
+        mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] < 7)]
     apo = catin.read_dr14_allStar()
     rapid_table = catalog.join_by_2MASS_key(
         mcq_rapid_dwarfs, apo, "tm_designation", "APOGEE_ID", join_type="left")
@@ -116,7 +116,7 @@ def write_rapid_rotator_tables():
         entirety in the machine-readable format. A portion is
         shown here for guidance regarding its form and content.}""")
     latexdict = {
-        "col_align": "llccccc", "caption": latex_caption, "tablefoot":
+        "col_align": "llcccccc", "caption": latex_caption, "tablefoot":
         latex_tablefoot, "units": {
             r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
             r"$\Delta K$": "mag", "$P_{rot}$": "day", "[Fe/H]": "dex"}}
@@ -2045,8 +2045,18 @@ def verify_eb_rapid_rotator_rate():
     ax.legend(loc="upper left")
     ax.set_xlim(1.5, 12.5)
 
+    # Calculate the total rate of synchronized binaries.
+    num_rapid = np.count_nonzero(np.logical_and(
+        mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] < 7))
+    total_rapid = num_rapid 
+    total_rapid_upper = au.poisson_upper_exact(total_rapid, 1) - total_rapid
+    total_rapid_lower = total_rapid - au.poisson_lower_exact(total_rapid, 1)
+    print("Rapid rate is {0:.5f} + {1:.6f} - {2:.6f}".format(
+        total_rapid / totalobjs, total_rapid_upper / totalobjs, 
+        total_rapid_lower / totalobjs))
+
     # Print the predicted number of rapid rotators from the eclipsing binaries.
-    rapid = np.logical_and(dwarf_ebs["period"] > 1, dwarf_ebs["period"] < 7)
+    rapid = np.logical_and(dwarf_ebs["period"] > 1.5, dwarf_ebs["period"] < 7)
     pred_rapid = np.sum(correction_factor[rapid])
     pred_num = np.count_nonzero(rapid)
     scale = pred_rapid / pred_num
@@ -2055,8 +2065,24 @@ def verify_eb_rapid_rotator_rate():
     raw_lower = au.poisson_lower(pred_num, 1) - pred_num
     upper_pred = raw_upper * scale / totalobjs
     lower_pred = raw_lower * scale / totalobjs
-    print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
-                                                       lower_pred))
+    print("Predicted Rate is {0:.5f} + {1:.6f} - {2:.6f}".format(
+        pred_rate, upper_pred, lower_pred))
+
+    # Calculate the total rate of synchronized binaries.
+    num_rapid = np.count_nonzero(np.logical_and(
+        mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] < 7))
+    num_ebs = np.count_nonzero(np.logical_and(
+        dwarf_ebs["period"] > 1.5, dwarf_ebs["period"] < 7))
+    total_rapid = num_rapid + num_ebs
+    total_rapid_upper = au.poisson_upper_exact(total_rapid, 1) - total_rapid
+    total_rapid_lower = total_rapid - au.poisson_lower_exact(total_rapid, 1)
+    total_rate = total_rapid / 0.92 / totalobjs
+    total_rate_upper = total_rapid_upper / 0.92 / totalobjs
+    total_rate_lower = total_rapid_lower / 0.92 / totalobjs
+    print("Total rate is {0:.5f} + {1:.6f} - {2:.6f}".format(
+        total_rate, total_rate_upper, total_rate_lower))
+
+
 
 def vsini_check():
     '''Plot showing that photometric rapid rotators have high vsini.'''
