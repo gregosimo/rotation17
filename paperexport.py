@@ -1561,7 +1561,7 @@ def rapid_rotator_bins():
     
     mcq_cooldwarfs = au.join_by_id(cooldwarfs, mcq, "kepid", "KIC")
     eb_cooldwarfs = au.join_by_id(cooldwarfs, ebs, "kepid", "KIC")
-    periodbins = np.flipud(np.array([1.5, 7, 15]))
+    periodbins = np.flipud(np.array([1.5, 7, 10]))
     f, axes = plt.subplots(
         2, 2, figsize=(24, 24), sharex=True, sharey=True)
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
@@ -1618,7 +1618,7 @@ def mcquillan_rapid_rotator_bins():
     dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     eb_dwarfs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
 
-    periodbins = np.flipud(np.array([1.5, 7, 15]))
+    periodbins = np.flipud(np.array([1.5, 7, 10]))
     f, axes = plt.subplots(
         2, 2, figsize=(24, 24), sharex=True, sharey=True)
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
@@ -1885,6 +1885,84 @@ def eb_rapid_rotator_rate_apogee():
     lower_pred = raw_lower * scale / totalobjs
     print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
                                                        lower_pred))
+
+@write_plot("ebdist")
+def eclipsing_binary_inferred_distribution():
+    '''Plot the observed EB, and inferred binary distribution.'''
+    eb_split = cache.eb_splitter_with_DSEP()
+    dwarf_ebs = eb_split.subsample(["Dwarfs", "Right Statistics Teff"])
+    # We only want detached systems
+    dwarf_ebs = dwarf_ebs[dwarf_ebs["period"] > 1]
+
+    # I need to get all Kepler targets that are in the sample I'm
+    # interested in. In order to do that, I'm going to first restrict the Teff
+    # range, then impose a K-band cut, and THEN calculate K-band luminosity 
+    # excess.
+    fullsamp = catin.stelparms_triple_KIC()
+    roughsamp = fullsamp[
+        np.logical_and(np.logical_and(
+            fullsamp["SDSS-Teff"] < 5250, fullsamp["SDSS-Teff"] > 4000),
+                       fullsamp["M_K"] > 1)]
+    coolsplitter = split.KeplerSplitter(roughsamp)
+    coolsplitter.split_photometric_quality(
+        "kmag", "kmag_err", splitnames=("K Detection", "Blend", "Bad K"),
+        crit="MK blend")
+    coolsplitter.split_Gaia()
+    clean_splitter = coolsplitter.split_subsample(["K Detection", "In Gaia"])
+    clean_splitter.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
+        clean_ebs.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
+    clean_splitter.data["K Excess"] = (clean_ebs.data["M_K"] - 
+                                  clean_ebs.data["MIST K"])
+    clean_splitter.split_mag("K Excess", -1.2, splitnames=("Not Dwarfs", "Dwarfs"),
+                        null_value=None)
+    fullnum = clean_splitter.subsample_len(["Dwarfs"])
+
+    f, ax = plt.subplots(1, 1, figsize=(12,12))
+    # Now bin the EBs
+    period_bins, dp = np.linspace(1.5, 12.5, 11+1, retstep=True)
+    period_bins = period_bins 
+    period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
+    eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
+    normalized_ebs = eb_hist / fullnum
+    eb_upperlim = (au.poisson_upper(eb_hist, 1) - eb_hist) / fullnum
+    eb_lowerlim = (eb_hist - au.poisson_lower(eb_hist, 1)) / fullnum
+    ax.step(period_bins, np.append(normalized_ebs, [0]), where="post", 
+            color=bc.red, ls="-", label="EBs")
+
+    # Now infer the total population of binaries.
+    # To calculate the eclipse probability, I need masses and radii.
+    masses = samp.calc_model_over_feh_fixed_age_alpha(
+        np.log10(dwarf_ebs["SDSS-Teff"]), mist.MISTIsochrone.logteff_col,
+        mist.MISTIsochrone.mass_col, 0.08, 1e9)
+    radii = masses
+    eclipse_prob = ebs.eclipse_probability(
+        dwarf_ebs["period"], radii*1.5, masses*1.5)
+    # For empty bins, this is the default eclipse probability.
+    default_probs = ebs.eclipse_probability(period_bin_centers, 0.7, 0.7)
+    # To translate from eb fraction to rapid fraction.
+    correction_factor = (np.maximum(0, 0.92 - eclipse_prob) / 
+                         eclipse_prob)
+    default_correction = (np.maximum(0, 0.92 - default_probs) /
+                          default_probs)
+    pred_hist, _ = np.histogram(
+        dwarf_ebs["period"], bins=period_bins, weights=correction_factor)
+    normalized_pred = pred_hist / totalobjs
+    scale_factor = np.where(
+        normalized_ebs, normalized_pred / normalized_ebs, default_correction)
+    pred_upperlim =  eb_upperlim * scale_factor
+    pred_lowerlim = eb_lowerlim * scale_factor
+    ax.step(period_bins, np.append(normalized_pred, [0]), where="post", 
+            color=bc.red, linestyle=":", 
+            label="Predicted Rapid Rotators from EBs")
+    ax.errorbar(period_bin_centers, normalized_pred, 
+            yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
+            color=bc.red, capsize=5)
+    ax.set_xlabel("Period (day)")
+    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.legend(loc="upper left")
+    ax.set_xlim(1, 12)
+    
+
 @write_plot("eclipseprob")
 def verify_eb_rapid_rotator_rate():
     '''Compare the rate of EBs to the rate of rapid rotators.'''
@@ -1934,14 +2012,14 @@ def verify_eb_rapid_rotator_rate():
         np.log10(dwarf_ebs["SDSS-Teff"]), mist.MISTIsochrone.logteff_col,
         mist.MISTIsochrone.mass_col, 0.08, 1e9)
     radii = masses
-    eclipse_prob = ebs.eclipse_probability(dwarf_ebs["period"], radii*1.5, 
-                                           masses*1.5)
+    eclipse_prob = ebs.eclipse_probability(
+        dwarf_ebs["period"], radii*1.5, masses*1.5)
     # For empty bins, this is the default eclipse probability.
     default_probs = ebs.eclipse_probability(period_bin_centers, 0.7, 0.7)
     # To translate from eb fraction to rapid fraction.
-    correction_factor = (np.maximum(0, np.sqrt(3)/2 - eclipse_prob) / 
+    correction_factor = (np.maximum(0, 0.92 - eclipse_prob) / 
                          eclipse_prob)
-    default_correction = (np.maximum(0, np.sqrt(3)/2 - default_probs) /
+    default_correction = (np.maximum(0, 0.92 - default_probs) /
                           default_probs)
     pred_hist, _ = np.histogram(
         dwarf_ebs["period"], bins=period_bins, weights=correction_factor)

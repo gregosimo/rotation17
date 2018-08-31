@@ -782,8 +782,17 @@ range.
 \end{figure*}
 
 For both binarity thresholds, the well-characterized APOGEE sample 
-illustrates the differences in binarity between slow and rapid rotators. The
-vertical displacements in different period bins are shown in
+illustrates the differences in binarity between slow and rapid rotators. For
+the purpose of illustration, we divide the sample into four bins, with edges at 
+1.5, 7, and 10 days. We draw a short-period limit for our analysis at 1.5 days 
+because we want to eliminate potential contamination from ellipsoidal variables 
+and semidetached systems \citep{VanEylen16}. We find 7 days to mark the
+transition from a binary-dominated synchronized population to a single-star
+dominated population (see below). And 10 days is the theoretically and
+observationally-motivated boundary in orbital period where synchronization
+should take place \citep{Claret97,Lurie17}.
+
+Vertical displacements in those bins of rotation period are shown in
 \cref{fig:apogee_rapid_excess}. Nearly all of the rapid rotators with periods 
 between 1.5--7 days are photometric binaries, in contrast to the slow rotators
 with periods greater than 15 days, which have a distinct single star sequence. 
@@ -955,11 +964,15 @@ for eclipsing systems, which is justified for short-period systems based on
 assume that the secondaries are half as massive as the primaries, which is
 generally consistent with a flat mass-ratio distribution \citep{Raghavan10}. 
 More massive secondaries would reduce the predicted number of non-eclipsing 
-systems. We also eliminate systems with \(\sin i > 1/2\) because starspot
-modulations would not be detected for these highly-inclined systems 
-\citep{Jackson10,Rebull17}. Given these assumptions, and the observed 
-population of eclipsing binaries, we predict the period distribution of 
-non-eclipsing binaries in \cref{fig:eclipseprob}. 
+systems. We also correct the rotational period distribution for inclination
+effects. K2 observations of the Pleiades found that 8\% of the sample did not
+show variations due to starspots \citep{Rebull17}, which is similar to the
+fraction of objects previously found to have inclinations too high to show
+starspots \citep{Jackson10}. Since rotation periods in the Pleiades are on the
+order of several days, comparable to the rotation periods in this sample, we
+treat 8\% of the total sample as being unobservable to starspot periods. Given 
+these assumptions, and the observed population of eclipsing binaries, we predict 
+the period distribution of non-eclipsing binaries in \cref{fig:eclipseprob}. 
 
 The two period distributions match well up to 7 days, indicating
 that the rotational period distribution is reflects the orbital period
