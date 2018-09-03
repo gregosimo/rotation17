@@ -194,7 +194,7 @@ The base sample of this study consists of \Kepler{} dwarfs that were analyzed
 for photometric starspot modulations. All targets in the \Kepler{} field have 
 stellar parameters determined at the very least by KIC photometry 
 \citep{Brown11}. The total number of objects that were analyzed was 133,030, 
-34,030 period detections.
+of which 34,030 have period detections.
 
 We also examine a spectroscopically-characterized subsample from APOGEE\@. 
 This sample has spectroscopically-determined temperatures and metallicities. 
@@ -318,7 +318,8 @@ period-dependent threshold. In order to reduce contamination from pulsators,
         visible above the lower main sequence. Temperatures are from
         \citet{Pinsonneault12}. The bin size is 100 K in
         temperature and 0.02 mag in K-band absolute magnitude. A 
-        representative error bar is shown on the bottom right corner. 
+        representative error bar is shown on the bottom right corner, although
+        the vertical error bar is too small to be easily visible. 
         \emph{Right:} The variation in the \citet{McQuillan14} period 
         detection fraction across the \Teff-\(M_K\) 
     diagram.}\label{fig:mcquillan_selection}
@@ -468,9 +469,10 @@ inclusion limits for binaries and potential triple systems.
 \begin{figure}[htb]
     \centering
     \plotone{ages}
-    \caption{Age-imposed behavior for the APOGEE dwarf sample with APOGEE
+    \caption{Age-imposed behavior for the dwarf sample with APOGEE
         temperatures. The purple line denotes the predicted luminosity excess of 
-        a 9 Gyr solar composition isochrone. The dashed line represents 0.75 
+        a 9 Gyr solar composition isochrone relative to a 1 Gyr baseline at
+        fixed metallicity. The dashed line represents 0.75 
         mag, the limit for photometric binaries. The 25th percentile of the 
         dwarfs in 15 temperature bins is shown in brown. The median absolute 
         deviation of the least-luminous 50\% of the bin is shown as the error 
@@ -593,14 +595,12 @@ distribution of the spectroscopic targets is representative of the full
         line at [Fe/H]=-0.3 denotes the metallicity beneath which the empirical correction is
         correction is poorly constrained due to too few metal-poor stars. 
         \emph{Right:} The vertical displacement caused by assuming a single 
-        metallicity isochrone.  The blue line represents the vertical 
-        displacement predicted by the MIST isochrones imposed by a metallicity 
-        mismatch with a [Fe/H] = 0.08 dex isochrone for a 5000 K star. The 
-        orange line denotes the vertical displacement caused by metallicity 
-        mismatches after correcting for the metallicity-dependent offset of the 
-        main sequence relative to the MIST isochrones shown in 
-    \cref{fig:met_trend}. The vertical dotted line shows the metallicity
-beneath which the empirical correction is unconstrained.}\label{fig:metallicity}
+        metallicity isochrone.  The blue line represents the difference between
+        the derived \(M_K\) assuming the median field metallicity and that for
+        the true metallicity. The orange line includes our empirical shape
+        correction for metallicity, which removes most of the predicted width.
+        The vertical dotted line shows the metallicity beneath which the 
+    empirical correction is unconstrained.}\label{fig:metallicity}
 \end{figure*}
 
 Because we will mostly be concerned with the cool dwarfs, we check the
@@ -718,7 +718,8 @@ The origin of this cutoff comes from the metallicity-dependence of the empirical
 correction in \cref{fig:metallicity}; metal-poor stars are forced to smaller 
 vertical displacements compared to the MIST predictions. We note that the MIST 
 models predict that the metallicity dependence K-band is similar to the V-band,
-which seems to be contradicted by the empirical corrections.
+which indicates that this is a feature of hte luminosity dependence of the main
+sequence locus, not a peculiar feature of the K-band bolometric corrections.
 
 \section{Results and Discussion}
 \label{sec:results}
@@ -758,7 +759,7 @@ using MIST isochrones.
 
 The eclipsing binaries range from making up almost 15\% of the total population 
 of binaries in the in the shortest-period bin in \cref{fig:ebdist} to 6\% in the 
-longest-period bin, hence are not a negligible segment of the
+longest-period bin, hence they are not a negligible segment of the
 population. \citet{McQuillan14} excluded eclipsing binaries from their analysis
 of rotation in the \Kepler{} field due to concerns that the eclipse signal would
 dominate the period. In order to obtain an unbiased view of the binary
@@ -807,13 +808,13 @@ should take place \citep{Claret97,Lurie17}.
 Vertical displacements in those bins of rotation period are shown in
 \cref{fig:apogee_rapid_excess}. Nearly all of the rapid rotators with periods 
 between 1.5--7 days are photometric binaries, in contrast to the slow rotators
-with periods greater than 15 days, which have a distinct single star sequence. 
+with periods greater than 10 days, which have a distinct single star sequence. 
 Angular momentum loss due to stellar winds acting over a billion years is
 expected to deplete the short-period regime of single stars. The transitional 
-periods between 7--15 days have a binary fraction intermediate to the 
+periods between 7--10 days have a binary fraction intermediate to the 
 rapid and slow regimes. The bin with periods shorter than 1.5 day is not expected
-to behave like detached, eclipsing binaries due to contamination from contact 
-binaries, ellipsoidal variables and blended pulsators \citep{VanEylen16}. 
+to behave like detached, eclipsing binaries due to potential contamination from 
+contact binaries, ellipsoidal variables and blended pulsators \citep{VanEylen16}. 
 
 To quantify the significance the excess binary fraction in the rapid rotators, 
 we compare the photometric binary fraction of the short-period bin to the
@@ -988,8 +989,8 @@ the long-period systems become dominated by a different
 period distribution. Our physical interpretation for this phenomenon is that the
 short-period systems are tidally-synchronized binaries, which remain 
 synchronized at least through an orbital period of 7 days. At periods longer
-than 7 days, the sample becomes dominated by a rapidly-rotating tail of single
-stars and wide binaries following single-star angular momentum evolution.
+than 7 days, the sample becomes a mix of synchronized binaries and a 
+rapidly-rotating tail of single stars and wide binaries following single-star angular momentum evolution.
 
 \begin{figure}[htb]
     \centering
@@ -1010,7 +1011,8 @@ photometric binaries under the assumption of a flat mass-ratio distribution
 0.7 solar mass star only mass-ratios greater than 0.70 result in photometric
 binaries according to the conservative binarity threshold, implying that only
 30\% of the binary population in our sample should be detected as a photometric 
-binary. This rough calculation by itself is incompatible with the observed 
+binary, even if the secondary is not drawn from a steep relative IMF. This rough 
+calculation by itself is incompatible with the observed 
 short-period photometric binary fraction in \cref{fig:binary_fraction} of 0.75
 This contradiction requires that our assumption of a flat mass-ratio function 
 cannot hold, or that there are selection effects in the sample. We find that
