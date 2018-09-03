@@ -1258,6 +1258,20 @@ def collapsed_met_histogram():
             label="[Fe/H] = 0.08")
     ax2.plot(inputexcesses, metmodel, color=bc.blue, ls="-", lw=3, marker="")
     ax2.plot(inputexcesses, nometmodel, color=bc.red, ls="-", lw=3, marker="")
+    ax2.errorbar([
+        fittedmet.mean_0.value, fittedmet.mean_1.value], [80, 80],
+             yerr=1, color=bc.blue, ls="", marker="", label="", elinewidth=1)
+    ax2.errorbar([
+        fittednomet.mean_0.value, fittednomet.mean_1.value], [75, 75],
+             yerr=1, color=bc.red, ls="", marker="", label="", elinewidth=1)
+    ax2.errorbar([
+        fittednomet.mean_0.value, fittednomet.mean_1.value], [75, 75],
+             xerr=[fittednomet.stddev_0.value, fittednomet.stddev_1.value],
+             color=bc.red, ls="", marker="", label="", capsize=4, elinewidth=3)
+    ax2.errorbar([
+        fittedmet.mean_0.value, fittedmet.mean_1.value], [80, 80],
+             xerr=[fittedmet.stddev_0.value, fittedmet.stddev_1.value],
+             color=bc.blue, ls="", marker="", label="", capsize=4, elinewidth=3)
     ax1.plot(
         [cons_limit, cons_limit], [0, 100], marker="", ls="--", color=bc.violet, 
         lw=4, zorder=3)
