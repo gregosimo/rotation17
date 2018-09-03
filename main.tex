@@ -26,8 +26,8 @@
 \newcommand{\Kepler}{\mbox{\textit{Kepler}}}
 \newcommand{\Gaia}{\mbox{\textit{Gaia}}}
 \newcommand{\McQuillan}{\citep{McQuillan14}}
-\newcommand{\Teff}{\ensuremath{T_{eff}}}
-\newcommand{\logg}{\ensuremath{\log(g)}}
+\newcommand{\Teff}{\ensuremath{T_{\rm eff}}}
+\newcommand{\logg}{\ensuremath{\log g}}
 \newcommand{\kms}{\textrm{~km~s}\ensuremath{^{-1}}}
 \newcommand{\MK}{\ensuremath{M_K}}
 
@@ -234,7 +234,7 @@ For this paper, we also make use of extinctions from the KSPC\@. The
 extinctions are inferred from the predicted absolute magnitude given KSPC 
 parameters, and a 3D extinction map \citep{Amores05}. The catalog extinction 
 is given as \(A_V\), which we convert to other bands using the 
-\citep{Cardelli89} extinction law. 
+\citet{Cardelli89} extinction law. 
 
 \subsection{Astrometric Data}
 
@@ -296,7 +296,7 @@ to have photometric \(\Teff < 6500\) K \citep{Brown11,Dressing13}, and
 implemented the color-color and \logg{} cuts advocated in \citet{Ciardi11}, 
 ranging from \(\logg = 3.5\) at 6000 K to \(\logg = 4.0\) at 4250 K. 
 In addition to the temperature and gravity cuts, \citet{McQuillan14} also 
-excluded known \Kepler{} eclipsing binaries and \Kepler Objects of Interest. 
+excluded known \Kepler{} eclipsing binaries and \Kepler{} Objects of Interest. 
 
 Rotational periods in \citet{McQuillan14} were measured by calculating the 
 autocorrelation function and fitting the location of multiple peaks. In lieu 
@@ -380,7 +380,7 @@ spectra. We included all targets with the \STARWARN{} quality flag enabled.
     \caption{\emph{Left:} \Teff-\(M_K\) diagram for the APOGEE observations of
         \Kepler{} targets. Asteroseismic targets are shown as black dots. The
         dwarf sample is shown as brown dots. The light blue dots indicate 
-        eclipsing binary targets and purple dots are Kepler Objects of 
+        eclipsing binary targets and purple dots are \Kepler{} Objects of 
         Interest. A binary sequence is clearly visible on the lower main
         sequence. Temperatures are spectrosopic APOGEE temperatures. A 
         representative error bar for the cool dwarf sample is 
@@ -1171,7 +1171,9 @@ sparsely-calibrated NIR region.
 
 \acknowledgments
 
-G.S, M.P. and D.T acknowledge support from NASA ADP Grant NNX15AF13G. 
+G.S, M.P. and D.T acknowledge support from NASA ADP Grant NNX15AF13G and from
+the National Sscience Foundation via grant AST-1411685 to The Ohio State
+University. 
 Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P.
 Sloan Foundation, the U.S. Department of Energy Office of Science, and the
 Participating Institutions. SDSS-IV acknowledges support and resources from the
