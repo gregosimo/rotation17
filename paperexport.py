@@ -112,7 +112,8 @@ def write_rapid_rotator_tables():
     latex_tablefoot = (
         r"""\tablecomments{All objects in \citet{McQuillan14} with periods between 1--7 
         days and 4000 K < $\Teff{}$ < 5250 K. For objects with APOGEE
-        observations, their APOGEE ID is given. This table is published in its
+        observations, their APOGEE ID and [Fe/H] are given. This table is 
+        published in its
         entirety in the machine-readable format. A portion is
         shown here for guidance regarding its form and content.}""")
     latexdict = {
@@ -506,7 +507,9 @@ def dwarf_metallicity():
     ax1.plot(
         [top_percent, top_percent], [0, 70], color=bc.black, lw=1, 
         marker="", ls="-")
-    ax1.set_xlabel("APOGEE [Fe/H]")
+    ax1.plot(
+        [-0.3, -0.3], [0, 70], color=bc.black, lw=2, marker="", ls=":")
+    ax1.set_xlabel("[Fe/H]")
     ax1.set_ylabel("Metallicity distribution")
     ax1.set_xlim(-1.25, 0.46)
     ax1.set_ylim(0, 70)
@@ -518,7 +521,6 @@ def dwarf_metallicity():
     metcorrect = np.poly1d(metcoeff)
 
     metspace = np.linspace(-1.25, 0.46, 20)
-    badmet = metspace < -0.3
     k_mets = samp.calc_model_mag_fixed_age_alpha(
         5000, metspace, "Ks", age=1e9)
     corrected_k_mets = k_mets + metcorrect(metspace)
@@ -530,7 +532,7 @@ def dwarf_metallicity():
 #       5000, median, "V", age=1e9)
     ax2.plot(metspace, k_mets - ref_k, color=bc.blue, ls="-", marker="",
              label="MIST Ks", lw=5)
-    ax2.plot(metspace[~badmet], corrected_k_mets[~badmet] - (ref_k + metcorrect(median)), 
+    ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), 
              color=bc.orange, ls="-", marker="", label="Empirical Ks", lw=5)
 #   ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
 #            label="V")
@@ -542,10 +544,12 @@ def dwarf_metallicity():
     ax2.plot(
         [top_percent, top_percent], [0.9, -0.3], color=bc.black, lw=1, 
         marker="", ls="-")
+    ax2.plot(
+        [-0.3, -0.3], [0.9, -0.3], color=bc.black, lw=2, marker="", ls=":")
     ax2.plot([-1.25, 0.5], [0.0, 0.0], 'k--')
     ax2.yaxis.set_minor_locator(minorLocator)
     hr.invert_y_axis(ax2)
-    ax2.set_xlabel("APOGEE [Fe/H]")
+    ax2.set_xlabel("[Fe/H]")
     ax2.set_ylabel("Vertical displacement")
     ax2.set_ylim(0.9, -0.3)
     ax2.legend(loc="center left")
@@ -880,7 +884,7 @@ def spec_temperature_correction():
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
-    ax2.set_xlabel("APOGEE Teff (K)")
+    ax2.set_xlabel("$T_{eff}$ (K)")
     ax2.set_ylabel("Residual")
     ax2.set_xlim(5250, 4000)
 
@@ -930,7 +934,7 @@ def phot_temperature_correction():
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
-    ax2.set_xlabel("Pinsonneault Teff (K)")
+    ax2.set_xlabel("$T_{eff}$ (K)")
     ax2.set_ylabel("Residual")
     ax2.set_xlim(5250, 4000)
 
@@ -1305,7 +1309,7 @@ def K_Excess_hr_diagram():
     ax1.set_xlim(6600, 3500)
     ax1.set_ylim(2, -4)
     ax1.legend(loc="upper left")
-    ax1.set_xlabel("APOGEE Teff (K)")
+    ax1.set_xlabel("$T_{eff}$ (K)")
     ax1.set_ylabel("K Excess")
 
 @write_plot("ages")
@@ -1356,7 +1360,7 @@ def age_isochrones():
     ax2.plot([5250, 5250], [-1.5, 0.5], 'k:')
     ax2.set_xlim([6500, 3500])
     ax2.set_ylim(0.5, -1.3)
-    ax2.set_xlabel("APOGEE Teff (K)")
+    ax2.set_xlabel("$T_{eff}$ (K)")
     ax2.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
 
 @write_plot("Teff_relation")
@@ -1553,7 +1557,7 @@ def el_badry_excess():
             multiples["TEFF"], multiples["Corrected K Excess"], 
             multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"]):
         ax.arrow(apoteff, apoex, (elbteff-apoteff), (elbex-apoex))
-    ax.set_xlabel("Teff (K)")
+    ax.set_xlabel("$T_{eff}$ (K)")
     ax.set_ylabel("Corrected K Excess")
     ax.legend(loc="lower right")
 
@@ -1602,8 +1606,8 @@ def rapid_rotator_bins():
         axes[0][0].legend(loc="upper right")
     axes[0][0].set_ylabel("Corrected K Excess")
     axes[1][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_xlabel("APOGEE Teff (K)")
-    axes[1][1].set_xlabel("APOGEE Teff (K)")
+    axes[1][0].set_xlabel("$T_{eff}$ (K)")
+    axes[1][1].set_xlabel("$T_{eff}$ (K)")
     axes[0][0].set_xlim(5250, 4000)
     axes[0][0].set_ylim(0.3, -1.25)
 
@@ -1658,8 +1662,8 @@ def mcquillan_rapid_rotator_bins():
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
     axes[0][0].set_ylabel("Corrected K Excess")
     axes[1][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_xlabel("Pinsonneault et al (2012) Teff")
-    axes[1][1].set_xlabel("Pinsonneault et al (2012) Teff")
+    axes[1][0].set_xlabel("$T_{eff}$ (K)")
+    axes[1][1].set_xlabel("$T_{eff}$ (K)")
     axes[0][0].set_xlim(5250, 4000)
     axes[0][0].set_ylim(0.3, -1.25)
 
@@ -1700,8 +1704,8 @@ def rapid_rotator_transition():
             [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
-    axes[1][0].set_xlabel("Pinsonneault et al (2012) Teff (K)")
-    axes[1][1].set_xlabel("Pinsonneault et al (2012) Teff (K)")
+    axes[1][0].set_xlabel("$T_{eff}$ (K)")
+    axes[1][1].set_xlabel("$T_{eff}$ (K)")
     axes[0][0].set_ylabel("Corrected K Excess")
     axes[1][0].set_ylabel("Corrected K Excess")
     ax.set_xlim(5250, 4000)

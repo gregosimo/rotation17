@@ -39,7 +39,7 @@ maintex = $(mainfile).tex
 
 bibfile = references.bib
 
-revision = main_v2.tex
+revision = main_v3.tex
 
 all: $(mainfile).pdf
 
@@ -67,7 +67,7 @@ referee: diff.pdf
 diff.pdf: $(revision) $(maintex)
 	-rm diff.*
 	latexdiff $(revision) $(maintex) > diff.tex
-	latexmk -pdfdvi -interaction=nonstopmode diff.tex
+	latexmk -pdf -interaction=nonstopmode diff.tex
 	mv diff.tex diff.pdf referee_material
 
 diff.ps: $(revision) $(maintex)
