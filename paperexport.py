@@ -812,6 +812,7 @@ def metallicity_corrected_excesses():
             np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_met, percentiles, 2)
     cor_poly = np.poly1d(cor_coeff)
+    print(cor_poly)
     
     ax1.plot(coolsamp["FE_H"], coolsamp["K Excess"], marker=".", color=bc.black,
              ls="", label="Original")

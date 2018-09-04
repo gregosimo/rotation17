@@ -30,6 +30,7 @@
 \newcommand{\logg}{\ensuremath{\log g}}
 \newcommand{\kms}{\textrm{~km~s}\ensuremath{^{-1}}}
 \newcommand{\MK}{\ensuremath{M_K}}
+\newcommand{\feh}{\textrm{[Fe/H]}}
 
 % Targeting flags
 \newcommand{\STARBAD}{\texttt{STAR\_BAD}}
@@ -521,12 +522,13 @@ both metallicity and temperature-dependent terms.
     \centering
     \epsscale{0.9}
     \plotone{metallicity_correction}
-    \caption{\emph{Top:} Residual metallicity trends in the MIST 
+    \caption{\emph{Top:} Residual metallicity trend in the MIST 
         metallicity-corrected displacement. A quadratic trend remains over 
         metallicity. The trend is characterized by fitting the sample to 
         5 bins with equal numbers of points.  The 25th percentile of points 
         denote the y-value of the bin while the mean temperature within each
-        bins denotes the x-value. Red points mark the bins used for the fit.
+        bins denotes the x-value. The best-fit relation is \(\Delta M_K =
+        -1.14\feh{}^2 + 0.45 \feh{} + 0.041\). Red points mark the bins used for the fit.
         The median absolute deviation of the 50\% of the sample showing the
         least luminosity excess within each bin is shown as an error bar. Three 
         very low-metallicity points are not shown.  \emph{Bottom:} Residuals 
