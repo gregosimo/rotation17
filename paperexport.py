@@ -1397,6 +1397,7 @@ def teff_comparison():
         xerr=[90], color=bc.black, marker="", ls="")
     coeff = np.polyfit(comparable_dwarfs["TEFF"], comparable_dwarfs["SDSS-Teff"], 1)
     poly = np.poly1d(coeff)
+    print(poly)
     testteffs = np.linspace(4000, 5250, 200)
     testys = poly(testteffs)
     ax.plot(testteffs, testys, 'k-')
