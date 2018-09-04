@@ -788,12 +788,18 @@ previous section, the 1-\(\sigma\) uncertainties of the single-star sequence
 were 0.086 mag with known metallicity, and 0.117 mag when metallicity was unknown. 
 To implement a uniform photometric binary cut for both the spectroscopic and
 photometric samples, we will assume a measured width of the main sequence of 
-0.1 mag. To show that our findings are robust to the choice of photometric
-binary threshold, we perform our analysis for two photometric binary thresholds: 
-an inclusive 2-\(\sigma\) threshold and a conservative 3-\(\sigma\) threshold,
-which turn out to be displacement cuts of 0.2 and 0.3 mag. To prevent age effects 
+0.1 mag. To prevent age effects 
 from biasing the results, we only performed statistics in the 4000--5250 K 
 range.
+
+The primary quantity we use to characterize the binarity of our samples is the
+photometric binary fraction, defined as the fraction of targets within a given
+period range that have a vertical displacement above a certain threshold.
+To show that our findings are robust to the choice of photometric
+binary threshold, we report photometric binary fractions for two photometric 
+binary thresholds: an inclusive 2-\(\sigma\) threshold and a conservative 
+3-\(\sigma\) threshold, which turn out to be displacement cuts of 0.2 and 0.3 
+mag. 
 
 \begin{figure*}[htb]
     \centering
@@ -897,14 +903,13 @@ is consistent with the overall trend in temperature seen in
 \begin{figure*}[htb]
     \centering
     \plotone{binary_fraction}
-    \caption{\emph{Top Left:} The photometric binary fraction as a function of 
-        period for the inclusive photometric binary threshold (\(\Delta K <
-        -0.2\) mag). The photometric binary fraction
-        for the full sample analyzed by \citet{McQuillan14} is shown as the
-        dotted line. Error bars are 1-\(\sigma\) binomial confidence
-        intervals. \emph{Top Right:} Same as the previous plot, except using
-        the more conservative threshold (\(\Delta K < -0.3\) mag). \emph{Bottom
-        left:} The period distribution of the photometric binary (solid green) 
+    \caption{\emph{Top Left:} The photometric binary function for the 
+        inclusive photometric binary threshold (\(\Delta K < -0.2\) mag). The 
+        photometric binary fraction for the full sample analyzed by 
+        \citet{McQuillan14} is shown as the dotted line. Error bars are 
+        1-\(\sigma\) binomial confidence intervals. \emph{Top Right:} Same as 
+        the previous plot, except using the more conservative threshold 
+        (\(\Delta K < -0.3\) mag). \emph{Bottom left:} The period distribution of the photometric binary (solid green) 
         and photometric single (dashed purple) samples, each normalized by the 
         total number of photometric binaries and photometric single stars 
         analyzed by \citet{McQuillan14}, respectively, using the inclusive
@@ -918,22 +923,22 @@ In order to understand the low-period edge of the single-star population, as
 well as the cutoff period for the tidally-synchronized binaries, we need to
 quantify the behavior illustrated in
 \cref{fig:mcq_rapid_excess,fig:mcquillan_transition}. One measure to trace
-changes in behavior between the binaries and single stars is the photometric
-binary fraction as a function of rotation period, shown in the top row of 
-\cref{fig:binary_fraction}. The rapid 
-rotators show a uniquely high binary fraction not seen in any other period 
-range, which is robust to the choice of detection threshold. As was 
-qualitatively shown in \cref{fig:mcquillan_transition}, the binary fraction 
-begins to decrease around 7 days, which is expected for the contribution of the
-single-star tail. However, it does not reach the mean binarity of the full 
-sample until around 9--11 days, after which the single-stars dominate the
-population.
+changes in behavior between the binaries and single stars is what we call the 
+``photometric binary function'', which denotes the photometric binary
+fraction as a function of rotation period. The photometric binary function is 
+shown in the top row of \cref{fig:binary_fraction}. As was 
+qualitatively shown in \cref{fig:mcquillan_transition}, the photometric binary
+function is high for rotation periods below 7 days, above which it begins to
+decrease, which is expected for the contribution of the
+single-star tail. However, the photometric binary function does not reach the 
+mean binarity of the full sample until around 9--11 days, after which the 
+single-stars dominate the population.
 
 We also find that the period dependence of the photometric binaries and
 photometric singles differ in the short-period domain. The fraction of
-photometric binaries as well as the fraction of
-photometric single stars is given in the bottom row of
-\cref{fig:binary_fraction} as a function of period for both the inclusive and 
+photometric binaries as well as the fraction of photometric single stars is 
+given in the bottom row of \cref{fig:binary_fraction} as a function of period 
+for both the inclusive and 
 conservative photometric binary thresholds. The number of photometric binaries 
 and photometric single stars both decrease in the short-period regime compared to the 
 long-period regime; however the photometric single stars decrease much more 
@@ -960,7 +965,9 @@ binary fraction of the rapid rotators with rotation periods between 1.5--7
 days is \(67^{+3.3}_{-3.5}\%\) with the inclusive threshold and
 \(59^{+3.6}_{-3.6}\%\) with the conservative threshold.  Given the
 uncertainties, the two photometric binary fractions are just outside of one 
-sigma away from each other.
+sigma away from each other. A slightly higher photometric binary fraction for
+the eclipsing binaries is to be expected because photometric binaries have
+larger secondaries, hence have a larger eclipse probability.
 
 \begin{figure}[htb]
     \centering
@@ -1003,8 +1010,10 @@ the long-period systems become dominated by a different
 period distribution. Our physical interpretation for this phenomenon is that the
 short-period systems are tidally-synchronized binaries, which remain 
 synchronized at least through an orbital period of 7 days. At periods longer
-than 7 days, the sample becomes a mix of synchronized binaries and a 
-rapidly-rotating tail of single stars and wide binaries following single-star angular momentum evolution.
+than 7 days, the situation becomes more complicated, with the transition from
+synchronized to nonsynchronized systems occurring beneath the tail of
+rapidly-rotating single stars and wide binaries. Determining the
+synchronization cutoff period will require disentangling these populations.
 
 \begin{figure}[htb]
     \centering

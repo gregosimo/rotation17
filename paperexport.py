@@ -2279,11 +2279,11 @@ def apogee_binary_fraction():
     ax2.plot([1, 50], [fullsamp_frac03, fullsamp_frac03], ls=":", marker="",
             color=bc.black)
     ax1.set_xlabel("")
-    ax1.set_ylabel("Photometric Binary Fraction")
+    ax1.set_ylabel("Photometric Binary Function")
     ax1.set_xlim(1, 21)
     ax1.set_ylim(0, 1)
     ax2.set_ylim(0, 1)
-    ax1.set_title(r"$\Delta K < -0.28$ mag")
+    ax1.set_title(r"$\Delta K < -0.2$ mag")
     ax2.set_title(r"$\Delta K < -0.41$ mag")
 
     normalized_binaries02 = total_binaries02 / summed_binaries02
@@ -2440,7 +2440,7 @@ def binary_fractions_with_period():
     ax2.plot([1, 50], [fullsamp_frac03, fullsamp_frac03], ls=":", marker="",
             color=bc.black, lw=3)
     ax1.set_xlabel("")
-    ax1.set_ylabel("Photometric Binary Fraction")
+    ax1.set_ylabel("Photometric Binary Function")
     ax1.set_xlim(1.5, 21.5)
     ax1.set_ylim(0, 1)
     ax2.set_ylim(0, 1)
@@ -2477,9 +2477,9 @@ def binary_fractions_with_period():
         summed_singles03)
 
     ax3.step(period_bins, np.append(normalized_binaries02, [0]), where="post", 
-            color=bc.algae, ls="-", label="Binaries", lw=3)
+            color=bc.algae, ls="-", label="Photometric Binaries", lw=3)
     ax3.step(period_bins, np.append(normalized_singles02, [0]), where="post", 
-            color=bc.purple, linestyle="--", label="Singles", lw=3)
+            color=bc.purple, linestyle="--", label="Photometric Singles", lw=3)
     ax3.errorbar(period_bins[:-1]+dp/2-dp/10, normalized_binaries02,
                 yerr=[normalized_binaries_lower02, normalized_binaries_upper02],
                 color=bc.algae, ls="", marker="")
@@ -2496,13 +2496,13 @@ def binary_fractions_with_period():
     ax4.errorbar(period_bins[:-1]+dp/2+dp/10, normalized_singles03,
                 yerr=[normalized_singles_lower03, normalized_singles_upper03],
                 color=bc.purple, ls="", marker="")
-    ax3.legend(loc="upper left")
+    ax3.legend(loc="lower right")
     ax3.set_xlabel("Period (day)")
     ax3.set_ylabel("Normalized Histogram")
     ax4.set_xlabel("Period (day)")
     ax4.set_ylabel("")
-    ax3.set_ylim(0, 0.06)
-    ax4.set_ylim(0, 0.06)
+    ax3.set_ylim(0, 0.035)
+    ax4.set_ylim(0, 0.035)
 
 def compare_eb_photometric_binary_fraction_to_mcquillan():
     '''Compare the photometric binary fraction of EBs to McQuillan.
