@@ -56,12 +56,14 @@ Phenomenon}
     use \Gaia{} parallaxes to distinguish photometric binaries (PBs) from
     single stars on the unevolved lower main sequence, and compare their
     distribution of rotation properties to those of single stars both with and 
-    without APOGEE spectroscopic characterization. Virtually all stars 
-    with rotation periods between 1.5--7 days are PBs, and the fraction of stars
-    with \(1.5 \textrm{ day } < P < 7\) day is \(1.7\% \pm 0.1\%\) which
-    is also consistent with the population of short period binaries inferred 
-    by \Kepler{} eclipsing binary data after correcting for inclination
-    (\(1.5\% \pm 0.3\%\)). This suggests that the rapid rotators 
+    without APOGEE spectroscopic characterization. We find that 59\% of stars
+    with \(1.5 \textrm{ day } < P < 7\) lie 0.3 mag above the main
+    sequence, compared with 28\% of the full rotation sample. The fraction of 
+    stars in the same period range is \(1.7 \pm 0.1\%\) of the total sample 
+    analyzed for rotation periods. Both the fraction of photometric binaries
+    and the fraction of  also consistent with the population of non-eclipsing short period 
+    binaries inferred from \Kepler{} eclipsing binary data after correcting for 
+    inclination, implying \(2.0 \pm 0.1\%\) of the total \Kepler{} sample. This suggests that the rapid rotators 
     are dominated by tidally-synchronized binaries rather than single-stars 
     obeying traditional angular momentum evolution. Combining both populations
     yields that the total fraction of \Kepler{} targets which are binaries with 
@@ -527,9 +529,10 @@ both metallicity and temperature-dependent terms.
         metallicity. The trend is characterized by fitting the sample to 
         5 bins with equal numbers of points.  The 25th percentile of points 
         denote the y-value of the bin while the mean temperature within each
-        bins denotes the x-value. The best-fit relation is \(\Delta M_K =
-        -1.14\feh{}^2 + 0.448 \feh{} + 0.0411\). Red points mark the bins used for the fit.
-        The median absolute deviation of the 50\% of the sample showing the
+        bins denotes the x-value. The best-fit relation is \(\Delta
+            \MK{} = -1.14\feh{}^2 + 0.448 \feh{} + 0.0411\). Red points mark 
+            the bins used for the fit.  The median absolute deviation of the 
+            50\% of the sample showing the
         least luminosity excess within each bin is shown as an error bar. Three 
         very low-metallicity points are not shown.  \emph{Bottom:} Residuals 
         after correcting for the quadratic trend.}\label{fig:met_trend}
@@ -594,16 +597,18 @@ distribution of the spectroscopic targets is representative of the full
         \(\Teff < 5250 \textrm{ K }\) and a luminosity less than 1.3 mag above 
         the single-star sequence. The 
         thick black line denotes the median metallicity while the thin black 
-        lines denote the 1-\(\sigma\) confidence intervals. A vertical dotted
-        line at [Fe/H]=-0.3 denotes the metallicity beneath which the empirical correction is
-        correction is poorly constrained due to too few metal-poor stars. 
-        \emph{Right:} The vertical displacement caused by assuming a single 
-        metallicity isochrone.  The blue line represents the difference between
-        the derived \(M_K\) assuming the median field metallicity and that for
-        the true metallicity. The orange line includes our empirical shape
-        correction for metallicity, which removes most of the predicted width.
-        The vertical dotted line shows the metallicity beneath which the 
-    empirical correction is unconstrained.}\label{fig:metallicity}
+        lines denote the 1-\(\sigma\) confidence intervals. The hatched region
+        to the left of [Fe/H]=-0.5 denotes the metallicity beneath which the 
+        empirical correction in \cref{fig:met_trend} is poorly constrained due 
+        to too few metal-poor stars. \emph{Right:} The vertical displacement 
+        caused by assuming a single metallicity isochrone.  The blue line 
+        represents the difference between the derived \(M_K\) assuming the 
+        median field metallicity and that for the true metallicity. The 
+        orange line includes our empirical shape correction for metallicity, 
+        which removes most of the predicted width. The hatched region
+        to the left of [Fe/H]=-0.5 denotes the metallicity beneath which the 
+        empirical correction is poorly constrained due to too few metal-poor 
+        stars.}\label{fig:metallicity}
 \end{figure*}
 
 Because we will mostly be concerned with the cool dwarfs, we check the
@@ -643,7 +648,8 @@ agrees with the uncertainties expected from the photometric method.
     \caption{Same as \cref{fig:apogee_teff_trend}, except using
         \citet{Pinsonneault12} temperatures, and subtracting off a
     constant [Fe/H]=0.08 isochrone for all objects instead of a 
-    metallicity-adjusted isochrone.}\label{fig:photuncor}
+    metallicity-adjusted isochrone. The best-fit relation is \(\Delta \MK{} =
+-0.0000937 \Teff{} + 0.434\). }\label{fig:photuncor}
 \end{figure}
 
 Combining the two changes: subtracting only a single-metallicity isochrone and

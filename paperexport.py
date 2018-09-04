@@ -507,8 +507,9 @@ def dwarf_metallicity():
     ax1.plot(
         [top_percent, top_percent], [0, 70], color=bc.black, lw=1, 
         marker="", ls="-")
-    ax1.plot(
-        [-0.3, -0.3], [0, 70], color=bc.black, lw=2, marker="", ls=":")
+    ax1.fill_between(
+        [-1.25, -0.5], [70, 70], [0, 0], edgecolor=bc.black, facecolor="white", 
+        hatch="/")
     ax1.set_xlabel("[Fe/H]")
     ax1.set_ylabel("Metallicity distribution")
     ax1.set_xlim(-1.25, 0.46)
@@ -544,8 +545,9 @@ def dwarf_metallicity():
     ax2.plot(
         [top_percent, top_percent], [0.9, -0.3], color=bc.black, lw=1, 
         marker="", ls="-")
-    ax2.plot(
-        [-0.3, -0.3], [0.9, -0.3], color=bc.black, lw=2, marker="", ls=":")
+    ax2.fill_between(
+        [-1.25, -0.5], [0.9, 0.9], [-0.3, -0.3], edgecolor=bc.black, 
+        facecolor="white", hatch="/")
     ax2.plot([-1.25, 0.5], [0.0, 0.0], 'k--')
     ax2.yaxis.set_minor_locator(minorLocator)
     hr.invert_y_axis(ax2)
@@ -919,6 +921,7 @@ def phot_temperature_correction():
             np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_teff, percentiles, 1)
     cor_poly = np.poly1d(cor_coeff)
+    print(cor_poly)
     
     ax1.plot(coolsamp["SDSS-Teff"], coolsamp["Solar K Excess"], marker=".", 
              color=bc.black, ls="", label="Original")
@@ -2509,6 +2512,8 @@ def compare_eb_photometric_binary_fraction_to_mcquillan():
     ebs = cache.eb_splitter_with_DSEP()
     mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+    mcq_dwarfs = au.filter_column_from_subtable(
+        mcq_dwarfs, "kepid", dwarf_ebs["kepid"])
     incl_limit = -0.2
     cons_limit = -0.3
 
