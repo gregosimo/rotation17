@@ -1097,7 +1097,8 @@ APOGEE DR13 targets whose spectra were fit for multiple solutions
 were published for both the primary and secondary. With \Gaia{} DR2 parallaxes,
 we can actually test how often two photometric components were successfully
 detected. All the DR13 objects analyzed by \citet{ElBadry18b} are shown in
-\cref{fig:elbadry_excess} with both the ASPCAP and decomposed temperatures.
+\cref{fig:elbadry_excess} with both the ASPCAP and decomposed primary 
+temperatures.
 
 The overall behavior in the \citet{ElBadry18b} sample is that the effect of 
 binarity is substantial, leading to incorrectly-inferred magnitude excesses of
@@ -1107,7 +1108,11 @@ leading an overestimation of the K-band vertical displacement by up to 0.3
 mag. The difference in temperature is less severe for targets with high 
 luminosity excesses, which is to be expected because the two stellar 
 components would have similar spectra. However, the effect is still 
-non-negligible. The overestimation of vertical displacements may also contribute 
+non-negligible. For the purpose of flagging photometric binaries, this effect
+is beneficial, as it increases the constrast of lower mass-ratio systems
+against the single stars. To characterize the luminosity-ratio of the 
+components, the offset of temperatures would need to be taken into account. 
+The increased displacement due to biased temperatures may also contribute 
 to the overabundance of photometric binaries with respect to a flat mass 
 distribution seen above. 
 
