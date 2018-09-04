@@ -94,7 +94,7 @@ def write_rapid_rotator_tables():
     mcq = cache.mcquillan_corrected_splitter()
     mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
     mcq_rapid_dwarfs = mcq_dwarfs[np.logical_and(
-        mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] < 7)]
+        mcq_dwarfs["Prot"] > 1.5, mcq_dwarfs["Prot"] <= 7)]
     apo = catin.read_dr14_allStar()
     rapid_table = catalog.join_by_2MASS_key(
         mcq_rapid_dwarfs, apo, "tm_designation", "APOGEE_ID", join_type="left")
@@ -108,13 +108,12 @@ def write_rapid_rotator_tables():
     # The latex label will be abridged.
     latex_length = 5
     latex_table = rapid_table_abridged[:latex_length]
-    latex_caption = "Kepler Rapid Rotators\label{tab:rapidrot}"
+    latex_caption = r"\Kepler{} Rapid Rotators\label{tab:rapidrot}"
     latex_tablefoot = (
-        r"""\tablecomments{All objects in \citet{McQuillan14} with periods between 1--7 
-        days and 4000 K < $\Teff{}$ < 5250 K. For objects with APOGEE
-        observations, their APOGEE ID and [Fe/H] are given. This table is 
-        published in its
-        entirety in the machine-readable format. A portion is
+        r"""\tablecomments{All objects in \citet{McQuillan14} with periods
+        between 1.5--7 days and 4000 K < $\Teff{}$ < 5250 K. For objects with 
+        APOGEE observations, their APOGEE ID and [Fe/H] are given. This table is 
+        published in its entirety in the machine-readable format. A portion is
         shown here for guidance regarding its form and content.}""")
     latexdict = {
         "col_align": "llcccccc", "caption": latex_caption, "tablefoot":
@@ -152,6 +151,73 @@ def write_rapid_rotator_tables():
         str(TABLE_PATH / "table1.txt"), format="ascii.fixed_width",
         names=ascii_colnames, overwrite=True, fill_values=badformat,
         formats=colformats)
+
+def write_marginal_rotator_tables():
+    '''Write the table of marginal rotators.
+    
+    These are objects with periods between 7-11 days. They have a combination
+    of synchronized binaries and single stars.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    mcq_rapid_dwarfs = mcq_dwarfs[np.logical_and(
+        mcq_dwarfs["Prot"] > 7, mcq_dwarfs["Prot"] < 11)]
+    apo = catin.read_dr14_allStar()
+    rapid_table = catalog.join_by_2MASS_key(
+        mcq_rapid_dwarfs, apo, "tm_designation", "APOGEE_ID", join_type="left")
+    abridged_cols = [
+        "kepid", "APOGEE_ID", "SDSS-Teff", "kmag", "M_K", "Corrected K Excess",
+        "Prot", "FE_H"]
+    rapid_table_abridged = rapid_table[abridged_cols]
+    rapid_table_abridged.sort("kepid")
+
+    # Write the LaTeX table.
+    # The latex label will be abridged.
+    latex_length = 5
+    latex_table = rapid_table_abridged[:latex_length]
+    latex_caption = r"\Kepler{} Synchronization Follow-up Targets\label{tab:marginalrot}"
+    latex_tablefoot = (
+        r"""\tablecomments{All objects in \citet{McQuillan14} with periods
+        between 7--11 days and 4000 K < $\Teff{}$ < 5250 K. For objects with 
+        APOGEE observations, their APOGEE ID and [Fe/H] are given. This table is 
+        published in its entirety in the machine-readable format. A portion is
+        shown here for guidance regarding its form and content.}""")
+    latexdict = {
+        "col_align": "llcccccc", "caption": latex_caption, "tablefoot":
+        latex_tablefoot, "units": {
+            r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
+            r"$\Delta K$": "mag", "$P_{rot}$": "day", "[Fe/H]": "dex"}}
+    latex_colnames = (
+            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
+            "$P_{rot}$", "[Fe/H]")
+    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f",
+                  "[Fe/H]": ".2f"}
+    latex_table.write(
+        str(TABLE_PATH / "table2.tex"), format="ascii.aastex", 
+        latexdict=latexdict, overwrite=True, names=latex_colnames, 
+        formats=colformats)
+
+    # Write the full table.
+    ascii_colnames = (
+            "KIC", "APOGEE_ID", "Teff", "K", "MK", "DELTA_K", "Prot", "[Fe/H]")
+    comments=[
+        "KIC - The Kepler Input Catalog ID for the star",
+        "APOGEE_ID - The APOGEE_ID if this star was observed in APOGEE. "
+            "The APOGEE_ID is equivalent to the 2MASS ID",
+        "Teff - The effective temperature from Pinsonneault et al (2012)",
+        "K - The 2MASS K-band apparent magnitude",
+        "MK - The 2MASS K-band absolute magnitude derived from Gaia parallaxes",
+        "DELTA_K - The vertical displacement above the median-metallicity "
+            "MIST isochrone as derived in this work.",
+        "[Fe/H] - The APOGEE iron abundance if this star was observed in "
+            "APOGEE."]
+    rapid_table_abridged.meta["comments"] = comments
+    colformats = {"Teff": "g", "MK": ".3f", "DELTA_K": ".3f", "[Fe/H]": ".2f"}
+    badformat = [(ascii.masked, "", ("APOGEE_ID", "[FE_H]"))]
+    rapid_table_abridged.write(
+        str(TABLE_PATH / "table2.txt"), format="ascii.fixed_width",
+        names=ascii_colnames, overwrite=True, fill_values=badformat,
+        formats=colformats)
+
 
 @write_plot("apogee_selection")
 def apogee_selection_coordinates():
