@@ -868,6 +868,7 @@ def spec_temperature_correction():
             np.abs(singles["K Excess"] - percentiles[ind-1]))
     cor_coeff = np.polyfit(med_teff, percentiles, 1)
     cor_poly = np.poly1d(cor_coeff)
+    print(cor_poly)
     
     ax1.plot(coolsamp["TEFF"], coolsamp["Partly Corrected K Excess"], 
              marker=".", color=bc.black, ls="", label="Original")
