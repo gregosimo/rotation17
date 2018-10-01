@@ -109,18 +109,100 @@ this is exactly the population we're interested in.
 \section{Sample Selection}
 \label{sec:sample}
 
-We select our sample to minimize ambiguity in the stellar radius when
-comparing rotation periods to \vsini. In general, large uncertainties in
-determining spectral types propogate to the radius estimates, especially in 
-the hot star regime, where a star of a given \Teff{} and \logg{} can have 
-multiple different radii due to overlap with higher-mass subgiants.
+In order to perform a comparison between rotation period and \vsini{}, we must
+also have a sample where the stellar radius can be
+characterized. 
 
-In order to sidestep detailed modeling of the complex radius uncertainties 
-for all \Kepler{} targets, we choose instead to study measures of
-stellar rotation
-in two regimes where radius uncertainties are greatly reduced: the
-APOKASC asteroseismic dwarf/subgiant sample, and the cool \(\Teff < 5500\) K 
-dwarf regime. 
+\subsection{APOGEE}
+
+The base of our sample comes from the Data Release 14 \citep{Abolfathi18}
+of the APOGEE survey \citep{Majewski17}. The workhorse behind the survey is the
+APOGEE spectrograph, a high-resolution (\(R \sim 22,000\)) multi-fiber
+near-infrared spectrograph \citep{Wilson10} mounted on the SDSS 2.5-meter
+telescope at Apache Point Observatory \citep{Gunn06}.
+
+Reduction of the APOGEE data takes place in three main stages. First,
+individual visit spectra are reduced, including detector calibration, bad pixel
+masking, wavelength calibration, sky subtraction, and determination of
+individual radial velocities through cross-correlation of template spectra.
+Second, the individual spectra are combined by correcting for radial velocity
+differences between the exposures, either by cross-correlating with each other,
+or with template spectra, whichever leads to a smaller scatter
+\citep{Holtzman18}. The full process is detailed in \citet{Nidever15}.
+
+The final step is the extraction of stellar parameters and chemical abundances
+by the APOGEE Stellar Parameter and Chemical Abundances Pipeline (ASPCAP)
+\citep{GarciaPerez16}. ASPCAP measures stellar parameters by performing a
+chi-squared minimization \citep{AllendePrieto06} over a 6-dimensional space of
+\Teff, \logg, [M/H], [\(\alpha\)/M], \vsini, and microturbulent velocity. Once
+those six parameters have been determined, ASPCAP measures abundances for
+individual elements, including \feh{}.
+
+After determination of the stellar parameters and chemical abundances, the 
+effective temperatures are calibrated to the photometric system of 
+\citet{GonzalezHernandez09} using a metallicity-dependent offset, and the 
+abundances are calibrated to provide homogeneous results within clusters. 
+After calibration, the scatter between the 
+calibrated and photometric temperatures  were found to be a function of 
+\Teff{}, ranging from 130 K at 5500 K down to 85 K at 4000 K
+\citep{Holtzman18}. The statistical uncertainty in \feh{} was measured to be 
+0.009 dex \citep{Holtzman18}, but the systematic uncertainty is likely closer
+to 0.1 dex \citep{Serenelli17}.
+
+We inspected the fits to a set of spectra representative of targets flagged 
+by the ASPCAP pipeline as having potential quality problems. A small fraction
+(2.5\%) of targets have the \STARBAD{} quality flag enabled. Visual inspection
+of a representative sample of spectra indicated that the flag was largely the
+result of poor subtraction or normalization of the spectrum in the pipeline, or
+due to poor model fits on the cool (\(\Teff < 4250 K\)) end. We exclude these
+from our analysis. A substantially larger fraction of targets (14\%) have the 
+\STARWARN{} quality flag enabled. Visual inspection of a representative sample 
+of these spectra indicated that the fits reasonably resembled the underlying 
+spectra. We include all targets with the \STARWARN{} quality flag enabled. 
+
+An additional 807 targets have the \VSINIWARN{} quality flag enabled. However, 
+all but 28 of them have \vsini{} < 3 \kms, meaning they are certainly below the
+detection limit of APOGEE\@. \gc{Look through a bunch of these to make sure
+    that somehow there aren't broad lined spectra that are fit with a narrow
+model}. Viewing a representative sample of these targets shows that most of
+these targets do have narrow-lined spectra corresponding to low
+\vsini{}. Because these objects are so below the detection threshold, any systematics in
+the numerical values of \vsini{} will not affect our results. The remaining 28
+targets 
+
+\begin{figure*}[htb]
+    \centering
+    \epsscale{1.1}
+    \plotone{f2}
+    \caption{\emph{Left:} \Teff-\MK{} diagram for the APOGEE observations of
+        \Kepler{} targets. Asteroseismic targets are shown as black dots. The
+        dwarf sample is shown as brown dots. The light blue dots indicate 
+        eclipsing binary targets and purple dots are \Kepler{} Objects of 
+        Interest. A binary sequence is clearly visible on the lower main
+        sequence. Temperatures are spectroscopic APOGEE temperatures. A 
+        representative error bar for the cool dwarf sample is 
+        shown in the bottom-left corner, although the vertical error bar is too
+        small to be easily visible. \emph{Right:} A density plot of the 
+        full APOGEE sample. To preserve the dynamic range of the dwarf 
+        sequence, the red clump was allowed to saturate. The bin size is 100 K
+    in temperature and 0.02 mag in \(Ks\)-band absolute 
+magnitude.}\label{fig:apogee_selection}
+\end{figure*}
+
+\Cref{fig:apogee_selection} shows all \Kepler{} targets with observed
+spectroscopic temperatures in the APOGEE DR14, color-coded by observing
+program. One of the driving efforts for \Kepler{} field observations has been
+the spectroscopic characterization of asteroseismic targets, shown as small
+black dots \citep{Zasowski17,Pinsonneault18}; 11,734 targets are part of that
+sample. The asteroseismic sample is substantially biased toward giants 
+and subgiants due to their high amplitude oscillations. A complementary 
+program proposed to observe the remaining portion of the \Kepler{} sample 
+cooler than 6500 K and brighter than \(H < 11\), make up an additional 3193
+targets, shown as small red dots. An additional 695 targets were part of an 
+effort to characterize \Kepler{} planet hosts with \(H < 14\), shown as purple 
+diamonds. The remaining 102 targets were targeted to follow-up 
+eclipsing binaries \citep{Prsa11,Slawson11}, and are shown as light blue 
+circles.  
 
 The APOKASC asteroseismic dwarf and subgiant sample
 consists of 426 targets \gvs{Check this number} which presented
@@ -205,6 +287,51 @@ double-lined spectra. The cool dwarfs are shown in red in
 
 Since APOGEE observed a large sample of targets withou original KIC parameters,
 it is capable of validating the methodology of the \citet{Huber14} parameters.
+
+\subsection{\Gaia{}}
+
+The availability of high-quality parallaxes from the \Gaia{} mission's Data
+Release 2 \citep{Gaia18} enables both the determination of
+radii for the APOGEE sample, as well as evolutionary state classifications for
+stars. The \Gaia{} DR2 performed a fully consistent single-star
+5-parameter (\(\alpha\), \(\delta\), \(\mu_\alpha\), \(\mu_\delta\), \(\pi\))
+solution to 1.3 billion sources over 22 months of observations
+\citep{Lindegren18}. For targets which could not be adequately fit with a
+single-star 5-parameter solution, a 2-parameter (\(\alpha\), \(\delta\))
+solution is performed instead \citep{Michalik15}. The criteria for a
+2-parameter fall-back solution include targets with Gaia \(G > 21.0\) mag, 
+having fewer than 6 visibility periods of observations, and an error ellipse 
+larger than a magnitude-dependent limit in its largest dimension 
+\citep{Lindegren18}.
+
+We use the cross-matched database of \citet{Berger18b} to match \Kepler{} targets
+against \Gaia{} DR2 detections.
+\citet{Berger18b} cross-matched targets in the KSPC DR25 \citep{Mathur17}, 
+with \Gaia{} DR2 sources using both position and \(G\)-band flux. Of the 
+successfully cross-matched targets, \citet{Berger18b} excluded objects with 
+fractional parallax errors greater than 0.2, \(\Teff < 3000\) K, 
+\(\logg < 0.1\), and low quality 2MASS photometry.  Because the remaining
+targets have high-quality parallaxes, we use the traditional 
+formula for deriving distance modulus from parallax instead of the Bayesian 
+method advocated by \citet{Luri18} to reduce computational complexity. We
+include a zero-point offset of 0.05 mas \citep{Zinn18}.
+
+\subsection{Photometric Data}
+
+In order to characterize our stellar sample, we chose to use absolute 
+\(Ks\)-band magnitude as a proxy for luminosity to minimize the impact of 
+extinction. \(Ks\)-band apparen t magnitudes were measured by the 2MASS survey 
+\citep{Skrutskie06}, which performed profile-fit photometry and derived 
+uncertainties for nearly the full sample.  The typical \(Ks\)-band 
+photometric uncertainty for the \citet{McQuillan14} sample is 0.03 mag. The 
+typical extinction from the KSPC and its uncertainty for cool dwarfs is 
+\(A_V = 0.33\), and \(\sigma_{A_V}=0.025\). Applying the \citet{Cardelli89} 
+relation that \(A_K/A_V = 0.114\), the effect of extinction itself shrinks to 
+the level of photometric errors.  A small fraction of targets (1.5\%) of the 
+\citet{McQuillan14} sample have 2MASS photometry flagged due to blending. To 
+avoid contaminating the binary sequence with unrelated blends, we exclude 
+these targets.
+
 
 
 \section{\vsini{} Comparison}
