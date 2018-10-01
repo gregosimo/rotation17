@@ -318,21 +318,24 @@ include a zero-point offset of 0.05 mas \citep{Zinn18}.
 
 \subsection{Photometric Data}
 
-In order to characterize our stellar sample, we chose to use absolute 
-\(Ks\)-band magnitude as a proxy for luminosity to minimize the impact of 
-extinction. \(Ks\)-band apparen t magnitudes were measured by the 2MASS survey 
-\citep{Skrutskie06}, which performed profile-fit photometry and derived 
-uncertainties for nearly the full sample.  The typical \(Ks\)-band 
-photometric uncertainty for the \citet{McQuillan14} sample is 0.03 mag. The 
+In order to characterize our stellar sample, we choose to use
+\(Ks\)-band photometry to minimize the impact of extinction. \(Ks\)-band 
+apparent magnitudes were measured by the 2MASS survey \citep{Skrutskie06}, 
+which uniformly performed profile-fit photometry and derived 
+uncertainties for the full \Kepler{} field.  The typical \(Ks\)-band 
+photometric uncertainty for the APOGEE sample is 0.017 mag. A very small 
+fraction of targets (0.3\%) of the 
+APOGEE sample have 2MASS photometry flagged due to blending. In the case of
+blending, aperture photometry is performed instead, and there is no
+well-characterized uncertainty in the photometry. In order to ensure
+that all the photometry in our sample is uniformly analyzed, we excluded these
+blended objects. \gvs{Do I want to exclude blended objects?}
+
+The 
 typical extinction from the KSPC and its uncertainty for cool dwarfs is 
 \(A_V = 0.33\), and \(\sigma_{A_V}=0.025\). Applying the \citet{Cardelli89} 
 relation that \(A_K/A_V = 0.114\), the effect of extinction itself shrinks to 
-the level of photometric errors.  A small fraction of targets (1.5\%) of the 
-\citet{McQuillan14} sample have 2MASS photometry flagged due to blending. To 
-avoid contaminating the binary sequence with unrelated blends, we exclude 
-these targets.
-
-
+the level of photometric errors.  
 
 
 \subsection{Comparison Datasets}
