@@ -2906,39 +2906,10 @@ def fraction_of_binaries_singles():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("N / N_tot")
 
-@ write_plot("f18")
-def photometric_binary_limit():
-    '''Plot the fraction of mass ratios detected as photometric binaries.'''
-    refmass = 0.725
-    refmet = 0.00
-    minmass = 0.1
-    solmet = mist.MISTIsochrone.isochrone_from_file(refmet)
-    tab = solmet.iso_table(1e9)
-    lowmass = tab[tab[solmet.mass_col] <= refmass]
-    qvals = lowmass[solmet.mass_col] / max(lowmass[solmet.mass_col])
-    refk = solmet.interpolate_isochrone_cols(
-        1e9, [refmass], solmet.mass_col, mist.band_translation["Ks"])
-    refteff = 10**solmet.interpolate_isochrone_cols(
-        1e9, [refmass], solmet.mass_col, solmet.logteff_col)
-
-    f, ax = plt.subplots(1, 1, figsize=(12, 12))
-    incl_limit = -0.2
-    cons_limit = -0.3
-
-    combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
-    kdiff = combined_k - refk
-    ax.plot(qvals, kdiff, marker="", ls="-", color=bc.black)
-    ax.plot([0, 0.702, 0.702], [cons_limit, cons_limit, 0], color=bc.violet, ls="--",
-            marker="")
-    ax.plot([0, 0.593, 0.593], [incl_limit, incl_limit, 0], color=bc.algae, ls="--",
-            marker="")
-    ax.set_xlabel("Mass ratio (q)")
-    ax.set_ylabel(r"{0}(MIST; $M_1+M_2$) - {0}(MIST; $M_1$)".format(MKstr))
-    hr.invert_y_axis()
-
+@write_plot("f19")
 def luminosity_ratio():
     '''Plot the luminosity-ratio as a function of mass-ratio.'''
-    refmass = 0.725
+    refmass = 0.72
     refmet = 0.00
     minmass = 0.1
     solmet = mist.MISTIsochrone.isochrone_from_file(refmet)
@@ -2947,8 +2918,6 @@ def luminosity_ratio():
     qvals = lowmass[solmet.mass_col] / max(lowmass[solmet.mass_col])
     refk = solmet.interpolate_isochrone_cols(
         1e9, [refmass], solmet.mass_col, mist.band_translation["Ks"])
-    refteff = 10**solmet.interpolate_isochrone_cols(
-        1e9, [refmass], solmet.mass_col, solmet.logteff_col)
     
     f, ax = plt.subplots(1, 1, figsize=(12, 12))
     combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
@@ -2964,8 +2933,8 @@ def luminosity_ratio():
     ax.plot(qs, direct_massfunc, color=bc.black, ls="-", marker="")
     ax.plot(qs, malm_massfunc, color="red", ls="-", marker="")
 
-    cons_q_lim = 0.69
-    incl_q_lim = 0.58
+    cons_q_lim = 0.64
+    incl_q_lim = 0.53
     ax.plot(
         [cons_q_lim, cons_q_lim], [0, 2*np.sqrt(2)], color=bc.violet, ls="--", 
         marker="")
@@ -2995,22 +2964,96 @@ def luminosity_ratio():
     malm_pb_norm, malm__norm_err = quad(
         lambda q: 10**(-0.6*kdiff_interp(q)), 0, 1)
     ax.text(
-        0.60, 1.20, r"$f_{PB}" + r"={0:.2f}$".format(incl_malm_pb/malm_pb_norm), 
+        0.55, 1.10, r"$f_{PB}" + r"={0:.2f}$".format(incl_malm_pb/malm_pb_norm), 
         color=bc.algae)
     ax.text(
-        0.75, 1.40, r"$f_{PB}" + r"={0:.2f}$".format(cons_malm_pb/malm_pb_norm), 
+        0.72, 1.30, r"$f_{PB}" + r"={0:.2f}$".format(cons_malm_pb/malm_pb_norm), 
         color=bc.violet)
     ax.text(
-        0.60, 0.8, r"$f_{PB}" + r"={0:.2f}$".format(incl_flat_pb/flat_pb_norm), 
+        0.55, 0.85, r"$f_{PB}" + r"={0:.2f}$".format(incl_flat_pb/flat_pb_norm), 
         color="k") 
     ax.text(
-        0.75, 0.6, r"$f_{PB}" + r"={0:.2f}$".format(cons_flat_pb/flat_pb_norm), 
+        0.72, 0.65, r"$f_{PB}" + r"={0:.2f}$".format(cons_flat_pb/flat_pb_norm), 
         color="k") 
+
     ax.set_xlabel("Mass ratio (q)")
     ax.set_ylabel(r"Observed mass function (normalized to q=0)")
     ax.set_ylim(0, 2*np.sqrt(2))
     ax.set_xlim(0, 1)
 
+@write_plot("f18")
+def photometric_binary_limit():
+    '''Demonstrate the impact of binarity on the inferred excess through temp.'''
+    refmass = 0.72
+    refmet = 0.00
+    minmass = 0.1
+    solmet = mist.MISTIsochrone.isochrone_from_file(refmet)
+    cit_tab = solmet.iso_table(1e9)
+    lowmass_cit = cit_tab[cit_tab[solmet.mass_col] <= refmass]
+    assert refmass == max(lowmass_cit[solmet.mass_col])
+    qvals = lowmass_cit[solmet.mass_col] / max(lowmass_cit[solmet.mass_col])
+    primary_k = solmet.interpolate_isochrone_cols(
+        1e9, [refmass], solmet.mass_col, mist.band_translation["Ks"])
+    secondary_ks = lowmass_cit[mist.band_translation["Ks"]]
+    combined_k = sed.sum_binary_mag(primary_k, secondary_ks)
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    incl_limit = -0.2
+    cons_limit = -0.3
+    # Now transform to and back from the photometric temperatures.
+    sdssphot = mist.MISTIsochrone.isochrone_from_file(
+        refmet, bandstr="SDSSugriz", bol_bands=[])
+    sdss_tab = sdssphot.iso_table(1e9)
+    lowmass_sdss = sdss_tab[sdss_tab[sdssphot.mass_col] <= refmass]
+    # Make sure these two isochrones work well together.
+    assert np.all(
+        lowmass_cit[solmet.mass_col] == lowmass_sdss[sdssphot.mass_col])
+    fitting_sdss = sdss_tab[
+        np.logical_and(
+            sdss_tab[sdssphot.mass_col] <= 1.0, 
+            sdss_tab[sdssphot.mass_col] >= 0.33)]
+    fitting_teff = 10**(np.log10(5040) - fitting_sdss[sdssphot.logteff_col])
+    fitting_gi = (
+        fitting_sdss[mist.band_translation["g"]] - 
+        fitting_sdss[mist.band_translation["i"]])
+    gi_to_teff_coeff = np.polyfit(fitting_gi, fitting_teff, 5)
+    gi_to_teff = np.poly1d(gi_to_teff_coeff)
+    teff_to_gi_coeff = np.polyfit(fitting_teff, fitting_gi, 5)
+    teff_to_gi = np.poly1d(teff_to_gi_coeff)
+    teffspan = 5040/np.linspace(4000, 5500)
+    gispan = np.linspace(0.65, 1.85, 100)
+    
+    primary_g = sdssphot.interpolate_isochrone_cols(
+        1e9, [refmass], solmet.mass_col, mist.band_translation["g"])
+    primary_i = sdssphot.interpolate_isochrone_cols(
+        1e9, [refmass], solmet.mass_col, mist.band_translation["i"])
+    primary_teff = 5040 / gi_to_teff(primary_g - primary_i)
+
+    secondary_g = lowmass_sdss[mist.band_translation["g"]]
+    secondary_i = lowmass_sdss[mist.band_translation["i"]]
+
+    combined_g = sed.sum_binary_mag(primary_g, secondary_g)
+    combined_i = sed.sum_binary_mag(primary_i, secondary_i)
+    combined_teff = 5040 / gi_to_teff(combined_g - combined_i)
+
+    inferred_primary_k = solmet.interpolate_isochrone_cols(
+        1e9, np.log10(combined_teff), solmet.logteff_col, 
+        mist.band_translation["Ks"])
+    standard_kdiff = combined_k - primary_k
+    biased_kdiff = combined_k - inferred_primary_k
+    ax.plot(np.append([0], qvals), np.append([0], standard_kdiff), 'k-') 
+    ax.plot(np.append([0], qvals), np.append([0], biased_kdiff), 'r-') 
+    ax.plot([0, 0.702, 0.702], [cons_limit, cons_limit, 0], color=bc.violet, ls="--",
+            marker="", lw=3)
+    ax.plot([0.636, 0.636], [-0.3, 0], color=bc.violet, ls="--", marker="", lw=1)
+    ax.plot([0, 0.593, 0.593], [incl_limit, incl_limit, 0], color=bc.algae, ls="--",
+            marker="", lw=3)
+    ax.plot([0.526, 0.526], [-0.2, 0], color=bc.algae, ls="--", marker="", lw=1)
+    ax.set_xlabel("Mass ratio (q)")
+    ax.set_ylabel(r"{0}(MIST; $M_1+M_2$) - {0}(MIST; $M_1$)".format(MKstr))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, -2.5*np.log10(2))
+    hr.invert_y_axis()
     
 @write_plot("tsb_analysis")
 def tsb_distribution():

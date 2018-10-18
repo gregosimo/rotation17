@@ -29,7 +29,7 @@
 \newcommand{\Teff}{\ensuremath{T_{\textrm{eff}}}}
 \newcommand{\logg}{\ensuremath{\log g}}
 \newcommand{\kms}{\textrm{~km~s}\ensuremath{^{-1}}}
-\newcommand{\MK}{\ensuremath{M_K}}
+\newcommand{\MK}{\ensuremath{M_{Ks}}}
 \newcommand{\feh}{\textrm{[Fe/H]}}
 
 % Targeting flags
@@ -887,6 +887,7 @@ spectra for multiple-component fits.
 \label{sec:results}
 
 \subsection{Vertical Displacements of Rapid Rotators}
+\label{sec:elbadry}
 
 After successfully calculating the vertical displacement of the full sample, we
 now attempt to distinguish between single and binary stars. As noted in the
@@ -897,6 +898,16 @@ photometric samples, we will assume a measured width of the main sequence of
 0.1 mag. To prevent age effects 
 from biasing the results, we only performed statistics in the 4000--5250 K 
 range.
+
+We validate many of the trends with period and binarity by revisiting them in 
+the smaller, but more well-characterized spectroscopic sample. The high 
+photometric binary function between 1.5--7 days (top rows of 
+\cref{fig:binary_fraction}) can be seen in the spectroscopic sample as well as 
+the drop-off in photometric single stars at short periods (bottom rows of 
+\cref{fig:binary_fraction}). However, the spectroscopic sample is too small 
+to meaningfully compare the eclipsing binaries and rapid rotators; the 
+orbital periods are within 1-\(\sigma\) binomial errors of the rotation periods 
+for all rotation periods.  
 
 The primary quantity we use to characterize the binarity of our samples is the
 photometric binary fraction, defined as the fraction of targets within a given
@@ -1160,37 +1171,54 @@ binary, even if the secondary is not drawn from a steep relative IMF. This rough
 calculation by itself is incompatible with the observed 
 short-period photometric binary fraction in \cref{fig:binary_fraction} of 59\%.
 
-One potential factor which can increase the observed photometric binary
+One piece that can affect the photometric binary fraction is the temperature
+underestimation introduced in Section~\ref{sec:elbadry}. We estimate the
+magnitude of this phenomenon by using a color-\Teff{} relation. Because the
+\citet{Pinsonneault12} temperatures were derived using \textit{griz} colors, we
+opt to use the \((g-i)\)-\Teff{} relationship to probe the impact of binarity
+on the temperature. The \( (g-i) \) color is the reddest color that maintains
+high photometric precision.
+
+We adopt a standard primary with a mass of 0.75 \Msun and solar metallicity, 
+and use the MIST isochrones to calculate the photometry for the star. We
+derive a temperature for the star by fitting a 5th-degree polynomial between
+\(\cfrac{5040 K}{\Teff}\) and \((g-i)\) using the MIST synthetic photometry. We
+then generate secondaries with a range of mass-ratios, and combine their flux
+with the primary flux, and infer a composite temperature based on the combined
+flux. Lastly, the composite temperature is then used to calculate the reference
+K-band magnitude as opposed to the true primary temperature. This effect is
+shown as the red curve in the left panel of \cref{fig:photometric_massratio}.
+As predicted, this effect increases the vertical displacement for low
+mass-ratio systems. However, it's a relatively small effect, only increasing
+the fraction of photometric binaries from 30\% to 37\% for the conservative
+limit, and 40\% to 48\% for the inclusive limit.
+
+Another effect which would increase the observed photometric binary
 fraction is Malmquist bias. Photometric binaries are intrinsically brighter
 than single stars, hence magnitude-limited surveys would detect them within a
 larger volume than single stars. We illustrate the effect of Malmquist bias for
 an artificial population with constant spatial density and a flat mass
-function in \cref{fig:photometric_massratio}. As expected, the observed
-mass-function increases because of the larger volume of binaries, but the 
-photometric binary fraction after accounting for Malmquist bias only increases
-to 45\%. We note that this is also an upper limit to the effect because the
-true spatial density of the \Kepler{} field should encounter an expoential
-dropoff, which would reduce the number of distant photometric binaries.
+function in the right panel of \cref{fig:photometric_massratio}. As expected, the observed
+mass-function increases because the photometric binaries are detected in larger
+volumes. We calculate the photometric binary fraction by calculating fraction
+of the observed mass function greater than a mass-ratio corresponding to our
+vertical displacement threshold. We use the minimum mass-ratio predicted to
+vertical displacements calculated above by including the effects of
+underestimating temperatures. Accounting for the Malmquist bias increases the
+photometric binary fraction from 37\% to 50\%, which still can't account for 
+the observed photometric binary fraction. We note that this treatment of
+Malmquist bias is an upper limit to the effect because the true spatial density 
+of the \Kepler{} field should encounter an expoential dropoff, which would 
+reduce the number of distant photometric binaries.  
 
+The contradiction between the predicted and observed photometric binary
+fractions requires either that either that the mass-ratio for synchronized
+binaries is not flat, or that there are more subtle selection effects in the 
+\Kepler{} sample. Attempting a detailed reconstruction of the intrinsic 
+mass-ratio distribution of tidally-synchronized binaries is beyond the scope 
+of this analysis.
 
-
-This contradiction requires that either our assumption of a flat mass-ratio 
-function cannot hold, or that there are selection effects in the sample. We 
-find that the median distance of the photometric single stars is 509 pc, while 
-the median distance of the photometric binaries is 653 pc, consistent with 
-photometric binaries being detected to a larger volume than photometric 
-singles. Attempting to reconstruct the intrinsic mass-ratio distribution of 
-tidally-synchronized binaries is beyond the scope of this analysis.
-
-We validate many of the trends with period and binarity by revisiting them in 
-the smaller, but more well-characterized spectroscopic sample. The high 
-photometric binary function between 1.5--7 days (top rows of 
-\cref{fig:binary_fraction}) can be seen in the spectroscopic sample as well as 
-the drop-off in photometric single stars at short periods (bottom rows of 
-\cref{fig:binary_fraction}). However, the spectroscopic sample is too small 
-to meaningfully compare the eclipsing binaries and rapid rotators; the 
-orbital periods are within 1-\(\sigma\) binomial errors of the rotation periods 
-for all rotation periods.  
+\subsection{The Synchronization Threshold}
 
 The 7 day limit that we get for the synchronization period cutoff is compatible
 with previous theoretical expectations. The original formulation by
