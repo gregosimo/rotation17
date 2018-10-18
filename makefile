@@ -1,11 +1,5 @@
 figdir = fig
-latexfigures = Bruntt_comp.pdf   \
-	       Pleiades_comp.pdf \
-	       astero.pdf        \
-	       cool_samp.pdf   \
-	       astero_rot.pdf    \
-	       cool_rot.pdf 	 \
-	       detection_fraction.pdf
+latexfigures := $(wildcard $(figdir))
 
 Bruntt_comp.pdf: paperexport.py
 	python paperexport.py Bruntt
@@ -33,6 +27,7 @@ figures: paperexport.py
 
 tabledir = tables
 tablelist := $(wildcard $(tabledir)/*)
+latextables := $(wildcard $(tabledir/*.tex))
 
 mainfile = main
 maintex = $(mainfile).tex
@@ -48,6 +43,9 @@ mnras: mnras.tar.gz
 mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 	tar -zcf mnras.tar.gz $(maintex) main.bbl $(bibfile) readme.mnras \
 	    $(latexfigures) $(tablelist)
+
+apj: apj.tar.gz
+
 
 # Is there an automated way to add dependencies for tables and figures in here? 
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
@@ -78,9 +76,9 @@ diff.ps: $(revision) $(maintex)
 
 arxiv: arxiv.tar.gz
 
-arxiv.tar.gz: $(maintex) $(mainfile).bbl $(latexfigures) $(tablelist)
+arxiv.tar.gz: $(maintex) $(mainfile).bbl $(latexfigures) $(latextables)
 	tar -czf arxiv.tar.gz $(maintex) $(mainfile).bbl $(latexfigures) \
-		$(tablelist) mnras.cls
+		$(latextables) 
 
 .PHONY : clean
 clean:
