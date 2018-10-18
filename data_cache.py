@@ -27,6 +27,51 @@ def clean_apogee_splitter():
     '''A persistent DataSplitter that can be used for isochrones. Nohelp.'''
     full = full_apogee_splitter()
     split.initialize_clean_APOGEE(full)
+    full.split_teff(
+        "TEFF", [5000], ("Cool Noev", "Hot HighEv", "Bad APOGEE Teff"),
+        teff_crit="Teff Evolution", null_value=np.ma.masked)
+
+    full.split_teff(
+        "TEFF", [4000, 5250], (
+            "APOGEE MetCor Cool", "APOGEE MetCor Teff", "APOGEE MetCor Hot",
+            "No APOGEE MetCor"), null_value=np.ma.masked,
+        teff_crit="APOGEE Metallicity Correction Region")
+
+    full.split_teff(
+        "T_eff [K]", [4000, 5250], (
+            "ElBadry MetCor Cool", "ElBadry MetCor Teff", "ElBadry MetCor Hot",
+            "No ElBadry MetCor"), null_value=np.ma.masked,
+        teff_crit="ElBadry Metallicity Correction Region")
+
+    full.split_teff(
+        "T_eff [K]", [4000, 5250], (
+            "ElBadry Statistics Cool", "ElBadry Statistics Teff",
+            "ElBadry Statistics Hot", "No ElBadry Statistics"),
+        null_value=np.ma.masked, teff_crit="ElBadry Statistics Region")
+
+    full.split_teff(
+        "TEFF", [4000, 5250], (
+            "APOGEE Statistics Cool", "APOGEE Statistics Teff",
+            "APOGEE Statistics Hot", "No APOGEE Statistics"),
+        null_value=np.ma.masked, teff_crit="APOGEE Statistics Region")
+
+    full.split_teff(
+        "teff", [4000, 5250], (
+            "Huber MetCor Cool", "Huber MetCor Teff", "Huber MetCor Hot",
+            "No Huber MetCor"), null_value=np.ma.masked,
+        teff_crit="Huber Metallicity Correction Region")
+
+    full.split_teff(
+        "SDSS-Teff", [4000, 5250], (
+            "Pinsonneault MetCor Cool", "Pinsonneault MetCor Teff",
+            "Pinsonneault MetCor Hot", "No Pinsonneault MetCor"),
+        null_value=np.ma.masked,
+        teff_crit="Pinsonneault Metallicity Correction Region")
+
+    full.split_metallicity(
+        -0.5, ("Low Met", "High Met", "No Met"), col="FE_H",
+        null_value=np.ma.masked)
+
     clean = full.split_subsample([
         "~Bad", "~Bad APOGEE Teff", "K Detection", "In Gaia", "~No Met"])
     # Add Temperature uncertainties from Holtzmann et al (2018).
@@ -44,21 +89,21 @@ def apogee_splitter_with_DSEP():
     '''A datasplitter with DSEP isochrones included. Help!'''
     clean = clean_apogee_splitter()
     clean.data["MIST K"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"], clean.data["FE_H"], "Ks", age=1e9, model="MIST"))
+        clean.data["TEFF"], clean.data["FE_H"], "Ks", age=1e9, model="MIST v1.1"))
     toohigh_met = clean.data["FE_H"] > 0.5
     clean.data["MIST K"][toohigh_met] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"][toohigh_met], 0.5, "Ks", age=1e9, model="MIST")
+        clean.data["TEFF"][toohigh_met], 0.5, "Ks", age=1e9, model="MIST v1.1")
     # I can add another gridpoint to the MIST isochrones in lieu of this.
     toolow_met = clean.data["FE_H"] < -2.5
     clean.data["MIST K"][toolow_met] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"][toolow_met], -2.5, "Ks", age=1e9, model="MIST")
+        clean.data["TEFF"][toolow_met], -2.5, "Ks", age=1e9, model="MIST v1.1")
     # Add the uncertainty in the MIST K. I don't want to deal with arbitrary
     # metallicities right now, so solar metallicity is good enough.
     # Since I don't care about the giants, I'm just going to assume everything
     # is a dwarf.
     clean.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
         clean.data["TEFF"], 0.0, "Ks", teff_err=clean.data["TEFF_ERR"], age=1e9, 
-        model="MIST")
+        model="MIST v1.1")
     clean.data["K Excess"] = clean.data["M_K"] - clean.data["MIST K"] 
     clean.data["K Excess Error Down"] = np.sqrt(
         clean.data["M_K_err2"]**2 + clean.data["MIST K Error"]**2)
@@ -82,7 +127,7 @@ def apogee_splitter_with_DSEP():
 
     # I will add in solar K values.
     clean.data["Solar K"] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"], 0.08, "Ks", age=1e9, model="MIST")
+        clean.data["TEFF"], 0.08, "Ks", age=1e9, model="MIST v1.1")
     clean.data["Solar K Excess"] = (
         clean.data["M_K"] - clean.data["Solar K"] - polycorrect(0.08))
     dwarfs = clean.subsample(["Dwarfs", "APOGEE MetCor Teff"])
@@ -102,7 +147,7 @@ def apogee_splitter_with_DSEP():
     clean.data["Phot Teff K"][good_sdss_teff] = (
         samp.calc_model_mag_fixed_age_alpha(
             clean.data["SDSS-Teff"][good_sdss_teff], 0.08, "Ks", age=1e9, 
-            model="MIST"))
+            model="MIST v1.1"))
     clean.data["Phot Teff K"] = np.ma.masked_values(
         clean.data["Phot Teff K"], -9999.0)
     clean.data["Phot Teff K Excess"] = (
@@ -178,9 +223,10 @@ def mcquillan_splitter_with_DSEP():
     # One of the McQuillan has a Teff of 7300, which is too hot even for the 1 
     # Gyr isochrone.
     clean.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
+        clean.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST v1.1")
     clean.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
-        clean.data["SDSS-Teff"], 0.0, "Ks", teff_err=100, age=1e9, model="MIST")
+        clean.data["SDSS-Teff"], 0.0, "Ks", teff_err=100, age=1e9, 
+        model="MIST v1.1")
     clean.data["K Excess"] = clean.data["M_K"] - clean.data["MIST K"]
     clean.data["K Excess Error Down"] = np.sqrt(
         clean.data["M_K_err2"]**2 + clean.data["MIST K Error"]**2)
@@ -236,10 +282,10 @@ def mcquillan_nondetections_splitter_with_DSEP():
     clean_nondets = nondet_splitter.split_subsample([
         "K Detection", "In Gaia", "Good Isochrone Teff"])
     clean_nondets.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
-        clean_nondets.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
+        clean_nondets.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST v1.1")
     clean_nondets.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
         clean_nondets.data["SDSS-Teff"], 0.0, "Ks", teff_err=150, age=1e9, 
-        model="MIST")
+        model="MIST v1.1")
     clean_nondets.data["K Excess"] = (
         clean_nondets.data["M_K"] - clean_nondets.data["MIST K"])
     clean_nondets.data["K Excess Error Down"] = np.sqrt(
@@ -297,12 +343,12 @@ def eb_splitter_with_DSEP():
     clean_ebs = eb_splitter.split_subsample([
         "K Detection", "In Gaia", "Good Isochrone Teff"])
     clean_ebs.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
-        clean_ebs.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST")
+        clean_ebs.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST v1.1")
     clean_ebs.data["K Excess"] = (clean_ebs.data["M_K"] - 
                                   clean_ebs.data["MIST K"])
     clean_ebs.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
         clean_ebs.data["SDSS-Teff"], 0.0, "Ks", teff_err=150, age=1e9, 
-        model="MIST")
+        model="MIST v1.1")
     clean_ebs.data["K Excess Error Down"] = np.sqrt(
         clean_ebs.data["M_K_err2"]**2 + clean_ebs.data["MIST K Error"]**2)
     clean_ebs.data["K Excess Error Up"] = np.sqrt(
