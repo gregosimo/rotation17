@@ -1,5 +1,5 @@
 % aastex6.1 will be released as part of TeXLive 2017 around June 1. 
-\documentclass[manuscript]{aastex6}
+\documentclass[twocolumn]{aastex6}
 
 % Make the underscore behave correctly.
 \usepackage[T1]{fontenc}
@@ -26,7 +26,7 @@
 \newcommand{\Kepler}{\mbox{\textit{Kepler}}}
 \newcommand{\Gaia}{\mbox{\textit{Gaia}}}
 \newcommand{\McQuillan}{\citep{McQuillan14}}
-\newcommand{\Teff}{\ensuremath{T_{\rm eff}}}
+\newcommand{\Teff}{\ensuremath{T_{\textrm{eff}}}}
 \newcommand{\logg}{\ensuremath{\log g}}
 \newcommand{\kms}{\textrm{~km~s}\ensuremath{^{-1}}}
 \newcommand{\MK}{\ensuremath{M_K}}
@@ -57,17 +57,15 @@ Phenomenon}
     single stars on the unevolved lower main sequence, and compare their
     distribution of rotation properties to those of single stars both with and 
     without APOGEE spectroscopic characterization. We find that 59\% of stars
-    with \(1.5 \textrm{ day } < P < 7\) lie 0.3 mag above the main
+    with \(1.5 \textrm{ day } < P < 7\) day lie 0.3 mag above the main
     sequence, compared with 28\% of the full rotation sample. The fraction of 
     stars in the same period range is \(1.7 \pm 0.1\%\) of the total sample 
-    analyzed for rotation periods. Both the fraction of photometric binaries
-    and the fraction of  also consistent with the population of non-eclipsing short period 
-    binaries inferred from \Kepler{} eclipsing binary data after correcting for 
-    inclination, implying \(2.0 \pm 0.1\%\) of the total \Kepler{} sample. This suggests that the rapid rotators 
+    analyzed for rotation periods. Both the photometric binary fraction
+    and the fraction of rapid rotators are consistent with a population of 
+    non-eclipsing short period binaries inferred from \Kepler{} eclipsing 
+    binary data after correcting for inclination. This suggests that the rapid rotators 
     are dominated by tidally-synchronized binaries rather than single-stars 
-    obeying traditional angular momentum evolution. Combining both populations
-    yields that the total fraction of \Kepler{} targets which are binaries with 
-    periods between 1.5--7 days is \(2.0 \pm 0.1\%\). We caution against 
+    obeying traditional angular momentum evolution. We caution against 
     interpreting rapid rotation in the \Kepler{} field as a signature of youth. 
     Following up this new sample of 217 candidate tidally-synchronized binaries 
     will help further understand tidal processes in stars.
@@ -91,7 +89,7 @@ The strong dependence of angular momentum loss on rotation \citep{Kawaler88}
 leads to the rapid convergence of a wide range of rotation rates to a unique
 mass-dependent value; for solar-type stars convergence is nearly complete by
 0.5 Gyr \citep{Pinsonneault89}. Rotation is therefore an age indicator for 
-stellar populations \citep{Skumanich72}; and correlations between rotation and
+stellar populations \citep{Skumanich72}, and correlations between rotation and
 age been used to derive empirical relationships for field populations, 
 sometimes referred to as gyrochronology \citep{Barnes07, Mamajek08, Meibom09}.  
 A full theoretical treatment of gyrochronology requires evolutionary stellar 
@@ -107,17 +105,18 @@ rotation in old field populations. Large-scale analyses have extracted
 rotation periods from the light curves of tens of thousands of field stars
 \citep{Nielsen13, Reinhold13, Garcia14, McQuillan14}. These rotation periods, 
 along with a field gyrochronology, are expected to provide insights on the age 
-distribution of the field, and thus provide more accurate representation of 
+distribution of the field, and thus provide a more accurate representation of 
 transiting exoplanets.
 
-The new observations of old field stars enabled by \Kepler{} have challenged 
+Recent observations of old field stars enabled by \Kepler{} have challenged 
 our theories of angular momentum evolution on multiple fronts. Existing 
 gyrochronological models anchored at the Sun have not been able to explain
 the relatively rapid rotation of old field stars with ages inferred from
 asteroseismic data \citep{Angus15, VanSaders16}. The \Kepler{} population at 
-long periods shows a sharp drop-off which is not predicted by stellar models 
-\citep{VanSaders18}.  Nearby K- and M-dwarfs show a bimodality in the period 
-distribution which has no clear explanation in stellar physics 
+long periods shows a sharp drop-off which is not predicted by either angular
+momentum evolution models, or as selection effects through rotation-activity 
+relations \citep{VanSaders18}.  Nearby K- and M-dwarfs show a bimodality in 
+the period distribution which has no clear explanation in stellar physics 
 \citep{Davenport18}. There is also a modest, but real, population of rapid 
 rotators that would be interpreted as young if they were single main sequence 
 stars.
@@ -157,14 +156,14 @@ which usually requires intense spectroscopic monitoring to derive orbits.
 
 The largest homogeneous study of synchronicity to date measured starspot 
 variability in the eclipsing binary sample \citep{Lurie17}, which found a
-cutoff in synchronicity at 10 days, in agreement with previous studies. A novel
-result found in their sample was the existence of a population of
-subsynchronous rotators (around 15\%) with orbital periods between 2--10 days.
-Confirmation of this finding may provide unexpected results in the theory of
-three-body interactions.
+synchronization period cutoff at 10 days, in agreement with previous studies. 
+A novel result found in their sample was the existence of a population of
+subsynchronous rotators (at the level of 15\%) with orbital periods between 
+2--10 days. Confirmation of this finding may provide unexpected results in the 
+theory of three-body interactions.
 
-The availability of \Gaia{} DR2 parallaxes \citep{Gaia18,Lindegren18} has
-enabled us to better characterize sources of rapid rotation beyond what is
+The availability of \Gaia{} DR2 parallaxes \citep{Gaia18,Lindegren18} 
+enables us to better characterize sources of rapid rotation beyond what is
 achievable through photometry and spectroscopy. Young single stars would be
 observed as rapid rotators within the field main sequence. Subgiants would lie 
 in the Hertzprung Gap, on the way to the Red Giant Branch. Lastly, binaries 
@@ -176,7 +175,7 @@ An additional constraint on the populations comes from the substantial sample
 of spectroscopically-characterized dwarfs from the Apache Point Observatory
 Galactic Evolution Experiment (APOGEE) \citep{Majewski17}. APOGEE contains a 
 total of 15,724 objects in the \Kepler{} field with usable stellar parameters,
-K-band photometry, and parallaxes.  This sample will be valuable for 
+\(Ks\)-band photometry, and parallaxes.  This sample will be valuable for 
 understanding the importance of metallicity to identify populations of 
 binaries.
 
@@ -196,8 +195,9 @@ and lay out future avenues to explore.
 The base sample of this study consists of \Kepler{} dwarfs that were analyzed
 for photometric starspot modulations. All targets in the \Kepler{} field have 
 stellar parameters determined at the very least by KIC photometry 
-\citep{Brown11}. The total number of objects that were analyzed was 133,030, 
-of which 34,030 have period detections.
+\citep{Brown11}. Based on the KIC photometry, \citet{McQuillan14} selected 
+133,030 targets to search for starspot variability, of which 34,030 have 
+period detections.
 
 We also examine a spectroscopically-characterized subsample from APOGEE\@. 
 This sample has spectroscopically-determined temperatures and metallicities. 
@@ -209,9 +209,9 @@ from 2MASS \citep{Skrutskie06}, parallaxes from \Gaia{} DR2 \citep{Gaia18},
 \Teff{} from \citet{Pinsonneault12}, extinction values estimated from the 
 \Kepler{} Stellar Parameter Catalog (KSPC) DR25 \citep{Huber14,Mathur17}, and
 MIST isochrones \citep{Choi16} (described further in
-Section~\ref{sec:analysis}). For the spectroscopic sample, \Teff{} and [Fe/H] 
-are taken from APOGEE DR14 \citep{Abolfathi18}. More detail on these catalogs 
-is given below.
+Section~\ref{sec:analysis}). For the spectroscopic sample, \Teff{} and
+\feh{} are taken from APOGEE DR14 \citep{Abolfathi18}. More detail on these 
+catalogs is given below.
 
 \subsection{Default Stellar Parameters}
 
@@ -219,21 +219,21 @@ Stellar parameters for the full \Kepler{} sample are available as part of the
 \Kepler{} Stellar Parameter Catalog (KSPC) DR25 \citep{Mathur17}. The KSPC
 compiles stellar parameters from the literature and simultaneously fits them
 using DSEP stellar evolutionary tracks \citep{Dotter08} via the methodology of
-\citet{Huber14}. Revised stellar parameters, such as \Teff, as well as inferred
-quantities, such as extinction, are output along with asymmetric
+\citet{Huber14}. Revised stellar parameters, such as \Teff, as well as 
+inferred quantities, such as extinction, are output along with asymmetric
 1-\(\sigma\) uncertainties. 
 
 The sophisticated machinery of the KSPC imprints artifacts in the \Teff{}
-distribution of cool dwarfs by attempting to stich together the temperature
+distribution of cool dwarfs by attempting to stitch together the temperature
 scales of \citet{Pinsonneault12} and \citet{Dressing13}. Instead of using
-\Teff{} from the KSPC, we therefore opted to use temperatures from 
+\Teff{} from the KSPC, we opted to use temperatures from 
 \citet{Pinsonneault12} to ensure uniformly analyzed temperatures; this data is
 close to the KSPC scale globally \citep{Huber17}. We note that 
 \citet{Pinsonneault12} only provides temperatures for colors where the
 infrared-flux method has been well-studied, which corresponds to between
 4000--7500 K.
 
-For this paper, we also make use of extinctions from the KSPC\@. The
+For this paper, we make use of extinctions from the KSPC\@. The
 extinctions are inferred from the predicted absolute magnitude given KSPC 
 parameters, and a 3D extinction map \citep{Amores05}. The catalog extinction 
 is given as \(A_V\), which we convert to other bands using the 
@@ -249,52 +249,43 @@ solution to 1.3 billion sources over 22 months of observations
 \citep{Lindegren18}. For targets which could not be adequately fit with a
 single-star 5-parameter solution, a 2-parameter (\(\alpha\), \(\delta\))
 solution is performed instead \citep{Michalik15}. The criteria for a
-2-parameter fall-back solution include targets with Gaia \(G > 21.0\), having
-fewer than 6 visibility periods of observations, and an error ellipse larger
-than a magnitude-dependent limit in its largest dimension \citep{Lindegren18}.
-
-% APOGEE Targeted sample APOKASC (APOKASC + Cool Dwarf - faint dwarfs) - 7642
-% Not bad APOGEE targeted sample - 7395
-% Good APOGEE with good K detection - 7373
-% Good APOGEE in Gaia - 6961
+2-parameter fall-back solution include targets with Gaia \(G > 21.0\) mag, 
+having fewer than 6 visibility periods of observations, and an error ellipse 
+larger than a magnitude-dependent limit in its largest dimension 
+\citep{Lindegren18}.
 
 We use the cross-matched database of \citet{Berger18b} to match \Kepler{} targets
 against \Gaia{} DR2 detections.
 \citet{Berger18b} cross-matched targets in the KSPC DR25 \citep{Mathur17}, 
-with \Gaia{} DR2 sources using both position and G-band flux. Of the 
+with \Gaia{} DR2 sources using both position and \(G\)-band flux. Of the 
 successfully cross-matched targets, \citet{Berger18b} excluded objects with 
 fractional parallax errors greater than 0.2, \(\Teff < 3000\) K, 
-\(\logg < 0.1\), and low quality 2MASS photometry.  Because all of our 
+\(\logg < 0.1\), and low quality 2MASS photometry.  Because the remaining
 targets have high-quality parallaxes, we use the traditional 
 formula for deriving distance modulus from parallax instead of the Bayesian 
 method advocated by \citet{Luri18} to reduce computational complexity. We
 include the zero-point offset of 0.05 mas \citep{Zinn18}.
-% Include when this calculation is actually *DONE*.
-%We converted parallax to distance modulus by using an
-%exponentially-decreasing volume density prior with a 1.35 kpc length scale
-%\citep{BailerJones15,Astraatmadja16}, and correcting for the zero-point offset
-%of 0.5 mas \citep{Zinn18}. \gvs{Should we include a table of this?} 
 
 \subsection{Photometric Data}
 
-In order to characterize our stellar sample, we chose to use absolute K-band
-magnitude as a proxy for luminosity to minimize the impact of extinction. 
-K-band apparent magnitudes were measured by the 2MASS survey 
-\citep{Skrutskie06}, which has profile-fit photometry with uncertainties 
-available for nearly the full sample.  The 
-typical K-band photometric uncertainty for the \citet{McQuillan14} sample is 
-0.03 mag. The typical extinction from the KSPC and its uncertainty for cool 
-dwarfs is \(A_V = 0.33\), and \(\sigma_{A_V}=0.025\). Applying the 
-\citet{Cardelli89} relation that \(A_K/A_V = 0.114\), the effect of extinction 
-itself shrinks to the level of photometric errors.  A small fraction of 
-targets (1.5\%) of the \citet{McQuillan14} sample have 2MASS photometry 
-flagged due to blending. To avoid contaminating the binary sequence with 
-unrelated blends, we exclude these targets.
+In order to characterize our stellar sample, we chose to use absolute 
+\(Ks\)-band magnitude as a proxy for luminosity to minimize the impact of 
+extinction.  \(Ks\)-band apparent magnitudes were measured by the 2MASS survey 
+\citep{Skrutskie06}, which performed profile-fit photometry and derived 
+uncertainties for nearly the full sample.  The typical \(Ks\)-band 
+photometric uncertainty for the \citet{McQuillan14} sample is 0.03 mag. The 
+typical extinction from the KSPC and its uncertainty for cool dwarfs is 
+\(A_V = 0.33\), and \(\sigma_{A_V}=0.025\). Applying the \citet{Cardelli89} 
+relation that \(A_K/A_V = 0.114\), the effect of extinction itself shrinks to 
+the level of photometric errors.  A small fraction of targets (1.5\%) of the 
+\citet{McQuillan14} sample have 2MASS photometry flagged due to blending. To 
+avoid contaminating the binary sequence with unrelated blends, we exclude 
+these targets.
 
 \subsection{Rotation Data}
 
 The rotation periods for our sample come from \citet{McQuillan14}, which
-is large and homogenously measured. \citet{McQuillan14} selected their sample 
+is large and homogeneously measured. \citet{McQuillan14} selected their sample 
 to have photometric \(\Teff < 6500\) K \citep{Brown11,Dressing13}, and 
 implemented the color-color and \logg{} cuts advocated in \citet{Ciardi11}, 
 ranging from \(\logg = 3.5\) at 6000 K to \(\logg = 4.0\) at 4250 K. 
@@ -302,8 +293,11 @@ In addition to the temperature and gravity cuts, \citet{McQuillan14} also
 excluded known \Kepler{} eclipsing binaries and \Kepler{} Objects of Interest. 
 
 Rotational periods in \citet{McQuillan14} were measured by calculating the 
-autocorrelation function and fitting the location of multiple peaks. In lieu 
-of visual verification of the autocorrelation function, \citet{McQuillan14}
+autocorrelation function (ACF) and fitting the location of multiple peaks.
+Pre-processed light curves were taken the PDC-MAP pipeline
+\citep{Smith12,Stumpe12}; the light curves were median-normalized and zeroed
+in inter-quarter gaps before calculating the ACF \citep{McQuillan13}. In
+lieu of visual verification of the autocorrelation function, \citet{McQuillan14}
 performed two automated tests to distinguish physical periodicity from
 instrumental artifacts or other sources of variability. First, the 
 periodicity must be consistent in different segments of the light curve.
@@ -314,21 +308,21 @@ period-dependent threshold. In order to reduce contamination from pulsators,
 \begin{figure*}[htb]
     \centering
     \epsscale{1.1}
-    \plotone{mcquillan_selection}
-    \caption{\emph{Left:} \Teff-\(M_K\) density plot of the sample of
+    \plotone{f1}
+    \caption{\emph{Left:} \Teff{}-\MK{} density plot of the sample of
         \citet{McQuillan14} period detections. Color represents the number of
         objects in each bin. A binary sequence is clearly 
         visible above the lower main sequence. Temperatures are from
         \citet{Pinsonneault12}. The bin size is 100 K in
-        temperature and 0.02 mag in K-band absolute magnitude. A 
-        representative error bar is shown on the bottom right corner, although
+        temperature and 0.02 mag in \(Ks\)-band absolute magnitude. A 
+        representative error bar is shown on the bottom left corner, although
         the vertical error bar is too small to be easily visible. 
         \emph{Right:} The variation in the \citet{McQuillan14} period 
-        detection fraction across the \Teff-\(M_K\) 
+        detection fraction across the \Teff-\MK{} 
     diagram.}\label{fig:mcquillan_selection}
 \end{figure*}
 
-The \citet{McQuillan14} sample is shown in a \Teff-\(M_K\)
+The \citet{McQuillan14} sample is shown in a \Teff-\MK{}
 diagram in \cref{fig:mcquillan_selection}. One of the new results enabled by 
 \Gaia{} is that a binary sequence,
 located above the main sequence, is clearly seen. Period detections become
@@ -345,7 +339,7 @@ telescope at Apache Point Observatory \citep{Gunn06}.
 
 Reduction of the APOGEE data takes place in three main stages. First,
 individual visit spectra are reduced, including detector calibration, bad pixel
-masking, wavelength calibration, sky substraction, and determination of
+masking, wavelength calibration, sky subtraction, and determination of
 individual radial velocities through cross-correlation of template spectra.
 Second, the individual spectra are combined by correcting for radial velocity
 differences between the exposures, either by cross-correlating with each other,
@@ -356,14 +350,19 @@ The final step is the extraction of stellar parameters and chemical abundances
 by the APOGEE Stellar Parameter and Chemical Abundances Pipeline (ASPCAP)
 \citep{GarciaPerez16}. ASPCAP measures stellar parameters by performing a
 chi-squared minimization \citep{AllendePrieto06} over a 6-dimensional space of
-\Teff, \logg, [M/H], [\(\alpha\)/M], \vsini, and microturbulent velocity.
+\Teff, \logg, [M/H], [\(\alpha\)/M], \vsini, and microturbulent velocity. Once
+those six parameters have been determined, ASPCAP measures abundances for
+individual elements, including \feh{}.
 
-After determination of the stellar parameters, the effective temperatures are 
-calibrated to the photometric system of \citet{GonzalezHernandez09} using a 
-metallicity-dependent offset. After calibration, the scatter between the 
+After determination of the stellar parameters and chemical abundances, the 
+effective temperatures are calibrated to the photometric system of \citet{GonzalezHernandez09} using a 
+metallicity-dependent offset, and the abundances are calibrated to provide
+homogeneous results within clusters. After calibration, the scatter between the 
 calibrated and photometric temperatures  were found to be a function of 
 \Teff{}, ranging from 130 K at 5500 K down to 85 K at 4000 K
-\citep{Holtzman18}.
+\citep{Holtzman18}. The statistical uncertainty in \feh{} was measured to be 
+0.009 dex \citep{Holtzman18}, but the systematic uncertainty is likely closer
+to 0.1 dex \citep{Serenelli17}.
 
 We inspected the fits to a set of spectra representative of targets flagged 
 by the ASPCAP pipeline as having potential quality problems. A small fraction
@@ -374,23 +373,25 @@ due to poor model fits on the cool (\(\Teff < 4250 K\)) end. We exclude these
 from our analysis. A substantially larger fraction of targets (14\%) have the 
 \STARWARN{} quality flag enabled. Visual inspection of a representative sample 
 of these spectra indicated that the fits reasonably resembled the underlying 
-spectra. We included all targets with the \STARWARN{} quality flag enabled.
+spectra. We include all targets with the \STARWARN{} quality flag enabled.
 
 \begin{figure*}[htb]
     \centering
     \epsscale{1.1}
-    \plotone{apogee_selection}
-    \caption{\emph{Left:} \Teff-\(M_K\) diagram for the APOGEE observations of
+    \plotone{f2}
+    \caption{\emph{Left:} \Teff-\MK{} diagram for the APOGEE observations of
         \Kepler{} targets. Asteroseismic targets are shown as black dots. The
         dwarf sample is shown as brown dots. The light blue dots indicate 
         eclipsing binary targets and purple dots are \Kepler{} Objects of 
         Interest. A binary sequence is clearly visible on the lower main
-        sequence. Temperatures are spectrosopic APOGEE temperatures. A 
+        sequence. Temperatures are spectroscopic APOGEE temperatures. A 
         representative error bar for the cool dwarf sample is 
-        shown in the bottom-right corner. \emph{Right:} A density plot of the 
+        shown in the bottom-left corner, although the vertical error bar is too
+        small to be easily visible. \emph{Right:} A density plot of the 
         full APOGEE sample. To preserve the dynamic range of the dwarf 
         sequence, the red clump was allowed to saturate. The bin size is 100 K
-    horizontally and 0.02 mag vertically.}\label{fig:apogee_selection}
+    in temperature and 0.02 mag in \(Ks\)-band absolute 
+magnitude.}\label{fig:apogee_selection}
 \end{figure*}
 
 \Cref{fig:apogee_selection} shows all \Kepler{} targets with observed
@@ -404,8 +405,32 @@ program proposed to observe the remaining portion of the \Kepler{} sample
 cooler than 6500 K and brighter than \(H < 11\), make up an additional 3193
 targets, shown as small red dots. An additional 695 targets were part of an 
 effort to characterize \Kepler{} planet hosts with \(H < 14\), shown as purple 
-diamonds. The remaining 102 targets were follow-up of eclipsing binaries 
-\citep{Prsa11,Slawson11}, and are shown as light blue circles.  
+diamonds. The remaining 102 targets were targeted to follow-up 
+eclipsing binaries \citep{Prsa11,Slawson11}, and are shown as light blue 
+circles.  
+
+
+\subsection{Eclipsing Binaries}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{f12}
+    \caption{The observed period distribution of all eclipsing binaries with
+    \Teff{} < 5250 K from \citet{Pinsonneault12} and vertical displacement less
+than 1.3 mag is shown in red. The period distribution of the full binary
+distribution inferred from the eclipsing binaries is shown in black. The
+normalization factor is the total number of Kepler cool dwarfs. Error bars
+represent 1-\(\sigma\) Poisson confidence intervals.}\label{fig:ebdist}
+\end{figure}
+
+To draw comparisons with a sample of known binarity, we use the 
+ \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16},
+the most fundamental sample for understanding binarity in the \Kepler{} field. 
+With \Kepler{}'s continuous monitoring and a long baseline of 4 years, the 
+eclipsing binary sample for orbital periods on the order of 20 days should be 
+complete \citep{Kirk16}. Most eclipses were identified by the main
+\Kepler{} pipeline \citep{Jenkins02,Jenkins10}. Orbital periods were measured using a
+neural network trained on synthetic eclipsing binary data \citep{Prsa08}. 
 
 \section{Data Analysis}
 \label{sec:analysis}
@@ -416,7 +441,7 @@ distinction is the
 vertical displacement above the single-star sequence. Vertical 
 displacement is a standard measure of binarity in clusters 
 \citep{Mermilliod92}, where the single-star sequence can be described by a
-single-age stellar population with a single metallicity. Equal-mass binaries
+stellar population with a unique age and metallicity. Equal-mass binaries
 would lie 0.75 mag above the single-star sequence, while equal-mass triples would be
 1.25 mag above. Measuring the vertical displacement for a field population is 
 more challenging, because the
@@ -428,31 +453,38 @@ and the natural width of the unevolved main sequence can be confidently
 measured to identify field binaries.
 
 The vertical displacement is a difference of two quantities: the measured 
-K-band luminosity of a star, and the inferred K-band luminosity of a single 
-star with the same temperature and metallicity as the original one at a reference age. The 
-former is a well-constrained and easily calculated quantity given the 2MASS 
-photometry and the \Gaia{} parallax; the latter requires a single-star model.
+\(Ks\)-band luminosity of a star, and the inferred \(Ks\)-band luminosity of a 
+single star with the same temperature and metallicity as the original one at a 
+reference age. The former is a well-constrained and easily calculated quantity 
+given the 2MASS photometry and the \Gaia{} parallax; the latter requires a 
+single-star model.
+
+\subsection{Stellar Model}
 
 We use the MIST \citep{Dotter16,Choi16} isochrones to model the 
 single-star lower main sequence. Bolometric corrections translating from
 evolutionary tracks to photometric bands are generated from ATLAS12/SYNTHE
-stellar atmosphere models \citep{Kurucz70,Kurucz93}. For a full description of the MIST isochrones, we 
-refer the reader to the source papers, as well as the MESA instrument papers 
-\citep{Paxton11, Paxton13, Paxton15}, which is the stellar model on which the 
-isochrones are based. In order to characterize the vertical displacement, we select 1 Gyr isochrones
+stellar atmosphere models \citep{Kurucz70,Kurucz93}. The solar abundance scale
+for the isochrones is from \citet{Asplund09}. For a full description of the 
+MIST isochrones, we refer the reader to the source papers, as well as the MESA 
+instrument papers \citep{Paxton11, Paxton13, Paxton15}, which is the stellar 
+model on which the isochrones are based. In order to characterize the vertical 
+displacement, we select 1 Gyr isochrones
 as a baseline case. As age effects in the domain of interest are by definition
 small, the precise choice of baseline age does not significantly impact our 
 results (see below).
 
+\subsection{Reducing Age Effects}
+
 \begin{figure}[htb]
     \centering
-    \plotone{sample_dk}
-    \caption{APOGEE temperature and K luminosity excess above a 1 Gyr MIST isochrone 
-        matched to the APOGEE metallicity for the APOGEE-\Kepler{} sample. 
-        In order to exclude evolved stars while preserving binaries and
-        triples, we define the dwarf sample as targets less than 1.3 magnitudes
-        more luminous than the metallicity-adjusted MIST isochrone (shown as
-        violet points). A representative error bar for the 
+    \plotone{f3}
+    \caption{APOGEE temperature and vertical displacement above a 1 Gyr MIST 
+        isochrone matched to the APOGEE metallicity for the APOGEE-\Kepler{} 
+        sample.  In order to exclude evolved stars while preserving binaries 
+        and triples, we define the dwarf sample as targets less than 1.3 
+        magnitudes more luminous than the metallicity-adjusted MIST isochrone 
+        (shown as violet points). A representative error bar for the 
         full APOGEE dwarf sample assuming Gaussian uncertainties is shown in 
         the lower right corner.}\label{fig:sample_dk}
 \end{figure}
@@ -463,7 +495,7 @@ shown in \cref{fig:sample_dk}. For every star, the displacement is calculated
 by subtracting the luminosity of the 1 Gyr isochrone with the APOGEE-measured 
 metallicity. F and G stars spread above the isochrone, which is 
 expected because these stars evolve substantially over the age of the Milky
-Way. With the main sequence detrended a visible binary sequence emerges at 
+Way. With the main sequence detrended, a visible binary sequence emerges at 
 \(\sim0.75\) mag above the main sequence. In order to exclude red 
 giant branch stars, we draw a limit at 1.3 magnitudes above the main sequence. 
 This limit cleanly excludes red giant branch stars while providing generous 
@@ -471,7 +503,7 @@ inclusion limits for binaries and potential triple systems.
 
 \begin{figure}[htb]
     \centering
-    \plotone{ages}
+    \plotone{f4}
     \caption{Age-imposed behavior for the dwarf sample with APOGEE
         temperatures. The purple line denotes the predicted luminosity excess of 
         a 9 Gyr solar composition isochrone relative to a 1 Gyr baseline at
@@ -501,16 +533,57 @@ temperature bin contains a population of both binaries and single stars, with
 binaries having substantially higher vertical displacements. The 25th 
 percentile statistic characterizes the main sequence in a way that is robust 
 to the population of binaries, and has been used successfully in clusters 
-\citep{An06}. Even large departures this assumed binary fraction should 
+\citep{An06}. Even large departures from the assumed binary fraction should 
 generally only affect the zero-point, but not the shape of the main sequence.
 
 The detrended main sequence is generally flat at temperatures cooler than 5000 K 
 with age effects becoming more important at hotter temperatures. The number of stars
-also increases substantially with temperature above 5000 K. As a compromise
+also increases substantially at temperatures above 5000 K. As a compromise
 between age effects and statistical power, we adopt a threshold \Teff{} of 
 5250 K to denote the lower main sequence.
 
-\subsection{Corrections for the Spectroscopic Sample}
+\subsection{Metallicity Distribution}
+
+For the full \citet{McQuillan14} sample, where individual metallicities are not
+available, we need to select an isochrone with a metallicity that is 
+representative of the full sample. We do this by assuming that the metallicity 
+distribution of the spectroscopic targets is representative of the full 
+\Kepler{} field. 
+
+\begin{figure*}[htb]
+    \centering
+    \plotone{f7}
+    \caption{\emph{Left:} Metallicity distribution of the \Kepler{} cool 
+        dwarfs in the APOGEE sample, selected as having 
+        \(\Teff < 5250 \textrm{ K }\) and a luminosity less than 1.3 mag above 
+        the single-star sequence. The 
+        thick black line denotes the median metallicity while the thin black 
+        lines denote the 1-\(\sigma\) confidence intervals. The hatched region
+        to the left of \feh{}=-0.5 denotes the metallicity beneath which the 
+        empirical correction in \cref{fig:met_trend} is poorly constrained due 
+        to too few metal-poor stars. \emph{Right:} The vertical displacement 
+        caused by assuming a single metallicity isochrone.  The blue line 
+        represents the difference between the derived \MK{} assuming the 
+        median field metallicity and that for the true metallicity. The 
+        orange line includes our empirical shape correction for metallicity, 
+        which removes most of the predicted width. The hatched region
+        to the left of \feh{}=-0.5 denotes the metallicity beneath which the 
+        empirical correction is poorly constrained due to too few metal-poor 
+        stars.}\label{fig:metallicity}
+\end{figure*}
+
+Because we will mostly be concerned with the cool dwarfs, we check the
+metallicity distribution of dwarfs cooler than 5250 K, which is the 
+temperature range of our sample. The metallicity distribution for that
+sample is shown in \cref{fig:metallicity}. The median metallicity is 
+0.08, consistent with that observed for planet hosts by 
+the California \Kepler{} survey \citep{Petigura17}.  We therefore treat the
+\(\feh{} = 0.08\) isochrone as the base isochrone for the photometric sample. 
+However, the metallicity of the base isochrone does not substantially affect 
+the analysis because any zero-point offset will be subtracted off in the 
+following correction.
+
+\subsection{Correcting Metallicity Trends}
 \label{sec:speccor}
 
 There are modest, but real, differences between the theoretically predicted
@@ -523,7 +596,7 @@ both metallicity and temperature-dependent terms.
 \begin{figure}[htb]
     \centering
     \epsscale{0.9}
-    \plotone{metallicity_correction}
+    \plotone{f5}
     \caption{\emph{Top:} Residual metallicity trend in the MIST 
         metallicity-corrected displacement. A quadratic trend remains over 
         metallicity. The trend is characterized by fitting the sample to 
@@ -540,20 +613,21 @@ both metallicity and temperature-dependent terms.
 
 We find and correct for a residual quadratic trend in the vertical 
 displacement of the main sequence over metallicity, shown in 
-\cref{fig:met_trend}.  We fit the trend to 5 equally populated bins. We denote 
+\cref{fig:met_trend} for the spectroscopic sample.  We fit the trend to 5 
+equally populated bins. We denote 
 the metallicity of the bin as the mean metallicity of all stars in that bin, 
 and the vertical displacement as the 25th percentile of all stars in that bin. 
 For the purpose of selecting the optimal binning style, we quantified the 
-goodness-of-fit using the median absolute deviation of the top 50th percentile 
-of the vertical displacements. The correction was mostly robust to the choice 
+goodness-of-fit using the median absolute deviation of the lowest
+50\% of the vertical displacements. The correction was mostly robust to the choice 
 of binning; only the sparsely populated low-metallicity regime 
-(\([Fe/H] < -0.6\)) was sensitive to the details of binning. Because there are 
-only three objects in this metallicity range, our conclusions are not 
+(\(\feh{} < -0.5\)) was sensitive to the details of binning. Because there are 
+only eight objects in this metallicity range, our conclusions are not 
 sensitive to their treatment.
 
 \begin{figure}[htb]
     \centering
-    \plotone{spec_teff_correction}
+    \plotone{f6}
     \caption{\emph{Top}: Vertical displacement above a 1 Gyr,
         metallicity-adjusted MIST isochrone, empirically corrected for
         metallicity trends, for the cool sample with APOGEE temperatures. 
@@ -562,8 +636,14 @@ sensitive to their treatment.
         \Teff{} + 0.546\) The median absolute deviation of the 50\% of the 
         sample showing the least luminosity excess within each bin is shown as 
         an error bar. \emph{Bottom:} The residuals after subtracting the 
-        linear trend.}\label{fig:apogee_teff_trend}
+        linear trend. Not shown are the two most metal-poor objects in the
+    sample, which have substantially large 
+residuals.}\label{fig:apogee_teff_trend}
 \end{figure}
+
+\subsection{Temperature Corrections}
+
+\subsubsection{Spectroscopic Sample}
 
 After correcting the trend in metallicity, we correct a residual trend in
 \Teff{}, shown in \cref{fig:apogee_teff_trend} using a similar procedure. We
@@ -575,56 +655,18 @@ flattened to its measured natural width, as seen in the bottom panel of
 \cref{fig:apogee_teff_trend}. The persistence of the binary sequence in the 
 residuals indicates that our corrections are meaningful.  
 
-\subsection{Corrections for Photometric Sample}
+\subsubsection{Photometric Sample}
 
 The photometric sample in \citet{McQuillan14} differs from the spectroscopic
 sample in two main ways: the lack of metallicity diagnostics, and the necessity
 of using photometric instead of spectroscopic \Teff{}. Both of these
-differences will increase the uncertainty of the inferred single-star K-band
-luminosity, and we measure their impact in the following analysis.
+differences will increase the uncertainty of the inferred single-star 
+\(Ks\)-band luminosity, and we measure their impact in the following analysis.
 
-For the full \citet{McQuillan14} sample, where individual metallicities are not
-available, we need to select an isochrone with a metallicity that is 
-representative of the full sample. We do this by assuming that metallicity 
-distribution of the spectroscopic targets is representative of the full 
-\Kepler{} field. 
-
-\begin{figure*}[htb]
-    \centering
-    \plotone{metallicity}
-    \caption{\emph{Left:} Metallicity distribution of the \Kepler{} cool 
-        dwarfs in the APOGEE sample, selected as having 
-        \(\Teff < 5250 \textrm{ K }\) and a luminosity less than 1.3 mag above 
-        the single-star sequence. The 
-        thick black line denotes the median metallicity while the thin black 
-        lines denote the 1-\(\sigma\) confidence intervals. The hatched region
-        to the left of [Fe/H]=-0.5 denotes the metallicity beneath which the 
-        empirical correction in \cref{fig:met_trend} is poorly constrained due 
-        to too few metal-poor stars. \emph{Right:} The vertical displacement 
-        caused by assuming a single metallicity isochrone.  The blue line 
-        represents the difference between the derived \(M_K\) assuming the 
-        median field metallicity and that for the true metallicity. The 
-        orange line includes our empirical shape correction for metallicity, 
-        which removes most of the predicted width. The hatched region
-        to the left of [Fe/H]=-0.5 denotes the metallicity beneath which the 
-        empirical correction is poorly constrained due to too few metal-poor 
-        stars.}\label{fig:metallicity}
-\end{figure*}
-
-Because we will mostly be concerned with the cool dwarfs, we check the
-metallicity distribution of dwarfs cooler than 5250 K, which is the 
-temperature range of our sample. The metallicity distribution for that
-sample is shown in \cref{fig:metallicity}. The median metallicity is 
-0.08, consistent with that observed for planet hosts by 
-the California \Kepler{} survey \citep{Petigura17}.  We therefore treat the \([Fe/H] =
-0.08\) isochrone as the base isochrone for the photometric sample. However, the
-metallicity of the base isochrone does not substantially affect the analysis
-because any zero-point offset will be subtracted off in the following
-correction.
 
 \begin{figure}[htb]
     \centering
-    \plotone{Teff_relation}
+    \plotone{f8}
     \caption{Comparison between the APOGEE spectroscopic \Teff{} and the
         \citet{Pinsonneault12} \Teff{} for objects with \(4000 \textrm{ K } \le
     \textrm{ APOGEE \Teff{} } \le 5250 \textrm{ K }\). A linear fit for the
@@ -643,12 +685,14 @@ Taking into account the 100 K uncertainty in the APOGEE \Teff{} scale, this
 implies a 90K uncertainty in the \citet{Pinsonneault12} temperatures, which
 agrees with the uncertainties expected from the photometric method. 
 
+\subsection{The Impact of Metallicity on the Main Sequence Width}
+
 \begin{figure}[htb]
     \centering
-    \plotone{phot_teff_correction}
+    \plotone{f9}
     \caption{Same as \cref{fig:apogee_teff_trend}, except using
         \citet{Pinsonneault12} temperatures, and subtracting off a
-    constant [Fe/H]=0.08 isochrone for all objects instead of a 
+        constant \feh{}=0.08 isochrone for all objects instead of a 
     metallicity-adjusted isochrone. The best-fit relation is \(\Delta \MK{} =
 -0.0000937 \Teff{} + 0.434\). }\label{fig:photuncor}
 \end{figure}
@@ -660,17 +704,17 @@ fit, similar to that done for the spectroscopic sample.
 
 \begin{figure*}[htb]
     \centering
-    \plotone{excess_hist}
+    \plotone{f10}
     \caption{\emph{Left:} Histogram showing the distribution of vertical 
         displacements with isochrones corresponding to APOGEE metallicities.
         The blue line denotes the best-fit double-Gaussian model to the
         distribution of vertical displacements. The red line is a fit to the
         best-fit double-Gaussian model assuming a single metallicity (see right
         panel). Conservative and inclusive photometric binary thresholds at 
-        \(\Delta K < -0.3\) mag and \(\Delta K < -0.2\) mag are shown as violet and green dashed 
+        \(\Delta \MK{} < -0.3\) mag and \(\Delta \MK{} < -0.2\) mag are shown as violet and green dashed 
         lines, respectively. The best-fit dispersion of the single-star 
         Gaussian is 0.086 mag. \emph{Right:} Histogram showing the 
-        distribution of vertical displacements with a \([Fe/H] = 0.08\) 
+        distribution of vertical displacements with a \(\feh{} = 0.08\) dex
         isochrone. The red line denotes the best-fit double-Gaussian model to
         the distribution of vertical displacements. The blue line is a fit to
         the best-fit double-Gaussian model for isochrones adjusted for the
@@ -686,101 +730,163 @@ metallicity information.}\label{fig:histcompare}
 
 Now that we have corrected vertical displacements over the 4000--5250 K
 temperature range, we can now compare the main-sequence scatter for the two
-datasets. We do this by generating histograms for the spectroscopic and
-photometric samples over vertical displacement, shown in
-\cref{fig:histcompare}. We try to characterize the width of the two samples by
-fitting a double Gaussian to each histogram, and taking the width of the
-main-sequence Gaussian as the uncertainty in the vertical displacement in the
-vertical displacement. Our fits indicate that the scatter for the spectroscopic
-sample is 0.086 mag while the scatter for the photometric sample is 0.117 mag.
+datasets. Histograms for the spectroscopic and photometric samples over 
+vertical displacement are shown in \cref{fig:histcompare}. We try to 
+characterize the width of the two samples by fitting a double Gaussian to each 
+histogram, and taking the width of the main-sequence Gaussian as the 
+uncertainty in the vertical displacement. Our fits indicate that the scatter 
+for the spectroscopic sample is 0.086 mag while the scatter for the 
+photometric sample is 0.117 mag.
 
 \begin{figure*}[htb]
     \centering
-    \plotone{metallicity_scatter}
+    \plotone{f11}
     \caption{\emph{Left:} The distribution of vertical displacements imposed
     by the metallicity distribution of the APOGEE sample using the raw MIST
     isochrones. All stars are assumed to have a known temperature of 5000 K. 
     Not shown are two very metal-poor stars which are off the plot to the 
-    right. \emph{Right:} Same as the left, except the MIST K-band magnitudes
-are corrected by the empirical correction in
-\cref{fig:met_trend}.}\label{fig:met_spread}
+    right. \emph{Right:} Same as the left, except the MIST \(Ks\)-band 
+    magnitudes are corrected by the empirical correction in
+\cref{fig:met_trend} and the two most metal-poor stars are off the figure to
+the left.}\label{fig:met_spread}
 \end{figure*}
 
 This modest increase in the scatter for the photometric sample is surprising,
-especially given the strong dependence of K-band magnitude on metallicity shown
-in \cref{fig:metallicity} predicted by the MIST isochrones. We believe that the
-reduced scatter is real, and that the MIST bolometric corrections overestimate 
-the dependence of K-band luminosity on metallicity. We demonstrate that the
-metallicity dependence of the isochrones by measuring the scatter in vertical
-displacement of an artificial population of stars which differ only by 
-metallicity. We assume all stars have a temperature of 5000 K, have an age
-of 1 Gyr, and have metallicities drawn from the APOGEE cool dwarf distribution
-shown in \cref{fig:metallicity}.
+especially given the strong dependence of \(Ks\)-band magnitude on metallicity 
+predicted by the MIST isochrones shown in the right panel of 
+\cref{fig:metallicity}. We believe that the reduced scatter is real, and that 
+the MIST bolometric corrections overestimate the dependence of \(Ks\)-band 
+luminosity on metallicity. We demonstrate the metallicity dependence of 
+the isochrones by measuring the 
+scatter in vertical displacement of an artificial population of stars which 
+differ only by metallicity. We assume all stars have a temperature of 5000 K, 
+have an age of 1 Gyr, and have metallicities drawn from the APOGEE cool dwarf 
+metallicity distribution (shown in the left panel of \cref{fig:metallicity}).
 
 We display two realizations of this population in \cref{fig:met_spread}: one
-using K-band magnitudes predicted by MIST, and another applying the
-metallicity-dependent correction in \cref{fig:met_trend}.
-The left-hand panel illustrates the distribution of vertical displacements 
-using the raw MIST K-band absolute magnitudes while the right-hand panel
-uses the empirically-corrected K-band magnitudes. The scatter of the two
-populations are 0.14 mag and 0.10 mag, respectively, indicating that the
-corrected distribution has a lower scatter due to metallicity.
-As is evident from the corrected sample on the right side of 
+using \(Ks\)-band magnitudes predicted by MIST (left), and another applying the
+metallicity-dependent correction in \cref{fig:met_trend} (right).
+The scatter of the two populations are 0.14 mag and 0.10 mag, respectively, 
+indicating that the corrected distribution has a lower scatter. As is evident 
+from the corrected sample on the right side of 
 \cref{fig:met_spread}, the reduction in the width of the main 
 sequence is driven by a cutoff at large, positive vertical displacements.
 The origin of this cutoff comes from the metallicity-dependence of the empirical 
 correction in \cref{fig:metallicity}; metal-poor stars are forced to smaller 
 vertical displacements compared to the MIST predictions. We note that the MIST 
-models predict that the metallicity dependence K-band is similar to the V-band,
-which indicates that this is a feature of hte luminosity dependence of the main
-sequence locus, not a peculiar feature of the K-band bolometric corrections.
+models predict that the metallicity dependence \(Ks\)-band is similar to the
+\(V\)-band, which indicates that the predicted scatter is a feature of the 
+luminosity dependence of the main sequence locus, not a peculiar feature of 
+the \(Ks\)-band bolometric corrections.  
+
+\subsection{Characterizing the EB Distribution}
+
+\Kepler{}'s short 30 minute cadence allows it to detect essentially all eclipsing
+main-sequence binaries. Even the shortest-period systems become detectable
+through ellipsoidal variations rather than through eclipses. As a result of
+\Kepler{}'s completeness at these short periods, the distribution of eclipsing
+binaries is solely determined by geometry, with an eclipse probability for circular 
+orbits given as \((R_1 + R_2)/a\), where \(R_1\) and \(R_2\) are the primary 
+and secondary radii, and \(a\) is the semimajor axis of the orbit. Given the 
+period distribution of the eclipsing binaries, as well as assumptions about 
+the masses and radii of the component stars, the period distribution of the 
+full binary sample can be derived using just the eclipse probability. We use
+the expression assuming circular orbits, which is justified because
+short-period, low-mass systems are overwhelmingly observed to be circularized
+\citep{Raghavan10,VanEylen16}. 
+
+We infer the primary radius by mapping temperature to radius in the MIST
+isochrones. Depending on whether the analysis is done in the context of the
+spectroscopic sample or the photometric sample, the appropriate temperature
+will be used.
+
+To simplify the calculation, we assume that the secondaries are half as massive 
+as the primaries, which is generally consistent with a flat mass-ratio 
+distribution \citep{Raghavan10}. More massive secondaries would reduce the 
+predicted number of non-eclipsing systems. 
+
+While the semimajor axis isn't an observable we infer it from the orbital
+period using \Kepler{}'s third law, which requires masses for the two
+components. We infer masses using a method similar to the radii above: the
+primary mass is mapped from \Teff{}, while the secondary mass assumes a flat
+mass function.
+
+Given these assumptions, an estimate of the orbital period distribution 
+for all short-period \Kepler{} binaries on the unevolved lower main sequence is 
+shown in \cref{fig:ebdist}. The eclipsing binaries range from making up almost 
+15\% of the total population of binaries in the in the shortest-period bin in 
+\cref{fig:ebdist} to 6\% in the longest-period bin, hence they are not a 
+negligible segment of the population. \citet{McQuillan14} excluded eclipsing 
+binaries from their analysis of rotation in the \Kepler{} field due to concerns 
+that the eclipse signal would dominate the period. In order to obtain an 
+unbiased view of the binary population at short periods, we calculate vertical 
+displacements for the \Kepler{} eclipsing binaries as well and include them in 
+our statistical analysis in Section~\ref{sec:results}. This treatment assumes that 
+orbital period is identical to the rotation period, which should certainly be 
+true for synchronized systems; we address the question of synchronicity 
+directly in Section~\ref{sec:synch}.
+
+\subsection{Binarity and Temperature Estimation}
+
+\begin{figure}[htb]
+    \centering
+    \plotone{f19}
+    \caption{The sample of APOGEE targets analyzed by \citet{ElBadry18b} for
+    spectroscopic signs of a companion. Black points indicate the APOGEE DR14 
+values for the targets. Violet points indicate the revised temperatures, and the
+\(Ks\)-band luminosity excess derived from the revised temperature and 
+metallicity in \citet{ElBadry18b}.}
+    \label{fig:elbadry_excess}
+\end{figure}
+
+While we assumed that objects showing large vertical displacement were
+binaries, our sample includes an abundance of systems with vertical
+displacements greater than 0.75 mag, some greater than even 1.3 mag. One
+obvious explanation for these systems is that they are multiple systems 
+where each component contributes substantially to the luminosity. One other 
+explanation is that the secondary causes biases the observed temperature to be 
+cooler than the actual primary temperature causing the single-star luminosity 
+to be underestimated. This phenomenon is expected to occur for both 
+photometric and spectroscopic temperatures \citep{Pinsonneault12,ElBadry18a}. 
+
+We can test the effect of binarity on the estimated temperature by using the
+APOGEE DR13 targets whose spectra were fit for multiple components
+\citep{ElBadry18b}. In cases where a two-component fit was favored, temperature
+were published for both the primary and secondary. With \Gaia{} DR2 parallaxes,
+we can test how often two photometric components were successfully
+detected. All the DR13 objects analyzed by \citet{ElBadry18b} are shown in
+\cref{fig:elbadry_excess} with both the ASPCAP and decomposed primary 
+temperatures.
+
+The overall behavior in the \citet{ElBadry18b} sample is that the effect of 
+binarity is substantial. For many of the intermediate mass-ratio objects, the 
+ASPCAP-inferred primary temperature may be off by several hundred Kelvin, 
+leading an overestimation of the \(Ks\)-band vertical displacement by up to 
+0.3 mag. The difference in temperature is less severe for targets with high 
+luminosity excesses, which is to be expected because the two stellar 
+components would have similar spectra. However, the effect is still 
+non-negligible. For the purpose of flagging photometric binaries, this effect
+is beneficial, as it increases the contrast of lower mass-ratio systems
+against the single stars. To characterize the luminosity-ratio of the 
+components, however, the offset of temperatures would need to be taken into 
+account.  The increased displacement due to biased temperatures may also 
+contribute to the observed overabundance of photometric binaries with respect 
+to a flat mass distribution seen above. 
+
+While the two-component fit produces results that overall seem reasonable, many
+of its decompositions were not compatible with the vertical displacement. Many
+of the photometric binaries were not flagged as requiring two-component fits.
+Additionally, two of the targets showing essentially no vertical displacement
+were flagged as having substantial modifications to the temperature from a
+companion. Nonetheless, the results of the analysis by \citet{ElBadry18b} are
+impressive given that it did not make use of \Gaia{} parallaxes. Future
+analyses may want to make use of the vertical displacement when flagging
+spectra for multiple-component fits.
 
 \section{Results and Discussion}
 \label{sec:results}
 
-\begin{figure}[htb]
-    \centering
-    \plotone{ebdist}
-    \caption{The observed period distribution of all eclipsing binaries with
-    \Teff{} < 5250 K from \citet{Pinsonneault12} and vertical displacement less
-than 1.3 mag is shown in red. The period distribution of the full binary
-distribution inferred from the eclipsing binaries is shown in black. The
-normalization factor is the total number of Kepler cool dwarfs. Error bars
-represent 1-\(\sigma\) Poisson confidence intervals.}\label{fig:ebdist}
-\end{figure}
-
-The most fundamental sample for understanding binarity in the \Kepler{} field
-is the \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16}. With
-\Kepler{}'s continuous monitoring and a long baseline of 4 years, the eclipsing 
-binary sample for orbital periods on the order of 20 days should be complete
-\citep{Kirk16}.
-Whether a binary is observed to eclipse or not depends solely on its geometry,
-with an eclipse probability for circular orbits given as \((R_1 + R_2)/a\), where \(R_1\) and 
-\(R_2\) are the primary and secondary radii, and \(a\) is the semimajor axis of
-the orbit. Given the period distribution of the eclipsing binaries, as well as
-assumptions about the masses and radii of the component stars, the period
-distribution of the full binary sample can be derived using just the eclipse
-probability. This expression assumes circular orbits, which is justified because
-short-period, low-mass systems are overwhelmingly observed to be circularized
-\citep{Raghavan10,VanEylen16}. To simplify the calculation, we
-assume that the secondaries are half as massive as the primaries, which is
-generally consistent with a flat mass-ratio distribution \citep{Raghavan10}. 
-More massive secondaries would reduce the predicted number of non-eclipsing 
-systems. Given these assumptions, an estimate of the orbital period distribution 
-for all short-period \Kepler{} binaries on the unevolved lower main sequence is 
-shown in \cref{fig:ebdist}, assuming radii and masses inferred from \Teff{} 
-using MIST isochrones.
-
-The eclipsing binaries range from making up almost 15\% of the total population 
-of binaries in the in the shortest-period bin in \cref{fig:ebdist} to 6\% in the 
-longest-period bin, hence they are not a negligible segment of the
-population. \citet{McQuillan14} excluded eclipsing binaries from their analysis
-of rotation in the \Kepler{} field due to concerns that the eclipse signal would
-dominate the period. In order to obtain an unbiased view of the binary
-population at short periods, we include the \Kepler{} eclipsing binaries in our
-statistical analysis. This treatment assumes that orbital period is identical
-to the rotation period, which should certainly be true for synchronized
-systems; we address the question of synchronicity directly later on.
+\subsection{Vertical Displacements of Rapid Rotators}
 
 After successfully calculating the vertical displacement of the full sample, we
 now attempt to distinguish between single and binary stars. As noted in the
@@ -804,7 +910,7 @@ mag.
 \begin{figure*}[htb]
     \centering
     \epsscale{1.1}
-    \plotone{apogee_rapid_excess}
+    \plotone{f13}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of cool 
         APOGEE targets with \citet{McQuillan14} periods >10 days, between 
         7--10 days, 1.5--7 days, and <1.5 days. Pink stars denote 
@@ -829,33 +935,27 @@ Vertical displacements in those bins of rotation period are shown in
 \cref{fig:apogee_rapid_excess}. Nearly all of the rapid rotators with periods 
 between 1.5--7 days are photometric binaries, in contrast to the slow rotators
 with periods greater than 10 days, which have a distinct single star sequence. 
-Angular momentum loss due to stellar winds acting over a billion years is
-expected to deplete the short-period regime of single stars. The transitional 
-periods between 7--10 days have a binary fraction intermediate to the 
-rapid and slow regimes. The bin with periods shorter than 1.5 day is not expected
-to behave like detached, eclipsing binaries due to potential contamination from 
-contact binaries, ellipsoidal variables and blended pulsators \citep{VanEylen16}. 
+The depletion of the single-star sequence in the short-period regime is likely 
+due to angular momentum loss due to stellar winds acting over a billion years. 
+The transitional periods between 7--10 days have a binary fraction 
+intermediate to the rapid and slow regimes. The bin with periods shorter than 
+1.5 day is not expected to behave like detached, eclipsing binaries due to 
+potential contamination from contact binaries, ellipsoidal variables and 
+blended pulsators \citep{VanEylen16}. 
 
 To quantify the significance the excess binary fraction in the rapid rotators, 
 we compare the photometric binary fraction of the short-period bin to the
-binary fraction of the full sample. In order to accurately characterize the 
-binarity of short-period systems, we include the \Kepler{} eclipsing binaries, 
-which were excluded by \citet{McQuillan14} to avoid contaminating signal from 
-the eclipses. The shortest-period systems are expected to be synchronized, so
-we assume that the rotational period is identical to the orbital period. 
-The eclipse probability for these short-period binaries can be as high as 40\% 
-\citep{Kirk16}, hence ignoring this population would severely
-bias the underlying sample. For systems where the orbital period is too long
-for synchronization, this assumption would break down and the orbital period
-distribution would behave differently from the rotational period distribution.
-We will perform a check for this effect further below.
+binary fraction of the full sample. As mentioned previously, we include the 
+\Kepler{} eclipsing binaries, to accurately characterize the binarity of
+short-period systems.
 
 We find that the photometric binary fraction with the inclusive and conservative 
 threshold for the full APOGEE sample with temperatures between 4000--5250 K is 
-38\% and 23\%, respectively. For the bin with rotational periods between 
-1.5--7 days the binary fraction using the inclusive and conservative cuts is
-71\% and 67\%, which are larger than the binary fraction of all cool APOGEE 
-dwarfs by a p-value of \(5 \times 10^4\) and \(4 \times 10^4\), respectively. 
+38\% and 23\%, respectively. For the rapidly-rotating bin with rotational 
+periods between 1.5--7 days the binary fraction using the inclusive and 
+conservative cuts is 71\% and 67\%, which are larger than the binary fraction 
+of all cool APOGEE 
+dwarfs with a p-value of \(5 \times 10^{-4}\) and \(4 \times 10^{-4}\), respectively. 
 The binary fraction for stars with periods between 7--10 days is 48\% for both 
 the inclusive and conservative cuts; they are marginally excluded with p-values
 of 0.24 and 0.01. For a long-period interval from 10--15 days, the binary 
@@ -866,7 +966,7 @@ of the full sample.
 \begin{figure*}[htb]
     \centering
     \epsscale{1.1}
-    \plotone{full_mcquillan_rr_excess}
+    \plotone{f14}
     \caption{\emph{Top Left to Bottom Right:} Vertical displacement of all 
         cool \citet{McQuillan14} targets in period bins >10 days, 
         7-10 days, 1.5-7 days, and <1.5 days. Pink stars 
@@ -878,15 +978,15 @@ of the full sample.
 
 While the spectroscopic sample can show trends between rotation and binarity in
 large bins, the substantially larger photometric sample is needed to 
-effectively characterize the rapid rotators. The vertical displacement of stars 
-in each period bin is shown in \cref{fig:mcq_rapid_excess}. With the 
-substantially larger number of objects in each bin, the absence of the
-single-star sequence in the rapid rotators is starker.
+effectively characterize the rapid rotators. The vertical displacement of the
+photometric sample in each period bin is shown in \cref{fig:mcq_rapid_excess}. 
+With the substantially larger number of objects in each bin, the absence of 
+the single-star sequence in the rapid rotators is starker.
 
 \begin{figure*}[htb]
     \centering
     \epsscale{1.1}
-    \plotone{mcquillan_transition}
+    \plotone{f15}
     \caption{Same as \cref{fig:mcq_rapid_excess} except with the period ranges
     7--9 days, 9--11 days, 11--13 days, and 13--15 days.}
     \label{fig:mcquillan_transition}
@@ -902,14 +1002,14 @@ is consistent with the overall trend in temperature seen in
 
 \begin{figure*}[htb]
     \centering
-    \plotone{binary_fraction}
+    \plotone{f16}
     \caption{\emph{Top Left:} The photometric binary function for the 
-        inclusive photometric binary threshold (\(\Delta K < -0.2\) mag). The 
+        inclusive photometric binary threshold (\(\Delta \MK{} < -0.2\) mag). The 
         photometric binary fraction for the full sample analyzed by 
         \citet{McQuillan14} is shown as the dotted line. Error bars are 
         1-\(\sigma\) binomial confidence intervals. \emph{Top Right:} Same as 
         the previous plot, except using the more conservative threshold 
-        (\(\Delta K < -0.3\) mag). \emph{Bottom left:} The period distribution of the photometric binary (solid green) 
+        (\(\Delta \MK{} < -0.3\) mag). \emph{Bottom left:} The period distribution of the photometric binary (solid green) 
         and photometric single (dashed purple) samples, each normalized by the 
         total number of photometric binaries and photometric single stars 
         analyzed by \citet{McQuillan14}, respectively, using the inclusive
@@ -923,10 +1023,10 @@ In order to understand the low-period edge of the single-star population, as
 well as the cutoff period for the tidally-synchronized binaries, we need to
 quantify the behavior illustrated in
 \cref{fig:mcq_rapid_excess,fig:mcquillan_transition}. One measure to trace
-changes in behavior between the binaries and single stars is what we call the 
-``photometric binary function'', which denotes the photometric binary
-fraction as a function of rotation period. The photometric binary function is 
-shown in the top row of \cref{fig:binary_fraction}. As was 
+changes in behavior between the binaries and single stars with rotation is 
+what we call the ``photometric binary function'', which denotes the 
+photometric binary fraction as a function of rotation period. The photometric 
+binary function is shown in the top row of \cref{fig:binary_fraction}. As was 
 qualitatively shown in \cref{fig:mcquillan_transition}, the photometric binary
 function is high for rotation periods below 7 days, above which it begins to
 decrease, which is expected for the contribution of the
@@ -935,10 +1035,10 @@ mean binarity of the full sample until around 9--11 days, after which the
 single-stars dominate the population.
 
 We also find that the period dependence of the photometric binaries and
-photometric singles differ in the short-period domain. The fraction of
-photometric binaries as well as the fraction of photometric single stars is 
-given in the bottom row of \cref{fig:binary_fraction} as a function of period 
-for both the inclusive and 
+photometric singles differ in the short-period domain. The period distribution
+of photometric binaries as well as the period distribution of photometric 
+single stars is given in the bottom row of \cref{fig:binary_fraction} as a 
+function of period for both the inclusive and 
 conservative photometric binary thresholds. The number of photometric binaries 
 and photometric single stars both decrease in the short-period regime compared to the 
 long-period regime; however the photometric single stars decrease much more 
@@ -950,6 +1050,9 @@ greater than 7 days for both the inclusive and conservative photometric binary
 thresholds. The relative contributions of photometric and single stars then 
 become fixed past 11 days, consistent with the flattening of the photometric 
 binary fraction. 
+
+\subsection{Comparison with Eclipsing Binaries}
+\label{sec:synch}
 
 Given the radical difference in behavior between the photometric binaries and
 photometric single stars in the short-period regime, we propose that the 
@@ -966,20 +1069,22 @@ days is \(67^{+3.3}_{-3.5}\%\) with the inclusive threshold and
 \(59^{+3.6}_{-3.6}\%\) with the conservative threshold.  Given the
 uncertainties, the two photometric binary fractions are just outside of one 
 sigma away from each other. A slightly higher photometric binary fraction for
-the eclipsing binaries is to be expected because photometric binaries have
-larger secondaries, hence have a larger eclipse probability.
+the eclipsing binaries is also to be expected because photometric binaries 
+have larger secondaries, hence have a larger eclipse probability.
 
 \begin{figure}[htb]
     \centering
-    \plotone{eclipseprob}
-    \caption{Comparison of rapid rotator period distribution and eclipsing
-    binary. The period distribution of the \citet{McQuillan14} sample is shown
-as a blue solid histogram, while the period distribution of the eclipsing binaries
-is shown as the red histogram. Both distributions are normalized to the total
-number of objects analyzed by \citet{McQuillan14} and in the EB catalog. The predicted EB 
-distribution assuming the \citet{McQuillan14} sample consists of binaries 
-inclined enough to show starspot modulation, but not inclined enough to eclipse. 
-Error bars represent 1-\(\sigma\) Poisson confidence 
+    \plotone{f17}
+    \caption{Comparison of the rapid rotator and eclipsing
+    binary period distributions. The period distribution of the 
+    \citet{McQuillan14} sample is shown as a blue solid histogram, while the 
+    period distribution of the eclipsing binaries is shown as the red 
+    histogram. Both distributions are normalized to the total number of 
+    objects analyzed by \citet{McQuillan14} and in the EB catalog. The 
+    predicted EB distribution (red dashed line) uses the observed EB orbital
+    period distribution to predict the period distribution of binaries 
+    inclined enough to show starspot modulation, but not inclined enough to 
+    eclipse. Error bars represent 1-\(\sigma\) Poisson confidence 
 intervals.}\label{fig:eclipseprob}
 \end{figure}
 
@@ -1000,24 +1105,42 @@ population of eclipsing binaries, we predict the period distribution of
 non-eclipsing binaries in \cref{fig:eclipseprob}. 
 
 The two period distributions match well up to 7 days, indicating
-that the rotational period distribution is reflects the orbital period
+that the rotational period distribution reflects the orbital period
 distribution for the eclipsing binaries. The period at which the data diverges
 from the prediction is also similar to the period where the binary fraction 
 drops in \cref{fig:binary_fraction}. The concordance of these two periods 
-suggests that the short-period systems follow a 
-rotational period distribution compatible with the eclipsing binaries, while 
-the long-period systems become dominated by a different 
-period distribution. Our physical interpretation for this phenomenon is that the
-short-period systems are tidally-synchronized binaries, which remain 
+suggests that the short-period systems follow a rotational period distribution 
+compatible with the orbital period distribution of eclipsing binaries, while 
+the long-period systems follow a different rotational
+period distribution. Our physical interpretation for this phenomenon is that 
+the short-period systems are tidally-synchronized binaries, which remain 
 synchronized at least through an orbital period of 7 days. At periods longer
-than 7 days, the situation becomes more complicated, with the transition from
-synchronized to nonsynchronized systems occurring beneath the tail of
+than 7 days, the picture becomes more complicated, with the transition from
+synchronized to unsynchronized systems overlapping with the tail of
 rapidly-rotating single stars and wide binaries. Determining the
 synchronization cutoff period will require disentangling these populations.
 
+Assuming that the rapid rotators and eclipsing binaries are two disjoint 
+samples of the same population between 1.5--7 periods, we can combine both
+samples to generalize properties of the rotation sample studied by
+\citet{McQuillan14}, assuming that they would have correctly identified the
+rotation period of the eclipsing binary as the orbital period. We calculate 
+that \(1.9 \pm 0.1\%\) of the sample analyzed by \citep{McQuillan14} have
+rotation periods between 1.5--7 days. As noted previously, the
+rapid rotators and eclipsing binaries should be sensitive to 92\% of the most
+inclined systems. Correcting for the low-inclination systems yields that \(2.0
+\pm 0.1\%\) of systems analyzed by \citet{McQuillan14} should be synchronized
+binaries with orbital periods between 1.5--7 days. In a sample of photometric
+binaries, the short-period systems will be more prominent. Systems with
+rotation periods between 1.5--7 days make up \(3.4 \pm 0.3\%\) of photometric
+binaries under our inclusive threshold, and \(4.5 \pm 0.4\%\) under our
+conservative threshold.
+
+\subsection{The High Photometric Binary Fraction}
+
 \begin{figure}[htb]
     \centering
-    \plotone{photometric_massratio}
+    \plotone{f18}
     \caption{Vertical displacement of a binary with a 0.7 M\(_\sun\), solar
     metallicity primary as a function of mass ratio using MIST models. The
 violet and green dashed lines denote the mass-ratio at which the vertical
@@ -1025,40 +1148,53 @@ displacement exceeds -0.3 and -0.2  mag, which are mass-ratios of 0.79 and
 0.68.}\label{fig:photometric_massratio}
 \end{figure}
 
-We attempt to generalize our results from just the photometric binaries to the
-full binary population. This generalization requires a mapping between the
-observed photometric binary fraction and the true binary fraction. We use the
-MIST models to predict the fraction of binaries which will be detected as
-photometric binaries under the assumption of a flat mass-ratio distribution
-\citep{Raghavan10}. As illustrated in \cref{fig:photometric_massratio}, for a 
-0.7 solar mass star only mass-ratios greater than 0.70 result in photometric
-binaries according to the conservative binarity threshold, implying that only
+With evidence that the short-period systems may be dominated by binaries, we
+compare the mass-ratio distribution inferred from the observed photometric 
+binary fraction. We use the MIST models to predict the fraction of binaries 
+which will be detected as photometric binaries under the assumption of a flat 
+mass-ratio distribution \citep{Raghavan10}. As illustrated in 
+\cref{fig:photometric_massratio}, for a 0.7 solar mass star only mass-ratios 
+greater than 0.70 result in photometric binaries according to the conservative binarity threshold, implying that only
 30\% of the binary population in our sample should be detected as a photometric 
 binary, even if the secondary is not drawn from a steep relative IMF. This rough 
 calculation by itself is incompatible with the observed 
-short-period photometric binary fraction in \cref{fig:binary_fraction} of 0.75
-This contradiction requires that our assumption of a flat mass-ratio function 
-cannot hold, or that there are selection effects in the sample. We find that
-the median distance of the photometric single stars is 509 pc, while the median
-distance of the photometric binaries is 653 pc, consistent with photometric 
-binaries being detected to a larger volume than photometric singles. Attempting 
-to reconstruct the intrinsic mass-ratio distribution of tidally-synchronized 
-binaries is beyond the scope of this analysis.
+short-period photometric binary fraction in \cref{fig:binary_fraction} of 59\%.
 
-We validate many of these trends by revisiting them in the smaller, but more
-well-characterized spectroscopic sample. The spike in the binary fraction
-between 1--7 days (top rows of \cref{fig:binary_fraction}) can be seen in the 
-spectroscopic sample as well as the drop-off in photometric single stars at
-short periods (bottom rows of \cref{fig:binary_fraction}). However, the
-spectroscopic sample is so small that all rotational periods end up being
-consistent with the orbital period distribution of eclipsing binaries because
-the binomial error bars are too large.
+One potential factor which can increase the observed photometric binary
+fraction is Malmquist bias. Photometric binaries are intrinsically brighter
+than single stars, hence magnitude-limited surveys would detect them within a
+larger volume than single stars. We illustrate the effect of Malmquist bias for
+an artificial population with constant spatial density and a flat mass
+function in \cref{fig:photometric_massratio}. As expected, the observed
+mass-function increases because of the larger volume of binaries, but the 
+photometric binary fraction after accounting for Malmquist bias only increases
+to 45\%. We note that this is also an upper limit to the effect because the
+true spatial density of the \Kepler{} field should encounter an expoential
+dropoff, which would reduce the number of distant photometric binaries.
 
-Under the assumption that the rapid rotators with rotation periods less than 7
-days are tidally-synchronized binaries, while longer-period systems contain a
-mix of synchronized binaries and single stars, we can infer a lower limit
-to the synchronization period of 7 days. The original formulation by
-\citep{Zahn77} included an expression for the synchronization timescale for a
+
+
+This contradiction requires that either our assumption of a flat mass-ratio 
+function cannot hold, or that there are selection effects in the sample. We 
+find that the median distance of the photometric single stars is 509 pc, while 
+the median distance of the photometric binaries is 653 pc, consistent with 
+photometric binaries being detected to a larger volume than photometric 
+singles. Attempting to reconstruct the intrinsic mass-ratio distribution of 
+tidally-synchronized binaries is beyond the scope of this analysis.
+
+We validate many of the trends with period and binarity by revisiting them in 
+the smaller, but more well-characterized spectroscopic sample. The high 
+photometric binary function between 1.5--7 days (top rows of 
+\cref{fig:binary_fraction}) can be seen in the spectroscopic sample as well as 
+the drop-off in photometric single stars at short periods (bottom rows of 
+\cref{fig:binary_fraction}). However, the spectroscopic sample is too small 
+to meaningfully compare the eclipsing binaries and rapid rotators; the 
+orbital periods are within 1-\(\sigma\) binomial errors of the rotation periods 
+for all rotation periods.  
+
+The 7 day limit that we get for the synchronization period cutoff is compatible
+with previous theoretical expectations. The original formulation by
+\citet{Zahn77} included an expression for the synchronization timescale for a
 binary system given as \(t_{sync} = 10^4 ((1+q)/2q)^2 P^4 / R^6\) where \(t_{sync}\) is
 in years, \(q\) is the mass-ratio, \(P\) is in days, and \(R\) is the radius in
 solar radii. For a 4 Gyr old equal-mass field binary, this
@@ -1069,70 +1205,14 @@ constant which made tidal dissipation on the main sequence a factor of 5
 smaller. The new expression corresponds to a synchronization period of 10 days,
 which is also consistent with our findings.
 
-\begin{figure}[htb]
-    \centering
-    \plotone{ElBadry_Excess}
-    \caption{The sample of APOGEE targets analyzed by \citet{ElBadry18b} for
-    spectroscopic signs of a companion. Black points indicate the APOGEE DR14 
-values for the targets. Violet points indicate the revised temperatures, and the
-K-band luminosity excess derived from the revised temperature and metallicity
-in \citet{ElBadry18b}.}
-    \label{fig:elbadry_excess}
-\end{figure}
-
-While we assumed that objects showing large vertical displacement were
-binaries, our sample includes an abundance of systems with vertical
-displacements greater than 0.75 mag, some greater than even 1.3 mag. One
-obvious explanation for these systems is that they are multiple systems of
-comparable mass. Some of these targets may be multiple systems where each
-component contributes substantially to the luminosity. One other explanation is 
-that the secondary causes biases the observed temperature to be cooler than the 
-actual primary temperature causing the single-star luminosity to be 
-underestimated. This phenomenon occurs for both photometric and spectroscopic 
-temperatures \citep{Pinsonneault12,ElBadry18a}. 
-
-We can test the effect of binarity on the estimated temperature by using the
-APOGEE DR13 targets whose spectra were fit for multiple solutions
-\citep{ElBadry18b}. In cases where a two-component fit was favored, temperature
-were published for both the primary and secondary. With \Gaia{} DR2 parallaxes,
-we can actually test how often two photometric components were successfully
-detected. All the DR13 objects analyzed by \citet{ElBadry18b} are shown in
-\cref{fig:elbadry_excess} with both the ASPCAP and decomposed primary 
-temperatures.
-
-The overall behavior in the \citet{ElBadry18b} sample is that the effect of 
-binarity is substantial, leading to incorrectly-inferred magnitude excesses of
-up to 0.3 mag. For many of the intermediate mass-ratio objects, the 
-ASPCAP-inferred primary temperature may be off by several hundred Kelvin, 
-leading an overestimation of the K-band vertical displacement by up to 0.3 
-mag. The difference in temperature is less severe for targets with high 
-luminosity excesses, which is to be expected because the two stellar 
-components would have similar spectra. However, the effect is still 
-non-negligible. For the purpose of flagging photometric binaries, this effect
-is beneficial, as it increases the constrast of lower mass-ratio systems
-against the single stars. To characterize the luminosity-ratio of the 
-components, the offset of temperatures would need to be taken into account. 
-The increased displacement due to biased temperatures may also contribute 
-to the overabundance of photometric binaries with respect to a flat mass 
-distribution seen above. 
-
-While the two-component fit produces results that overall seem reasonable, many
-of its decompositions were not compatible with the vertical displacement. Many
-of the photometric binaries were not flagged as requiring two-component fits.
-Additionally, two of the targets showing essentially no vertical displacement
-were flagged as having substantial modifications to the temperature from a
-companion. Nonetheless, the results of the analysis by \citet{ElBadry18b} are
-impressive given that it did not make use of \Gaia{} parallaxes. Future
-analyses may want to make use of the vertical displacement when flagging
-spectra for multiple-component fits.
 
 \section{Conclusion}
 \label{sec:conclusions}
 
-We calculated K-band luminosity excesses above the main sequence for the full
+We calculated \(Ks\)-band luminosity excesses above the main sequence for the full
 \citet{McQuillan14} sample. As seen in both a spectroscopically-characterized
 subset as well as in the general sample, rapid rotators with periods between
-1--7 days show substantially larger luminosity excesses than the slower
+1.5--7 days show substantially larger luminosity excesses than the slower
 rotators. At periods longer than 7 days, the rapidly rotating tail of the
 single-star population grows more numerous before dominating the sample at
 periods longer than 9 days. 
@@ -1171,21 +1251,19 @@ cutoff period for cool \Kepler{} dwarfs.
 RV follow-up of our non-eclipsing close binaries will provide a good resource
 for understanding these systems. RV orbital periods for non-eclipsing systems 
 will provide crucial confirmation of the subsynchronous binary population 
-discovered in \citet{Lurie17}. Our sample would also make an ideal sample for
-studies of the mass-ratio distribution for close binaries. Because it was
-detected through rotation, it should only be weakly biased with mass-ratio,
-which has long been a concern with studies of stellar multiplicity
+discovered in \citet{Lurie17}. The rapid rotators would also make an ideal 
+sample for studies of the mass-ratio distribution for close binaries. Because 
+they were detected through rotation, they should only be weakly biased with 
+mass-ratio, which has long been a concern with studies of stellar multiplicity
 \citep{Halbwachs03}.
-
-
 
 A background population of tidally-synchronized binaries requires caution for
 interpreting gyrochronology in the \Kepler{} field. Attempting to characterize
 the age distribution of the \Kepler{} field through gyrochronology without 
 taking synchronized binaries into account would under-estimate the age, 
 potentially biasing future population studies of \Kepler{} stars or planets. 
-In order to successfully short-period systems into a gyrochronology, either age 
-diagnostics independent of rotation or activity would have to be used, or
+In order to successfully short-period systems into a gyrochronology, either 
+age diagnostics independent of rotation or activity would have to be used, or
 tidally-synchronized binaries would have to be individually excluded, or
 modeled as a population.
 
@@ -1196,12 +1274,12 @@ successfully calibrate gyrochronology and angular momentum evolution models.
 The \Kepler{} field, which is rich in synchronized binaries, is an excellent 
 source of additional systems to study.
 
-We also note that the K-band bolometric corrections in the MIST isochrones
-overpredict the dependence on metallicity, even near solar metallicity. We
-derived corrections for trends imposed by the MIST isochrones which reduced the
-scatter in the single-star sequence. In the era of \Gaia{} parallaxes,
-additional testing can be done to validate bolometric corrections in the
-sparsely-calibrated NIR region.
+We also note that the \(Ks\)-band bolometric corrections in the MIST 
+isochrones overpredict the dependence on metallicity, even near solar 
+metallicity. We derived corrections for trends imposed by the MIST isochrones 
+which reduced the scatter in the single-star sequence. In the era of \Gaia{} 
+parallaxes, additional testing can be done to validate bolometric corrections 
+in the sparsely-calibrated NIR region.
 
 \acknowledgments
 

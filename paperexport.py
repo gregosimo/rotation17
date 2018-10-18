@@ -18,6 +18,8 @@ from astropy.io import ascii
 import statop as stat
 import functools
 import scipy
+from scipy.interpolate import UnivariateSpline
+from scipy.integrate import quad
 
 sys.path.append(os.path.join(os.environ["THESIS"], "scripts"))
 import path_config as paths
@@ -40,6 +42,10 @@ PAPER_PATH = paths.HOME_DIR / "papers" / "rotletter18"
 TABLE_PATH = PAPER_PATH / "tables"
 FIGURE_PATH = PAPER_PATH / "fig"
 PLOT_SUFFIX = "pdf"
+
+Protstr = r"$P_{\mathrm{rot}}$"
+Teffstr = r"$T_{\mathrm{eff}}$"
+MKstr = r"$M_{Ks}$"
 
 def build_filepath(toplevel, filename, suffix=PLOT_SUFFIX):
     '''Generate a full path to save a filename.'''
@@ -112,19 +118,19 @@ def write_rapid_rotator_tables():
     latex_tablefoot = (
         r"""\tablecomments{All objects in \citet{McQuillan14} with periods
         between 1.5--7 days and 4000 K < $\Teff{}$ < 5250 K. For objects with 
-        APOGEE observations, their APOGEE ID and [Fe/H] are given. This table is 
+        APOGEE observations, their APOGEE ID and \feh{} are given. This table is 
         published in its entirety in the machine-readable format. A portion is
         shown here for guidance regarding its form and content.}""")
     latexdict = {
         "col_align": "llcccccc", "caption": latex_caption, "tablefoot":
         latex_tablefoot, "units": {
-            r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
-            r"$\Delta K$": "mag", "$P_{rot}$": "day", "[Fe/H]": "dex"}}
+            r"$\Teff$": "K", r"\(K\)": "mag", r"\MK": "mag", 
+            r"$\Delta \MK$": "mag", Protstr: "day", r"\feh": "dex"}}
     latex_colnames = (
-            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
-            "$P_{rot}$", "[Fe/H]")
-    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f",
-                  "[Fe/H]": ".2f"}
+            "KIC", "APOGEE ID", r"$\Teff$", r"\(K\)", r"\MK", r"$\Delta \MK$", 
+            Protstr, r"\feh")
+    colformats = {r"$\Teff$": "g", "\MK": ".3f", r"$\Delta \MK$": ".3f",
+                  r"\feh": ".2f"}
     latex_table.write(
         str(TABLE_PATH / "table1.tex"), format="ascii.aastex", 
         latexdict=latexdict, overwrite=True, names=latex_colnames, 
@@ -178,19 +184,19 @@ def write_marginal_rotator_tables():
     latex_tablefoot = (
         r"""\tablecomments{All objects in \citet{McQuillan14} with periods
         between 7--11 days and 4000 K < $\Teff{}$ < 5250 K. For objects with 
-        APOGEE observations, their APOGEE ID and [Fe/H] are given. This table is 
+        APOGEE observations, their APOGEE ID and \feh{} are given. This table is 
         published in its entirety in the machine-readable format. A portion is
         shown here for guidance regarding its form and content.}""")
     latexdict = {
         "col_align": "llcccccc", "caption": latex_caption, "tablefoot":
         latex_tablefoot, "units": {
-            r"$\Teff$": "K", "K": "mag", "$M_K$": "mag", 
-            r"$\Delta K$": "mag", "$P_{rot}$": "day", "[Fe/H]": "dex"}}
+            r"$\Teff$": "K", r"\(K\)": "mag", r"\MK": "mag", 
+            r"$\Delta \MK$": "mag", Protstr: "day", r"\feh": "dex"}}
     latex_colnames = (
-            "KIC", "APOGEE ID", r"$\Teff$", "K", "$M_K$", r"$\Delta K$", 
-            "$P_{rot}$", "[Fe/H]")
-    colformats = {r"$\Teff$": "g", "$M_K$": ".3f", r"$\Delta K$": ".3f",
-                  "[Fe/H]": ".2f"}
+            "KIC", "APOGEE ID", r"$\Teff$", r"\(K\)", r"\MK", r"$\Delta \MK$", 
+            Protstr, r"\feh")
+    colformats = {r"$\Teff$": "g", "\MK": ".3f", r"$\Delta \MK$": ".3f",
+                  r"\feh": ".2f"}
     latex_table.write(
         str(TABLE_PATH / "table2.tex"), format="ascii.aastex", 
         latexdict=latexdict, overwrite=True, names=latex_colnames, 
@@ -219,7 +225,7 @@ def write_marginal_rotator_tables():
         formats=colformats)
 
 
-@write_plot("apogee_selection")
+@write_plot("f2")
 def apogee_selection_coordinates():
     '''Show the APOGEE and McQuillan samples in selection coordinates.'''
     clean_apogee = cache.clean_apogee_splitter()
@@ -290,17 +296,17 @@ def apogee_selection_coordinates():
     median_k_errup = np.median(fullsample[dwarfs]["M_K_err1"]) 
     median_k_errdown = np.median(fullsample[dwarfs]["M_K_err2"])
     ax1.errorbar(
-        [4200], [7.1], yerr=[[median_k_errdown], [median_k_errup]], 
+        [6500], [6.0], yerr=[[median_k_errdown], [median_k_errup]], 
         xerr=teff_error, elinewidth=3)
     ax1.set_xlim(7000, 3500)
-    ax1.set_ylim(8.2, -8)
-    ax1.set_xlabel("$T_{eff}$ (K)")
-    ax1.set_ylabel("Gaia $M_K$")
+    ax1.set_ylim(7.2, -8)
+    ax1.set_xlabel("{0} (K)".format(Teffstr))
+    ax1.set_ylabel(MKstr)
     ax1.legend(loc="upper left")
-    ax2.set_ylabel("Gaia $M_K$")
+    ax2.set_ylabel(MKstr)
     ax2.set_xlim(7000, 3500)
-    ax2.set_ylim(8.2, -8)
-    ax2.set_xlabel("$T_{eff}$ (K)")
+    ax2.set_ylim(7.2, -8)
+    ax2.set_xlabel("{0} (K)".format(Teffstr))
 
     # Print out the number of objects in each category.
     print("Number of asteroseismic targets: {0:d}".format(
@@ -312,7 +318,7 @@ def apogee_selection_coordinates():
         len(apogee2_koi) + len(apogee2_koi_control) + len(apogee2_monitor) +
         len(apogee_hosts)))
 
-@write_plot("mcquillan_selection")
+@write_plot("f1")
 def mcquillan_selection_coordinates():
     mcq = catin.mcquillan_with_stelparms()
     nomcq = catin.mcquillan_nondetections_with_stelparms()
@@ -320,7 +326,7 @@ def mcquillan_selection_coordinates():
     f, (ax2, ax3) = plt.subplots(
         1,2, figsize=(24, 12))
     teff_bin_edges = np.arange(4000, 7000, 50)
-    mk_bin_edges = np.arange(-7, 8, 0.02)
+    mk_bin_edges = np.arange(-3, 8, 0.02)
 
     count_cmap = plt.get_cmap("viridis")
     count_cmap.set_under("white")
@@ -352,18 +358,18 @@ def mcquillan_selection_coordinates():
     median_k_errup = np.median(stacked_mcq[dwarfs]["M_K_err1"]) 
     median_k_errdown = np.median(stacked_mcq[dwarfs]["M_K_err2"])
     ax2.errorbar(
-        [4200], [7.1], yerr=[[median_k_errdown], [median_k_errup]], 
+        [6500], [7.0], yerr=[[median_k_errdown], [median_k_errup]], 
         xerr=teff_error, elinewidth=3)
 
     ax2.set_xlim(7000, 4000)
-    ax2.set_ylim(8.2, -6)
-    ax2.set_ylabel("Gaia $M_K$")
-    ax2.set_xlabel(r"$T_{eff}$ (K)")
+    ax2.set_ylim(8.2, -3)
+    ax2.set_ylabel(MKstr)
+    ax2.set_xlabel("{0} (K)".format(Teffstr))
     ax2.set_title("Period detection density")
-    ax3.set_ylabel("Gaia $M_K$")
+    ax3.set_ylabel(MKstr)
     ax3.set_xlim(7000, 4000)
-    ax3.set_ylim(8.2, -6)
-    ax3.set_xlabel(r"$T_{eff}$ (K)")
+    ax3.set_ylim(8.2, -3)
+    ax3.set_xlabel(r"{0} (K)".format(Teffstr))
     ax3.set_title("Detection fraction")
     plt.setp(ax3.get_yticklabels(), visible=True)
 
@@ -548,7 +554,7 @@ def subtracted_K_plot():
     ax.set_xlabel("APOGEE Teff (K)")
     ax.set_ylabel(r"$M_K$ - $M_K$ (DSEP; [Fe/H] adjusted)")
 
-@write_plot("metallicity")
+@write_plot("f7")
 def dwarf_metallicity():
     '''Show the metallicity distribution of the cool dwarfs.'''
     full = cache.apogee_splitter_with_DSEP()
@@ -598,9 +604,10 @@ def dwarf_metallicity():
 #   ref_V = samp.calc_model_mag_fixed_age_alpha(
 #       5000, median, "V", age=1e9)
     ax2.plot(metspace, k_mets - ref_k, color=bc.blue, ls="-", marker="",
-             label="MIST Ks", lw=5)
+             label=r"MIST $\mathit{Ks}$", lw=5)
     ax2.plot(metspace, corrected_k_mets - (ref_k + metcorrect(median)), 
-             color=bc.orange, ls="-", marker="", label="Empirical Ks", lw=5)
+             color=bc.orange, ls="-", marker="", 
+             label=r"Empirical $\mathit{Ks}$", lw=5)
 #   ax2.plot(metspace, V_mets - ref_V, color=bc.blue, ls="-", marker="",
 #            label="V")
     ax2.plot(
@@ -622,7 +629,7 @@ def dwarf_metallicity():
     ax2.set_ylim(0.9, -0.3)
     ax2.legend(loc="center left")
 
-@write_plot("metallicity_scatter")
+@write_plot("f11")
 def metallicity_scatter():
     '''Plot the scatter in Delta-K caused by the metallicity distribution.'''
     full = cache.apogee_splitter_with_DSEP()
@@ -634,7 +641,7 @@ def metallicity_scatter():
         apo_dwarfs["K Excess"], apo_dwarfs["FE_H"], deg=2)
     metcorrect = np.poly1d(metcoeff)
 
-    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(40, 20), sharex=True,
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 12), sharex=True,
                                  sharey=True)
     # What does the Delta-K distribution look like from JUST the metallicity
     # distribution? Assume a single temperature and the metallicity
@@ -647,14 +654,13 @@ def metallicity_scatter():
     arr, bins, patches = ax1.hist(
         trueks - refk, bins=60, color=bc.blue, alpha=0.5, histtype="bar",
         range=(-0.5, 0.5))
-    ax1.set_xlabel(r"$M_K(MIST;T_{eff}=5000K) - M_K(MIST; T_{eff}=5000K; [Fe/H]=0.08)$")
+    ax1.set_xlabel("{0} Excess".format(MKstr))
     ax1.set_ylabel("N")
 
     arr, bins, patches = ax2.hist(
         correctedks - refk - metcorrect(median), bins=60, color=bc.blue,
         alpha=0.5, histtype="bar", range=(-0.5, 0.5))
-    ax2.set_xlabel(r"$(M_K(MIST;T_{eff}=5000K) + C([Fe/H])) - M_K(MIST;"
-                   "T_{eff}=5000K; [Fe/H]=0.08)$")
+    ax2.set_xlabel(r"Corrected {0} Excess".format(MKstr))
     ax2.set_ylabel("")
     ax1.set_xlim(-0.5, 0.5)
     print("MIST Scatter: {0:.2f}".format(np.std(trueks-refk)))
@@ -847,7 +853,7 @@ def median_over_metallicity():
     hr.invert_y_axis()
     plt.legend(loc="upper right")
 
-@write_plot("metallicity_correction")
+@write_plot("f5")
 def metallicity_corrected_excesses():
     '''Plot the indices corrected by metallicity.'''
     f, (ax1, ax2) = plt.subplots(
@@ -889,7 +895,7 @@ def metallicity_corrected_excesses():
     testx = np.linspace(-1.0, 0.5, 100, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
+    ax1.set_ylabel("{0} - {0} (MIST; 1 Gyr)".format(MKstr))
     ax1.set_ylim(0.3, -1.2)
     ax1.set_xlim(-0.55, 0.45)
     ax1.legend(loc="upper left")
@@ -904,11 +910,12 @@ def metallicity_corrected_excesses():
         coolsamp["FE_H"][binaries], residual[binaries], color=bc.black, 
         marker="o", ls="", label="Binary")
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
+    ax2.set_ylim(0.6, -1.4)
     hr.invert_y_axis(ax2)
     ax2.set_xlabel("[Fe/H]")
     ax2.set_ylabel("Residual")
 
-@write_plot("spec_teff_correction")
+@write_plot("f6")
 def spec_temperature_correction():
     f, (ax1, ax2) = plt.subplots(
         2, 1, gridspec_kw={"height_ratios": [2, 1]}, sharex=True, 
@@ -945,7 +952,7 @@ def spec_temperature_correction():
     testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("[Fe/H]-corrected K Excess")
+    ax1.set_ylabel(r"[Fe/H]-corrected {0} Excess".format(MKstr))
     ax1.set_ylim(0.3, -1.2)
     ax1.legend(loc="upper left")
     residual = coolsamp["Partly Corrected K Excess"] - cor_poly(coolsamp["TEFF"])
@@ -954,11 +961,12 @@ def spec_temperature_correction():
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
-    ax2.set_xlabel("$T_{eff}$ (K)")
+    ax2.set_xlabel("{0} (K)".format(Teffstr))
     ax2.set_ylabel("Residual")
     ax2.set_xlim(5250, 4000)
+    ax2.set_ylim(0.6, -1.4)
 
-@write_plot("phot_teff_correction")
+@write_plot("f9")
 def phot_temperature_correction():
     '''Plot the behavior of the sample over [Fe/H].'''
     f, (ax1, ax2) = plt.subplots(
@@ -996,7 +1004,7 @@ def phot_temperature_correction():
     testx = np.linspace(4000, 5250, endpoint=True)
     ax1.plot(testx, cor_poly(testx), color="red", linestyle="-", label="Fit")
     ax1.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
-    ax1.set_ylabel("$M_K$ - $M_K$ (MIST; [Fe/H]=0.08; 1 Gyr)")
+    ax1.set_ylabel("$M_{Ks}$ - $M_{Ks}$ (MIST; [Fe/H]=0.08; 1 Gyr)")
     ax1.set_ylim(0.3, -1.2)
     ax1.legend(loc="upper left")
     residual = coolsamp["Solar K Excess"] - cor_poly(coolsamp["SDSS-Teff"])
@@ -1005,7 +1013,7 @@ def phot_temperature_correction():
     ax2.plot([testx[0], testx[-1]], [0,0], 'k--', label="")
     hr.invert_y_axis(ax2)
     hr.invert_x_axis(ax2)
-    ax2.set_xlabel("$T_{eff}$ (K)")
+    ax2.set_xlabel("$T_{\mathrm{eff}}$ (K)")
     ax2.set_ylabel("Residual")
     ax2.set_xlim(5250, 4000)
 
@@ -1293,7 +1301,7 @@ def binary_function():
     ax.set_ylabel("N")
     print(binfitter)
 
-@write_plot("excess_hist")
+@write_plot("f10")
 def collapsed_met_histogram():
     '''Plot the distribution of K Excesses in the cool, unevolved sample.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1357,14 +1365,14 @@ def collapsed_met_histogram():
         lw=4, zorder=3)
     print("Width w/ metallicity: {0:.03f}".format(fittedmet.stddev_0.value))
     print("Width w/o metallicity: {0:.03f}".format(fittednomet.stddev_0.value))
-    ax1.set_xlabel("Corrected K Excess")
+    ax1.set_xlabel(r"Corrected {0} Excess".format(MKstr))
     ax1.set_ylabel("N")
-    ax2.set_xlabel("Corrected K Excess")
+    ax2.set_xlabel(r"Corrected {0} Excess".format(MKstr))
     ax1.set_ylabel("")
     ax1.set_ylim(0, 100)
     ax1.legend(loc="upper left")
 
-@write_plot("sample_dk")
+@write_plot("f3")
 def K_Excess_hr_diagram():
     '''Plot a full HR diagram in subtracted K space.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1394,10 +1402,10 @@ def K_Excess_hr_diagram():
     ax1.set_xlim(6600, 3500)
     ax1.set_ylim(2, -4)
     ax1.legend(loc="upper left")
-    ax1.set_xlabel("$T_{eff}$ (K)")
-    ax1.set_ylabel("K Excess")
+    ax1.set_xlabel("$T_{\mathrm{eff}}$ (K)")
+    ax1.set_ylabel("$M_{Ks}$ - $M_{Ks}$ (MIST; 1 Gyr)")
 
-@write_plot("ages")
+@write_plot("f4")
 def age_isochrones():
     '''Plot age isochrones on the APOGEE sample.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1445,10 +1453,10 @@ def age_isochrones():
     ax2.plot([5250, 5250], [-1.5, 0.5], 'k:')
     ax2.set_xlim([6500, 3500])
     ax2.set_ylim(0.5, -1.3)
-    ax2.set_xlabel("$T_{eff}$ (K)")
-    ax2.set_ylabel("$M_K$ - $M_K$ (MIST; 1 Gyr)")
+    ax2.set_xlabel("$T_{\mathrm{eff}}$ (K)")
+    ax2.set_ylabel("$M_{Ks}$ - $M_{Ks}$ (MIST; 1 Gyr)")
 
-@write_plot("Teff_relation")
+@write_plot("f8")
 def teff_comparison():
     targs = cache.apogee_splitter_with_DSEP()
     dwarfs = targs.subsample(["Dwarfs", "APOGEE MetCor Teff"])
@@ -1473,8 +1481,8 @@ def teff_comparison():
     print("The scatter in the relation is {0:4.0f} K".format(scatter))
     print("The typical APOGEE uncertainty is {0:4.0f} K".format(
         np.median(comparable_dwarfs["TEFF_ERR"])))
-    ax.set_xlabel("APOGEE Teff (K)")
-    ax.set_ylabel("Pinsonneault Teff (K)")
+    ax.set_xlabel("APOGEE $T_{\mathrm{eff}}$ (K)")
+    ax.set_ylabel("Pinsonneault et al. (2012) $T_{\mathrm{eff}}$ (K)")
     ax.set_xlim(4000, 5250)
 
 def teff_comparison_mcquillan():
@@ -1620,7 +1628,7 @@ def compare_McQuillan_to_nondetections():
     plt.ylabel("N (< K) / N")
     plt.legend(loc="upper left")
 
-@write_plot("ElBadry_Excess")
+@write_plot("f19")
 def el_badry_excess():
     '''Plot the distribution of K Excesses using the El-Badry temperatures.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1643,11 +1651,11 @@ def el_badry_excess():
             multiples["TEFF"], multiples["Corrected K Excess"], 
             multiples["T_eff [K]"], multiples["Corrected ElBadry K Excess"]):
         ax.arrow(apoteff, apoex, (elbteff-apoteff), (elbex-apoex))
-    ax.set_xlabel("$T_{eff}$ (K)")
-    ax.set_ylabel("Corrected K Excess")
+    ax.set_xlabel("{0} (K)".format(Teffstr))
+    ax.set_ylabel("Corrected {0} Excess".format(MKstr))
     ax.legend(loc="lower right")
 
-@write_plot("apogee_rapid_excess")
+@write_plot("f13")
 def rapid_rotator_bins():
     '''Plot the distribution of K Excesses for different bins of rotation.'''
     targs = cache.apogee_splitter_with_DSEP()
@@ -1664,10 +1672,11 @@ def rapid_rotator_bins():
     cons_limit = -0.3
     mcq_period_indices = np.digitize(mcq_cooldwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_cooldwarfs["period"], periodbins)
-    titles = ["{0:g} day < Prot <= {1:g} day".format(p2, p1) for (p1, p2) in
+    titles = ["{0:g} day < {2} <= {1:g} day".format(p2, p1, Protstr) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
-    titles.insert(0, "Prot > {0:g} day".format(periodbins[0]))
-    titles.insert(len(titles), "Prot <= {0:g} day".format(periodbins[-1]))
+    titles.insert(0, "{1} > {0:g} day".format(periodbins[0], Protstr))
+    titles.insert(len(titles), "{1} <= {0:g} day".format(
+        periodbins[-1], Protstr))
     for i, (title, ax) in enumerate(zip(titles, np.ravel(axes))):
         mcq_periodbin = mcq_cooldwarfs[mcq_period_indices == i]
         eb_periodbin = eb_cooldwarfs[eb_period_indices == i]
@@ -1690,10 +1699,10 @@ def rapid_rotator_bins():
         ax.plot([4000, 5250], [-0.0, -0.0], 'k-', lw=2)
 #       plt.setp(ax.get_yticklabels(), visible=False)
         axes[0][0].legend(loc="upper right")
-    axes[0][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_xlabel("$T_{eff}$ (K)")
-    axes[1][1].set_xlabel("$T_{eff}$ (K)")
+    axes[0][0].set_ylabel("Corrected {0} Excess".format(MKstr))
+    axes[1][0].set_ylabel("Corrected {0} Excess".format(MKstr))
+    axes[1][0].set_xlabel("{0} (K)".format(Teffstr))
+    axes[1][1].set_xlabel("{0} (K)".format(Teffstr))
     axes[0][0].set_xlim(5250, 4000)
     axes[0][0].set_ylim(0.3, -1.25)
 
@@ -1708,7 +1717,7 @@ def plot_teff_prov():
         clean.data["teff"], 0.03, "Ks", age=1e9, model="MIST")
 
 
-@write_plot("full_mcquillan_rr_excess")
+@write_plot("f14")
 def mcquillan_rapid_rotator_bins():
     '''Plot the rapid rotator bins in the full McQuillan sample.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -1723,10 +1732,12 @@ def mcquillan_rapid_rotator_bins():
     cons_limit = -0.3
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
-    titles = ["{0:g} day < Prot <= {1:g} day".format(p2, p1) for (p1, p2) in
+    Protstr = r"$P_{\mathrm{rot}}$"
+    titles = ["{0:g} day < {2} <= {1:g} day".format(p2, p1, Protstr) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
-    titles.insert(0, "Prot > {0:g} day".format(periodbins[0]))
-    titles.insert(len(titles), "Prot <= {0:g} day".format(periodbins[-1]))
+    titles.insert(0, "{1} > {0:g} day".format(periodbins[0], Protstr))
+    titles.insert(len(titles), "{1} <= {0:g} day".format(
+        periodbins[-1], Protstr))
     for i, (title, ax) in enumerate(zip(titles, np.ravel(axes))):
         mcq_periodbin = dwarfs[mcq_period_indices == i]
         eb_periodbin = eb_dwarfs[eb_period_indices == i]
@@ -1746,14 +1757,14 @@ def mcquillan_rapid_rotator_bins():
             [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
-    axes[0][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_xlabel("$T_{eff}$ (K)")
-    axes[1][1].set_xlabel("$T_{eff}$ (K)")
+    axes[0][0].set_ylabel("Corrected $M_{Ks}$ Excess")
+    axes[1][0].set_ylabel("Corrected $M_{Ks}$ Excess")
+    axes[1][0].set_xlabel("$T_{\mathrm{eff}}$ (K)")
+    axes[1][1].set_xlabel("$T_{\mathrm{eff}}$ (K)")
     axes[0][0].set_xlim(5250, 4000)
     axes[0][0].set_ylim(0.3, -1.25)
 
-@write_plot("mcquillan_transition")
+@write_plot("f15")
 def rapid_rotator_transition():
     '''Make bins in the transition region of the McQuillan rapid rotators.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -1769,7 +1780,7 @@ def rapid_rotator_transition():
     cons_limit = -0.3
     mcq_period_indices = np.digitize(dwarfs["Prot"], periodbins)
     eb_period_indices = np.digitize(eb_dwarfs["period"], periodbins)
-    titles = ["{0:0d} day < Prot <= {1:0d} day".format(p1, p2) for (p1, p2) in
+    titles = ["{0:0d} day < {2} <= {1:0d} day".format(p1, p2, Protstr) for (p1, p2) in
               zip(periodbins[:-1], periodbins[1:])]
     for i, (title, ax) in enumerate(zip(titles, np.ravel(axes))):
         mcq_periodbin = dwarfs[mcq_period_indices == i+1]
@@ -1790,10 +1801,10 @@ def rapid_rotator_transition():
             [4000, 5250], [incl_limit, incl_limit], marker="", ls="--", color=bc.algae, 
             lw=4, zorder=3)
         ax.plot([3500, 6500], [-0.0, -0.0], 'k-', lw=2, zorder=4)
-    axes[1][0].set_xlabel("$T_{eff}$ (K)")
-    axes[1][1].set_xlabel("$T_{eff}$ (K)")
-    axes[0][0].set_ylabel("Corrected K Excess")
-    axes[1][0].set_ylabel("Corrected K Excess")
+    axes[1][0].set_xlabel("{0} (K)".format(Teffstr))
+    axes[1][1].set_xlabel("{0} (K)".format(Teffstr))
+    axes[0][0].set_ylabel("Corrected {0} Excess".format(MKstr))
+    axes[1][0].set_ylabel("Corrected {0} Excess".format(MKstr))
     ax.set_xlim(5250, 4000)
     ax.set_ylim(0.3, -1.25)
 
@@ -1972,8 +1983,8 @@ def eb_rapid_rotator_rate_apogee():
     ax.errorbar(period_bin_centers, normalized_pred, 
             yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
             color=bc.red, capsize=5)
-    ax.set_xlabel("Period (day)")
-    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.set_xlabel("Orbital Period (day)")
+    ax.set_ylabel("Normalized Period Distribution")
     ax.legend(loc="upper left")
     ax.set_xlim(1, 12)
 
@@ -1990,7 +2001,7 @@ def eb_rapid_rotator_rate_apogee():
     print("Rate is {0:.5f} + {1:.6f} - {1:.6f}".format(pred_rate, upper_pred,
                                                        lower_pred))
 
-@write_plot("ebdist")
+@write_plot("f12")
 def eclipsing_binary_inferred_distribution():
     '''Plot the observed EB, and inferred binary distribution.'''
     eb_split = cache.eb_splitter_with_DSEP()
@@ -2063,13 +2074,13 @@ def eclipsing_binary_inferred_distribution():
     ax.errorbar(period_bin_centers, normalized_pred, 
             yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
             color=bc.black, capsize=5)
-    ax.set_xlabel("Period (day)")
-    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.set_xlabel("Orbital Period (day)")
+    ax.set_ylabel("Normalized Period Distribution")
     ax.legend(loc="upper left")
     ax.set_xlim(1.5, 12.5)
     
 
-@write_plot("eclipseprob")
+@write_plot("f17")
 def verify_eb_rapid_rotator_rate():
     '''Compare the rate of EBs to the rate of rapid rotators.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -2141,7 +2152,7 @@ def verify_eb_rapid_rotator_rate():
             yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
             color=bc.red, capsize=5)
     ax.set_xlabel("Period (day)")
-    ax.set_ylabel("# in period bin / Full Teff Sample")
+    ax.set_ylabel("Normalized Period Distribution")
     ax.legend(loc="upper left")
     ax.set_xlim(1.5, 12.5)
 
@@ -2409,7 +2420,7 @@ def apogee_binary_fraction():
     ax3.set_ylim(0, 0.06)
     ax4.set_ylim(0, 0.06)
 
-@write_plot("binary_fraction")
+@write_plot("f16")
 def binary_fractions_with_period():
     '''Measure the binary fraction with period.'''
     mcq = cache.mcquillan_corrected_splitter()
@@ -2510,8 +2521,8 @@ def binary_fractions_with_period():
     ax1.set_xlim(1.5, 21.5)
     ax1.set_ylim(0, 1)
     ax2.set_ylim(0, 1)
-    ax1.set_title(r"$\Delta K < {0:g}$ mag".format(incl_limit))
-    ax2.set_title(r"$\Delta K < {0:g}$ mag".format(cons_limit))
+    ax1.set_title(r"$\Delta {0} < {1:g}$ mag".format(MKstr.strip("$"), incl_limit))
+    ax2.set_title(r"$\Delta {0} < {1:g}$ mag".format(MKstr.strip("$"), cons_limit))
 
     normalized_binaries02 = total_binaries02 / summed_binaries02
     normalized_binaries_upper02 = (
@@ -2563,9 +2574,9 @@ def binary_fractions_with_period():
                 yerr=[normalized_singles_lower03, normalized_singles_upper03],
                 color=bc.purple, ls="", marker="")
     ax3.legend(loc="lower right")
-    ax3.set_xlabel("Period (day)")
-    ax3.set_ylabel("Normalized Histogram")
-    ax4.set_xlabel("Period (day)")
+    ax3.set_xlabel("Rotation Period (day)")
+    ax3.set_ylabel("Normalized Period Distribution")
+    ax4.set_xlabel("Rotation Period (day)")
     ax4.set_ylabel("")
     ax3.set_ylim(0, 0.035)
     ax4.set_ylim(0, 0.035)
@@ -2688,6 +2699,89 @@ def compare_actual_to_predicted_rapid_rotator_fraction():
     print("Inferred rapid rotator fraction: {0:.2f}+{1:.2f}-{2:.2f}%".format(
         predicted_num / total_sample*100, predicted_num_upper / total_sample*100, 
         predicted_num_lower / total_sample*100))
+
+def calculate_rapid_statistics():
+    '''Print out various summary statistics of the rapid rotators.'''
+    mcq = cache.mcquillan_corrected_splitter()
+    nomcq = cache.mcquillan_nondetections_corrected_splitter()
+    ebs = cache.eb_splitter_with_DSEP()
+    mcq_dwarfs = mcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    nomcq_dwarfs = nomcq.subsample(["Dwarfs", "Right Statistics Teff"])
+    generic_columns = ["Corrected K Excess"]
+    dwarfs = vstack([
+        mcq_dwarfs[generic_columns], nomcq_dwarfs[generic_columns]])
+    dwarf_ebs = ebs.subsample(["Dwarfs", "Right Statistics Teff"])
+    mcq_dwarfs = au.filter_column_from_subtable(
+        mcq_dwarfs, "kepid", dwarf_ebs["kepid"])
+    # What fraction of McQuillan+EB are rapid rotators?
+    num_mcq_rapid = np.count_nonzero(np.logical_and(
+        mcq_dwarfs["Prot"] >= 1.5, mcq_dwarfs["Prot"] < 7))
+    num_eb_rapid = np.count_nonzero(np.logical_and(
+        dwarf_ebs["period"] >= 1.5, dwarf_ebs["period"] < 7))
+    num_rapid = num_mcq_rapid + num_eb_rapid
+    num_rapid_upper = au.poisson_upper_exact(num_rapid, 1) - num_rapid
+    num_rapid_lower = num_rapid - au.poisson_lower_exact(num_rapid, 1)
+    total_num = len(mcq_dwarfs) + len(nomcq_dwarfs) + len(dwarf_ebs)
+    rapid_frac = num_rapid / total_num
+    rapid_frac_upper = num_rapid_upper / total_num
+    rapid_frac_lower = num_rapid_lower / total_num
+    print("Combined rate of rapid rotators: {0:.3g}+{1:.2g}-{2:.2g}%".format(
+        rapid_frac*100, rapid_frac_upper*100, rapid_frac_lower*100))
+    # What is the fraction of close binaries after correcting for inclination?
+    total_frac = rapid_frac / 0.92
+    total_frac_upper = rapid_frac_upper / 0.92
+    total_frac_lower = rapid_frac_lower / 0.92
+    print("Total rate of rapid rotators: {0:.3g}+{1:.2g}-{2:.2g}%".format(
+        total_frac*100, total_frac_upper*100, total_frac_lower*100))
+    # What fraction of photometric binaries are rapid rotators?
+    incl_lim = -0.2
+    cons_lim = -0.3
+
+    num_mcq_incl_rapid = np.count_nonzero(np.logical_and(
+        np.logical_and(mcq_dwarfs["Prot"] >= 1.5, mcq_dwarfs["Prot"] < 7),
+        mcq_dwarfs["Corrected K Excess"] < incl_lim))
+    num_eb_incl_rapid = np.count_nonzero(np.logical_and(
+        np.logical_and(dwarf_ebs["period"] >= 1.5, dwarf_ebs["period"] < 7),
+        dwarf_ebs["Corrected K Excess"] < incl_lim))
+    num_incl_rapid = num_mcq_incl_rapid + num_eb_incl_rapid
+    num_incl_rapid_upper = (
+        au.poisson_upper_exact(num_incl_rapid, 1) - num_incl_rapid)
+    num_incl_rapid_lower = (
+        num_incl_rapid - au.poisson_lower_exact(num_incl_rapid, 1))
+    total_incl = (
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < incl_lim) +
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < incl_lim) +
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < incl_lim))
+    incl_rapid_frac = num_incl_rapid / total_incl
+    incl_rapid_frac_upper = num_incl_rapid_upper / total_incl
+    incl_rapid_frac_lower = num_incl_rapid_lower / total_incl
+    print("Inclusive photometric rapid rotators: {0:.3g}+{1:.2g}-{2:.2g}%".format(
+        incl_rapid_frac*100, incl_rapid_frac_upper*100,
+        incl_rapid_frac_lower*100))
+
+    num_mcq_cons_rapid = np.count_nonzero(np.logical_and(
+        np.logical_and(mcq_dwarfs["Prot"] >= 1.5, mcq_dwarfs["Prot"] < 7),
+        mcq_dwarfs["Corrected K Excess"] < cons_lim))
+    num_eb_cons_rapid = np.count_nonzero(np.logical_and(
+        np.logical_and(dwarf_ebs["period"] >= 1.5, dwarf_ebs["period"] < 7),
+        dwarf_ebs["Corrected K Excess"] < cons_lim))
+    num_cons_rapid = num_mcq_cons_rapid + num_eb_cons_rapid
+    num_cons_rapid_upper = (
+        au.poisson_upper_exact(num_cons_rapid, 1) - num_cons_rapid)
+    num_cons_rapid_lower = (
+        num_cons_rapid - au.poisson_lower_exact(num_cons_rapid, 1))
+    total_cons = (
+        np.count_nonzero(mcq_dwarfs["Corrected K Excess"] < cons_lim) +
+        np.count_nonzero(nomcq_dwarfs["Corrected K Excess"] < cons_lim) +
+        np.count_nonzero(dwarf_ebs["Corrected K Excess"] < cons_lim))
+    cons_rapid_frac = num_cons_rapid / total_cons
+    cons_rapid_frac_upper = num_cons_rapid_upper / total_cons
+    cons_rapid_frac_lower = num_cons_rapid_lower / total_cons
+    print("Conservative photometric rapid rotators: {0:.3g}+{1:.2g}-{2:.2g}%".format(
+        cons_rapid_frac*100, cons_rapid_frac_upper*100,
+        cons_rapid_frac_lower*100))
+
+
 
 
 def real_binary_fraction_with_period():
@@ -2812,7 +2906,7 @@ def fraction_of_binaries_singles():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("N / N_tot")
 
-@ write_plot("photometric_massratio")
+@ write_plot("f18")
 def photometric_binary_limit():
     '''Plot the fraction of mass ratios detected as photometric binaries.'''
     refmass = 0.725
@@ -2839,10 +2933,83 @@ def photometric_binary_limit():
     ax.plot([0, 0.593, 0.593], [incl_limit, incl_limit, 0], color=bc.algae, ls="--",
             marker="")
     ax.set_xlabel("Mass ratio (q)")
-    ax.set_ylabel(r"$M_K(MIST: M_1+M_2) - M_K(MIST; M_1)$")
+    ax.set_ylabel(r"{0}(MIST; $M_1+M_2$) - {0}(MIST; $M_1$)".format(MKstr))
     hr.invert_y_axis()
 
+def luminosity_ratio():
+    '''Plot the luminosity-ratio as a function of mass-ratio.'''
+    refmass = 0.725
+    refmet = 0.00
+    minmass = 0.1
+    solmet = mist.MISTIsochrone.isochrone_from_file(refmet)
+    tab = solmet.iso_table(1e9)
+    lowmass = tab[tab[solmet.mass_col] <= refmass]
+    qvals = lowmass[solmet.mass_col] / max(lowmass[solmet.mass_col])
+    refk = solmet.interpolate_isochrone_cols(
+        1e9, [refmass], solmet.mass_col, mist.band_translation["Ks"])
+    refteff = 10**solmet.interpolate_isochrone_cols(
+        1e9, [refmass], solmet.mass_col, solmet.logteff_col)
     
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    combined_k = sed.sum_binary_mag(refk, lowmass[mist.band_translation["Ks"]])
+    kdiff = combined_k - refk
+    # Make a Univariate spline between qvals and kdiff
+    kdiff_interp = UnivariateSpline(
+        np.append([0], qvals), np.append([0], kdiff), bbox=[0, 1], s=0)
+
+    qs = np.linspace(0, 1, 101, endpoint=True)
+    kdiffs = kdiff_interp(qs)
+    direct_massfunc = np.ones(len(qs))
+    malm_massfunc = 10**(-0.6*kdiffs)
+    ax.plot(qs, direct_massfunc, color=bc.black, ls="-", marker="")
+    ax.plot(qs, malm_massfunc, color="red", ls="-", marker="")
+
+    cons_q_lim = 0.69
+    incl_q_lim = 0.58
+    ax.plot(
+        [cons_q_lim, cons_q_lim], [0, 2*np.sqrt(2)], color=bc.violet, ls="--", 
+        marker="")
+    ax.plot(
+        [incl_q_lim, incl_q_lim], [0, 2*np.sqrt(2)], color=bc.algae, ls="--", 
+        marker="")
+    cons_pb_indices = np.logical_and(qs >= cons_q_lim, qs <= 1.0)
+    incl_pb_indices = np.logical_and(qs >= incl_q_lim, qs <= 1.0)
+    ax.fill_between(
+        qs[incl_pb_indices], direct_massfunc[incl_pb_indices],
+        np.zeros(np.count_nonzero(incl_pb_indices)), alpha=0.1, color="k")
+    ax.fill_between(
+        qs[cons_pb_indices], malm_massfunc[cons_pb_indices],
+        np.zeros(np.count_nonzero(cons_pb_indices)), alpha=0.1, color=bc.violet)
+    ax.fill_between(
+        qs[incl_pb_indices], malm_massfunc[incl_pb_indices],
+        np.zeros(np.count_nonzero(incl_pb_indices)), alpha=0.1, color=bc.algae)
+
+
+    cons_flat_pb, cons_flat_err = quad(lambda q: 1, cons_q_lim, 1)
+    incl_flat_pb, incl_flat_err = quad(lambda q: 1, incl_q_lim, 1)
+    flat_pb_norm, flat_norm_err = quad(lambda q: 1, 0, 1)
+    cons_malm_pb, cons_malm_err = quad(
+        lambda q: 10**(-0.6*kdiff_interp(q)), cons_q_lim, 1)
+    incl_malm_pb, incl_malm_err = quad(
+        lambda q: 10**(-0.6*kdiff_interp(q)), incl_q_lim, 1)
+    malm_pb_norm, malm__norm_err = quad(
+        lambda q: 10**(-0.6*kdiff_interp(q)), 0, 1)
+    ax.text(
+        0.60, 1.20, r"$f_{PB}" + r"={0:.2f}$".format(incl_malm_pb/malm_pb_norm), 
+        color=bc.algae)
+    ax.text(
+        0.75, 1.40, r"$f_{PB}" + r"={0:.2f}$".format(cons_malm_pb/malm_pb_norm), 
+        color=bc.violet)
+    ax.text(
+        0.60, 0.8, r"$f_{PB}" + r"={0:.2f}$".format(incl_flat_pb/flat_pb_norm), 
+        color="k") 
+    ax.text(
+        0.75, 0.6, r"$f_{PB}" + r"={0:.2f}$".format(cons_flat_pb/flat_pb_norm), 
+        color="k") 
+    ax.set_xlabel("Mass ratio (q)")
+    ax.set_ylabel(r"Observed mass function (normalized to q=0)")
+    ax.set_ylim(0, 2*np.sqrt(2))
+    ax.set_xlim(0, 1)
 
     
 @write_plot("tsb_analysis")
