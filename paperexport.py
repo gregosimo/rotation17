@@ -287,7 +287,6 @@ def apogee_selection_coordinates():
                aspect="auto", cmap=count_cmap, norm=Normalize(vmin=1, vmax=10))
     f.colorbar(im, ax=ax2)
 
-
     # Add a representative error bar.
     dwarfs = np.logical_and(
         fullsample["TEFF"] < 5500, fullsample["M_K"] > 2.95)
@@ -348,6 +347,12 @@ def mcquillan_selection_coordinates():
                aspect=(extent[1]-extent[0])/(extent[3]-extent[2]),
                cmap=ratio_cmap)
     f.colorbar(im, ax=ax3)
+
+    # Show a 1 Gyr MIST Isochrone
+    test_teffs = np.linspace(4000, 7000, 100)
+    iso_ks = samp.calc_model_mag_fixed_age_feh_alpha(
+        test_teffs, 0.0, "Ks", age=1e9, model="MIST v1.1")
+    ax2.plot(test_teffs, iso_ks, color=bc.pink, marker="", ls="-", lw=2)
 
     # Add a representative error bar.
     stacked_columns = ["SDSS-Teff", "M_K", "M_K_err1", "M_K_err2"]
@@ -2035,7 +2040,7 @@ def eclipsing_binary_inferred_distribution():
 
     f, ax = plt.subplots(1, 1, figsize=(12,12))
     # Now bin the EBs
-    period_bins, dp = np.linspace(1.5, 12.5, 11+1, retstep=True)
+    period_bins, dp = np.linspace(1.5, 10.5, 9+1, retstep=True)
     period_bins = period_bins 
     period_bin_centers = np.sqrt(period_bins[1:] * period_bins[:-1])
     eb_hist, _ = np.histogram(dwarf_ebs["period"], bins=period_bins)
@@ -2070,14 +2075,31 @@ def eclipsing_binary_inferred_distribution():
     pred_lowerlim = eb_lowerlim * scale_factor
     ax.step(period_bins, np.append(normalized_pred, [0]), where="post", 
             color=bc.black, linestyle=":", 
-            label="Predicted Rapid Rotators from EBs")
+            label="Predicted Binaries from EBs")
     ax.errorbar(period_bin_centers, normalized_pred, 
             yerr=[pred_lowerlim, pred_upperlim], marker="", ls="", 
             color=bc.black, capsize=5)
+
+    # Calculate the total number of binaries with periods less than 10 days.
+    shortper = np.logical_and(dwarf_ebs['period'] > 1.5, dwarf_ebs["period"] < 10)
+    num_short_ebs = np.count_nonzero(shortper)
+    num_short_ebs_upper = au.poisson_upper(num_short_ebs, 1)-num_short_ebs
+    num_short_ebs_lower = num_short_ebs - au.poisson_lower(num_short_ebs, 1)
+
+    num_short_binaries = np.sum(1/eclipse_prob[shortper])
+    short_binaries_scale = num_short_binaries / num_short_ebs
+    num_short_binaries_upper = num_short_ebs_upper * short_binaries_scale
+    num_short_binaries_lower = num_short_ebs_lower * short_binaries_scale
+    print(
+        "Fraction of binaries between 1.5-10 days are: "
+        "{0:.2g}+{1:.3g}-{1:.3g}".format(
+            num_short_binaries/fullnum, num_short_binaries_upper/fullnum,
+            num_short_binaries_lower/fullnum))
+
     ax.set_xlabel("Orbital Period (day)")
     ax.set_ylabel("Normalized Period Distribution")
     ax.legend(loc="upper left")
-    ax.set_xlim(1.5, 12.5)
+    ax.set_xlim(1.5, 10.5)
     
 
 @write_plot("f17")
@@ -2906,7 +2928,7 @@ def fraction_of_binaries_singles():
     ax.set_xlabel("Period (day)")
     ax.set_ylabel("N / N_tot")
 
-@write_plot("f19")
+@write_plot("f20")
 def luminosity_ratio():
     '''Plot the luminosity-ratio as a function of mass-ratio.'''
     refmass = 0.72
