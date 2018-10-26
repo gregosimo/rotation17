@@ -10,7 +10,7 @@ import matplotlib as mpl
 import matplotlib.patches as mpatches
 from matplotlib.ticker import AutoMinorLocator
 from matplotlib.colors import Normalize
-from astropy.table import Table, vstack
+from astropy.table import Table, vstack, unique
 from astropy.io import ascii
 from astropy.stats import median_absolute_deviation, sigma_clip
 from astropy.modeling import models, fitting
@@ -287,6 +287,21 @@ def apogee_selection_coordinates():
                aspect="auto", cmap=count_cmap, norm=Normalize(vmin=1, vmax=10))
     f.colorbar(im, ax=ax2)
 
+    # Show a 1 Gyr MIST Isochrone
+    test_teffs = np.linspace(3500, 7000, 100)
+    iso_ks = samp.calc_model_mag_fixed_age_feh_alpha(
+        test_teffs, 0.0, "Ks", age=1e9, model="MIST v1.1")
+    iso_ks_highmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        test_teffs, 0.5, "Ks", age=1e9, model="MIST v1.1")
+    iso_ks_lowmet = samp.calc_model_mag_fixed_age_feh_alpha(
+        test_teffs, -0.5, "Ks", age=1e9, model="MIST v1.1")
+    ax2.plot(test_teffs, iso_ks_highmet, color=bc.pink, marker="", ls="--",
+             lw=2, label="[Fe/H] = 0.5")
+    ax2.plot(test_teffs, iso_ks, color=bc.pink, marker="", ls="-", lw=2,
+             label="[Fe/H] = 0.0")
+    ax2.plot(test_teffs, iso_ks_lowmet, color=bc.pink, marker="", ls=":", lw=2,
+             label="[Fe/H] = -0.5")
+
     # Add a representative error bar.
     dwarfs = np.logical_and(
         fullsample["TEFF"] < 5500, fullsample["M_K"] > 2.95)
@@ -306,6 +321,7 @@ def apogee_selection_coordinates():
     ax2.set_xlim(7000, 3500)
     ax2.set_ylim(7.2, -8)
     ax2.set_xlabel("{0} (K)".format(Teffstr))
+    ax2.legend(loc="upper left")
 
     # Print out the number of objects in each category.
     print("Number of asteroseismic targets: {0:d}".format(
@@ -348,11 +364,6 @@ def mcquillan_selection_coordinates():
                cmap=ratio_cmap)
     f.colorbar(im, ax=ax3)
 
-    # Show a 1 Gyr MIST Isochrone
-    test_teffs = np.linspace(4000, 7000, 100)
-    iso_ks = samp.calc_model_mag_fixed_age_feh_alpha(
-        test_teffs, 0.0, "Ks", age=1e9, model="MIST v1.1")
-    ax2.plot(test_teffs, iso_ks, color=bc.pink, marker="", ls="-", lw=2)
 
     # Add a representative error bar.
     stacked_columns = ["SDSS-Teff", "M_K", "M_K_err1", "M_K_err2"]
@@ -3171,6 +3182,34 @@ def tsb_distribution():
     ax.set_ylabel("Population Number")
     ax.set_xlim(1, 20)
     ax.legend(loc="upper left")
+
+def CKS_histogram():
+    '''Compare the metallicities from the CKS to APOGEE.'''
+    cks = catin.read_California_Kepler_Spectroscopy()
+    parms = catin.stelparms_with_Gaia()
+    targs = cache.apogee_splitter_with_DSEP()
+    cooldwarfs = targs.subsample(["Dwarfs", "APOGEE Statistics Teff"])
+
+    cks_parms = au.join_by_id(cks, parms, "KIC", "kepid")
+    cool_targs = cks_parms[cks_parms["Teff"] < 5250]
+    cool_targs["MIST K"] = samp.calc_model_mag_fixed_age_feh_alpha(
+        cool_targs["Teff"], 0.0, "Ks", age=1e9, model="MIST v1.1")
+    cool_targs["K Diff"] = cool_targs["M_K"] - cool_targs["MIST K"]
+    cool_dwarfs = cool_targs[cool_targs["K Diff"] > -1.3]
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    fehbins = np.linspace(-0.7, 0.7, 14+1, endpoint=True)
+    ax.hist([cooldwarfs["FE_H"], cool_dwarfs["[Fe/H]"]], bins=fehbins,
+            histtype="step", color=["black", "red"], label=["APOGEE", "CKS"],
+            normed=True, cumulative=True)
+    ax.set_xlabel("[Fe/H]")
+    ax.set_ylabel("N")
+    ax.legend("upper left")
+
+    D, crit, sig = scipy.stats.anderson_ksamp(
+        [cooldwarfs["FE_H"], cool_dwarfs["[Fe/H]"]])
+    print(D, crit, sig)
+
 
 @write_plot("Bruntt_comp")
 def Bruntt_vsini_comparison():
