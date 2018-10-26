@@ -78,9 +78,9 @@ Rotation is a fundamental property of stars; it impacts their lifetimes, can
 induce mixing, and can serve as a population diagnostic. Stars are also born 
 with a wide range of rotation rates \citep{Attridge92, Herbst00, Henderson12}.
 The observed rotation rates are also strikingly different in high and low mass 
-stars. \citet{Kraft67} noted a dichotomy in rotation rates: with field stars 
-hotter than 6200 K rotating with a wide range of \vsini, and those cooler than 
-6200 K, including the Sun, rotating with largely undetectable \vsini. This abrupt transition is thought to
+stars. \citet{Kraft67} noted a dichotomy in rotation rates: field stars 
+hotter than 6200 K rotate with a wide range of \vsini, and those cooler than 
+6200 K, including the Sun, rotate with largely undetectable \vsini. This abrupt transition is thought to
 be due to the onset of convective envelopes for lower-mass stars, which 
 enables efficient angular momentum loss through magnetized winds 
 \citep{Parker58,Weber67}.
@@ -90,15 +90,15 @@ leads to the rapid convergence of a wide range of rotation rates to a unique
 mass-dependent value; for solar-type stars convergence is nearly complete by
 0.5 Gyr \citep{Pinsonneault89}. Rotation is therefore an age indicator for 
 stellar populations \citep{Skumanich72}, and correlations between rotation and
-age been used to derive empirical relationships for field populations, 
-sometimes referred to as gyrochronology \citep{Barnes07, Mamajek08, Meibom09,
-Angus15}.  
-A full theoretical treatment of gyrochronology requires evolutionary stellar 
-models that include a variety of physical effects (see \citet{Gallet13} for an
-overview). Models of angular momentum evolution have usually been calibrated 
-using rotation periods in star clusters, which have known ages and are easily 
-characterized \citep{Krishnamurthi97, Gallet13, Somers17}. The calibrating 
-clusters are typically young (\(< 1\) Gyr), with the behavior at old ages anchored by the Sun. 
+age have been used to derive empirical relationships for field populations, 
+an approach sometimes referred to as gyrochronology \citep{Barnes07, Mamajek08, Meibom09,
+Angus15}. A full theoretical treatment of gyrochronology requires evolutionary 
+stellar models that include a variety of physical effects (see \citet{Gallet13} 
+for an overview). Models of angular momentum evolution have usually been 
+calibrated using rotation periods in star clusters, which have known ages and 
+are easily characterized \citep{Krishnamurthi97, Gallet13, Somers17}. The 
+calibrating clusters are typically young (\(< 1\) Gyr), with the behavior at old 
+ages anchored by the Sun. 
 
 The \Kepler{} satellite \citep{Borucki10,Koch10}, which observed a single field
 for over four years, has revolutionized our ability to measure stellar 
@@ -114,9 +114,10 @@ our theories of angular momentum evolution on multiple fronts. Existing
 gyrochronological models anchored at the Sun have not been able to explain
 the relatively rapid rotation of old field stars with ages inferred from
 asteroseismic data \citep{Angus15, VanSaders16}. The \Kepler{} population at 
-long periods shows a sharp drop-off which is not predicted by either angular
-momentum evolution models, or as selection effects through rotation-activity 
-relations \citep{VanSaders18}.  Nearby K- and M-dwarfs show a bimodality in 
+long periods shows a sharp drop-off which is not predicted by standard angular
+momentum evolution models. The data appears to require either a dramatic
+decrease in magnetized winds, detectability, or a combination of both 
+\citep{VanSaders18}.  Nearby K- and M-dwarfs show a bimodality in 
 the period distribution which has no clear explanation in stellar physics 
 \citep{Davenport18}. There is also a modest, but real, population of rapid 
 rotators that would be interpreted as young if they were single main sequence 
@@ -126,9 +127,9 @@ The \Kepler{} field also contains a mixture of stellar populations, not all of
 which have been calibrated in clusters. Subgiants, while being rare in the 
 clusters used to calibrate gyrochronology, 
 make up 20\% of \Kepler{} targets \citep{Berger18b}. Since the 
-subgiant population contains stars expanding off the main sequence from 
-above the Kraft break, they obey a different gyrochronology relation than that 
-calibrated for cluster dwarfs \citep{vanSaders13}. 
+subgiant population consists of stars undergoing substantial structural changes
+as they expand off the main sequence, they obey a different gyrochronology 
+relation than that calibrated for cluster dwarfs \citep{vanSaders13}. 
 
 Another population which is not included in traditional angular momentum
 evolution models is tidally-synchronized binaries. These binaries have orbital 
@@ -285,8 +286,9 @@ these targets.
 
 \subsection{Rotation Data}
 
-The rotation periods for our sample come from \citet{McQuillan14}, which
-is large and homogeneously measured. \citet{McQuillan14} selected their sample 
+The rotation periods for our sample come from the catalog compiled by 
+\citet{McQuillan14}, which is large and homogeneously measured. 
+\citet{McQuillan14} selected their sample 
 to have photometric \(\Teff < 6500\) K \citep{Brown11,Dressing13}, and 
 implemented the color-color and \logg{} cuts advocated in \citet{Ciardi11}, 
 ranging from \(\logg = 3.5\) at 6000 K to \(\logg = 4.0\) at 4250 K. 
@@ -335,6 +337,7 @@ in evolved stars. The bulk of the period sample are solar analogs, reflecting
 the underlying \Kepler{} sample.
 
 \subsection{Spectroscopic Parameters}
+\label{sec:speccat}
 
 We draw our spectroscopic sample from the Data Release 14 \citep{Abolfathi18}
 of the APOGEE survey \citep{Majewski17}. The workhorse behind the survey is the
@@ -414,19 +417,33 @@ diamonds. The remaining 102 targets were targeted to follow-up
 eclipsing binaries \citep{Prsa11,Slawson11}, and are shown as light blue 
 circles.  
 
-While the spectroscopic sample is a heterogeneous collection of different
-observing programs, we do not expect there to be a substantial selection
-effects. The bulk of the cool dwarf sample was
-targeted as part of the dwarf sample, which was selected solely on photometric 
-temperature, \logg, and apparent magnitude. 
-
+The bulk (\(\sim80\%\)) of the cool dwarfs (\(\Teff < 5250\) K were observed through the cool dwarf
+programs. These were large magnitude-limited surveys targeting objects with
+photometric \(\Teff < 6500\) K, photometric \(\logg \le 3.5\), and 
+\(H > 11\)~mag. This is expected to be our least biased sample because there are 
+only course astrophysics constraints on the parameters. Much of the remaining 
+sample (\(\sim 17\%\)) consist of follow-up observations to \Kepler{} Objects of 
+Interest. These observations go much deeper, down to \(H = 14\)~mag. These are
+likely to be biased toward high-metallicity and single stars. Lastly, the
+eclipsing binaries make up the rest of the sample, and the only criterion is
+that eclipses are found in the \Kepler{} light curves. Because we do not want
+to bias our sample against binaries, we make sure we include them.
+Because they make up only a small portion of the sample, we don't expect that 
+they will affect our results.  Additionally, \citet{McQuillan14} excluded known
+\Kepler{} eclipsing binaries from their analysis, hence our sample should not
+be biased in a way that isn't corrected by including the eclipsing binary
+sample below (see Section~\ref{sec:ebcat}.
 
 \subsection{Eclipsing Binaries}
+\label{sec:ebcat}
 
+When selecting the sample to perform their periodogram analysis,
+\citet{McQuillan14} excluded known eclipsing binary targets to avoid confusing
+the eclipse signal as a rotation signal, which biases the rotation sample
+against close binaries. To correct for this bias, we include the 
+ \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16}, with the assumption
+ that the short-period eclipsing binaries are synchronized.
 
-To draw comparisons with a sample of known binarity, we use the 
- \Kepler{} Eclipsing Binary sample \citep{Prsa11,Kirk16},
-the most fundamental sample for understanding binarity in the \Kepler{} field. 
 With \Kepler{}'s continuous monitoring and a long baseline of 4 years, the 
 eclipsing binary sample for orbital periods on the order of 20 days should be 
 complete \citep{Kirk16}. Most eclipses were identified by the main
@@ -590,13 +607,31 @@ distribution of the spectroscopic targets is representative of the full
 Because we will mostly be concerned with the cool dwarfs, we check the
 metallicity distribution of dwarfs cooler than 5250 K, which is the 
 temperature range of our sample. The metallicity distribution for that
-sample is shown in the left panel of \cref{fig:metallicity}. The median metallicity is 
-0.08, consistent with that observed for planet hosts by 
-the California \Kepler{} survey \citep{Petigura17}.  We therefore treat the
-\(\feh{} = 0.08\) isochrone as the base isochrone for the photometric sample. 
-However, the metallicity of the base isochrone does not substantially affect 
-the analysis because any zero-point offset will be subtracted off in the 
-following corrections.
+sample is shown in the left panel of \cref{fig:metallicity}. The median 
+metallicity is 0.08, consistent with that observed for planet hosts by 
+the California \Kepler{} survey \citep{Petigura17}.  
+
+We check the spectroscopic catalog for strong selection effects by comparing to
+results from the California \Kepler{} Survey (CKS). The CKS observed a large
+(1305) sample of \Kepler{} planet hosts, including a magnitude-limited sample
+with \(Kp < 14.2\)~mag, which is substantially deeper than the APOGEE survey
+\citep{Petigura17}. In order to test if the metallicity of a shallow survey, 
+such as APOGEE, differs from the metallicity of a deeper survey, such as the 
+CKS, we compare the metallicity distribution of the two surveys. As noted before, 
+in Section~\ref{sec:speccat}, planet host surveys are likely to be biased toward 
+higher metallicities. When applying the same temperature and evolutionary state
+cuts to the CKS, we find that the median metallicity is 0.05 dex. A 2-sample
+Anderson-Darling test finds that the two metallicity distributions are
+discrepant by 2-\(\sigma\).
+
+While the two surveys are significantly different, the magnitude of the
+difference is small, even accounting for the fact that planet hosts should be
+more metal-rich than the overall sample. We therefore treat the
+Additionally, the zeroth-order effect of metallicity will shift the base 
+isochrone by a zero point offset, which will be subtracted off in the 
+following corrections. As a result, we adopt the \(\feh{} = 0.08\) isochrone as 
+the base isochrone for the photometric sample. 
+
 
 \subsection{Correcting Metallicity Trends}
 \label{sec:speccor}
@@ -645,7 +680,7 @@ sensitive to their treatment.
 
 \begin{figure*}[htb]
     \centering
-    \plottwo{f6}{f8}
+    \plottwo{f6}{f9}
     \caption{\emph{Top Left}: Vertical displacement above a 1 Gyr,
         metallicity-adjusted MIST isochrone, empirically corrected for
         metallicity trends, for the cool sample with APOGEE temperatures. 
@@ -664,7 +699,8 @@ isochrone. The best-fit relation is \(\Delta \MK{} = -0.0000937 \Teff{}
 \end{figure*}
 
 Combining the two changes: subtracting only a single-metallicity isochrone and
-using the photometric temperatures yields the points in \cref{fig:photuncor}.
+using the photometric temperatures yields the points in the right panel of 
+\cref{fig:apogee_teff_trend}.
 This sample still has a trend with temperature, that we remove using a linear
 fit, similar to that done for the spectroscopic sample.
 
@@ -840,7 +876,7 @@ half of the primary's mass.
 Given these assumptions, an estimate of the orbital period distribution 
 for all short-period \Kepler{} binaries on the unevolved lower main sequence is 
 shown in \cref{fig:ebdist}. The eclipsing binaries range from making up almost 
-15\% of the total population of binaries in the in the shortest-period bin in 
+15\% of the total population of binaries in the shortest-period bin in 
 \cref{fig:ebdist} to 6\% in the longest-period bin, hence they are not a 
 negligible segment of the population. \citet{McQuillan14} excluded eclipsing 
 binaries from their analysis of rotation in the \Kepler{} field due to concerns 
@@ -857,10 +893,11 @@ periods between 1.5--10 days.
 
 \subsection{Binarity and Temperature Estimation}
 
-\begin{figure}[htb]
+\begin{figure*}[htb]
     \centering
     \plottwo{f19}{f18}
-    \caption{\emph{Left:} The sample of APOGEE targets analyzed by \citet{ElBadry18b} for
+    \caption{\emph{Left:} The sample of APOGEE targets analyzed by 
+        \citet{ElBadry18b} for
     spectroscopic signs of a companion. Black points indicate the APOGEE DR14 
 values for the targets. Violet points indicate the revised temperatures, and the
 \(Ks\)-band luminosity excess derived from the revised temperature and 
@@ -873,7 +910,7 @@ displacement, but taking into account distortions in the photometric \Teff{}
 caused by binarity. The mass-ratios corresponding to the conservative and 
 inclusive thresholds are 0.64 and 0.53. }
     \label{fig:binary_teff}
-\end{figure}
+\end{figure*}
 
 
 While we generally assume that objects showing large vertical displacement are
@@ -919,7 +956,7 @@ parallaxes. Future analyses may want to make use of the vertical displacement
 when flagging spectra for multiple-component fits.
 
 We also investigate the impact of binarity on the vertical displacement using
-photometric temperatures. Unlike \citet{ElBadry18}, who fit two-component
+photometric temperatures. Unlike \citet{ElBadry18b}, who fit two-component
 models to the full spectrum, we instead are interested in how companions
 generically affect the vertical displacement. We build a toy model of a binary
 using MIST isochrones perturbing the observed temperature using a
@@ -932,7 +969,7 @@ are more sensitive to low-mass binary companions, so we choose the
 We adopt a standard primary with a mass of 0.75 \(M_\sun\) and solar metallicity, 
 and use the MIST isochrones to calculate the photometry for the star. We
 derive a temperature for the star by fitting a 5th-degree polynomial between
-\(\cfrac{5040 K}{\Teff}\) and \((g-i)\) using the MIST synthetic photometry. We
+\(\tfrac{5040 K}{\Teff}\) and \((g-i)\) using the MIST synthetic photometry. We
 then generate secondaries with a range of mass-ratios, and combine their flux
 with the primary flux, and infer a composite temperature based on the combined
 flux. Lastly, the composite temperature is then used to calculate the reference
@@ -951,6 +988,7 @@ the spectroscopic case.
 Because the effect of binarity on photometric temperature only imparts small 
 deviations for the vertical displacement, we claim that the objects which lie
 substantially above the photometric binary sequence are true multiple systems. 
+
 
 
 \section{Results and Discussion}
@@ -1323,8 +1361,9 @@ make a natural base sample for follow-up studies to better constrain the
 cutoff period for cool \Kepler{} dwarfs.
 
 RV follow-up of our non-eclipsing close binaries will provide a good resource
-for understanding these systems. RV orbital periods for non-eclipsing systems 
-will provide crucial confirmation of the subsynchronous binary population 
+for understanding these systems. RV orbital periods for both eclipsing and 
+non-eclipsing systems 
+will provide additional information on the subsynchronous binary population 
 discovered in \citet{Lurie17}. The rapid rotators would also make an ideal 
 sample for studies of the mass-ratio distribution for close binaries. Because 
 they were detected through rotation, they should only be weakly biased with 
