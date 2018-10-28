@@ -34,7 +34,7 @@ maintex = $(mainfile).tex
 
 bibfile = references.bib
 
-revision = main_v3.tex
+revision = main_apj1.tex
 
 all: $(mainfile).pdf
 
