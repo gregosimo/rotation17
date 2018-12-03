@@ -1247,6 +1247,11 @@ def Pleiades_vsini_discrepant_points():
     ax.set_title("Radius from Deprojected mass")
     ax.legend(loc="lower left")
 
+    multip_cols = [
+        "APOGEE_ID", "Per_MU", "dd", "ddm", "shch", "beat", "cpeak", "resc", 
+        "resd", "dscu", "cloud", "PPer", "SPer", "TPer", "QPer"]
+    print(pleiades_vsini[multip_cols][discrepant_targets])
+
 
 def Pleiades_vsini_radius_inflation_teff():
     '''Plot the vsini vs veq diagram for the Pleiades.
