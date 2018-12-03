@@ -1012,9 +1012,9 @@ def K_Excess_hr_diagram():
             tablebin["K Excess"], 100-25)
         med_teff[ind-1] = np.mean(tablebin["TEFF"])
     ax2.plot(med_teff, percentiles, marker="o", color=bc.algae, ls="-",
-             label="Binned")
+             label="Binned", zorder=3)
     ax2.plot([7000, 3000], [0, 0], 'k-')
-    ax2.plot([7000, 3000], [-0.75, -0.75], 'k--')
+    ax2.plot([7000, 3000], [-2.5*np.log10(2), -2.5*np.log10(2)], 'k--')
     ax2.set_xlim([6500, 3500])
     ax2.set_ylim(0.5, -2)
     ax1.set_xlabel("APOGEE Teff (K)")
