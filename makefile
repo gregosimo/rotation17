@@ -1,11 +1,4 @@
 figdir = fig
-latexfigures = Bruntt_comp.pdf   \
-	       Pleiades_comp.pdf \
-	       astero.pdf        \
-	       cool_samp.pdf   \
-	       astero_rot.pdf    \
-	       cool_rot.pdf 	 \
-	       detection_fraction.pdf
 
 Bruntt_comp.pdf: paperexport.py
 	python paperexport.py Bruntt
@@ -33,6 +26,7 @@ figures: paperexport.py
 
 tabledir = tables
 tablelist := $(wildcard $(tabledir)/*)
+latexfigures := $(wildcard $(figdir)/*)
 
 mainfile = main
 maintex = $(mainfile).tex
@@ -53,10 +47,10 @@ mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
 # that may be annoyingly difficult.
 #
-$(mainfile).pdf: $(maintex) $(bibfile) paperexport.py
+$(mainfile).pdf: $(maintex) $(bibfile) paperexport.py $(latexfigures) 
 	latexmk -pdf $(maintex)
 
-$(mainfile).ps: $(maintex) $(bibfile)
+$(mainfile).ps: $(maintex) $(bibfile $(latexfigures))
 	latexmk -ps $(maintex)
 
 $(mainfile).bbl: $(maintex) $(bibfile)
