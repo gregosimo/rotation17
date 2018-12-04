@@ -630,6 +630,94 @@ def asteroseismic_vsini():
 #   ax.set_ylabel("Vsini")
     ax.set_title("Asteroseismic vsini agreement")
 
+def asteroseismic_vsini_with_Gaia():
+    '''Plot the vsini agreement for the asteroseismic sample.'''
+    astero = cache.astero_splitter()
+    apokasc = astero.subsample([
+        "Asteroseismic Dwarfs", "~Bad", "~No vsini", "~DLSB"])
+    full = cache.apogee_splitter_with_DSEP()
+    fulltable = full.subsample([])
+    fullastero = au.join_by_id(
+        apokasc, fulltable, "KEPLER_INT", "kepid", join_type="left",
+        conflict_suffixes=("_APOKASC", "_APOGEE"))
+    garcia = catin.read_Garcia_periods()
+    astero_garcia = au.join_by_id(fullastero, garcia, "KEPLER_INT", "KIC")
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    rot.plot_vsini_velocity(
+        astero_garcia["VSINI_APOKASC"], astero_garcia["Prot"], 
+        astero_garcia["e_Prot"], astero_garcia["Gaia R"], 
+        astero_garcia["Gaia R err"], ax=ax)
+
+#   ax.set_xlabel("Veq")
+#   ax.set_ylabel("Vsini")
+    ax.set_title("Asteroseismic vsini agreement")
+
+def asteroseismic_gaia_radius_comparison():
+    astero = cache.astero_splitter()
+    apokasc = astero.subsample(["Asteroseismic Dwarfs"])
+    full = cache.apogee_splitter_with_DSEP()
+    fulltable = full.subsample([])
+    apokasc_full = au.join_by_id(
+        apokasc, fulltable, "KEPLER_INT", "kepid", 
+        conflict_suffixes=("_APOGEE", "_APOKASC"))
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    ax.errorbar(
+        apokasc_full["RADIUS_DW"], apokasc_full["Gaia R"],
+        yerr=apokasc_full["Gaia R err"], 
+        xerr=[-apokasc_full["RADIUS_DW_MERR"], apokasc_full["RADIUS_DW_PERR"]],
+    marker=".", color="k", ls="")
+    ax.plot([0, 4.5], [0, 4.5], 'k-')
+    ax.set_xlabel("Asteroseismic R")
+    ax.set_ylabel("Gaia R")
+    ax.set_xlim(0, 4.5)
+    ax.set_ylim(0, 4.5)
+
+def asteroseismic_target_sectors():
+    '''Plot where in the Teff-MK diagram the asteroseismic targets fall.'''
+    astero = cache.astero_splitter()
+    apokasc = astero.subsample(["Asteroseismic Dwarfs"])
+    full = cache.apogee_splitter_with_DSEP()
+    fulltable = full.subsample([])
+    apokasc_full = au.join_by_id(
+        apokasc, fulltable, "KEPLER_INT", "kepid", 
+        conflict_suffixes=("_APOGEE", "_APOKASC"))
+
+    cool_dwarfs = full.subsample(["Cool Dwarfs"])
+    hot_dwarfs = full.subsample(["Hot Dwarfs"])
+    hot_subgiants = full.subsample(["Subgiants"])
+    luminous_subgiants = full.subsample(["Luminous Subgiants"])
+    giants = full.subsample(["Giants"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["K Excess"], marker=".", 
+        color=bc.violet, ls="", label="Cool Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_dwarfs["TEFF"], hot_dwarfs["K Excess"], marker=".", 
+        color=bc.orange, ls="", label="Hot Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_subgiants["TEFF"], hot_subgiants["K Excess"], marker=".", 
+        color=bc.algae, ls="", label="Hot Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"], luminous_subgiants["K Excess"], marker=".", 
+        color=bc.sky_blue, ls="", label="Luminous Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        giants["TEFF"], giants["K Excess"], marker=".", 
+        color=bc.red, ls="", label="Giants", axis=ax)
+
+    hr.absmag_teff_plot(
+        apokasc_full["TEFF"], apokasc_full["K Excess"], marker="*",
+        color=bc.black, ls="", label="Asteroseismic", axis=ax, ms=8)
+
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("K Excess")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(1.0, -5.0) 
+    ax.legend(loc="upper right")
+
 ###############
 # Cool Dwarfs #
 ###############
