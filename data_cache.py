@@ -182,8 +182,13 @@ def apogee_splitter_with_DSEP():
         "BC K", 0.0, 1e9)
     # Add the zero-point offset.
     log_bol_lum = (-0.4 * (clean.data["M_K"] + bolometric_correction - 4.75))
+    log_bol_lum_ms = (-0.4 * (
+        (clean.data["MIST K (sol)"]) + bolometric_correction - 4.75))
     clean.data["Gaia R"] = 10**(
         0.5*(log_bol_lum - 4*(np.log10(clean.data["TEFF"]) - np.log10(5777))))
+    clean.data["Gaia MS R"] = 10**(
+        0.5*(log_bol_lum_ms - 4*(
+            np.log10(clean.data["TEFF"]) - np.log10(5777))))
     clean.data["Gaia R err"] = (
         clean.data["Gaia R"] * np.log(10) * np.sqrt(
             (0.2*clean.data["K_ERR"])**2 + 
@@ -193,6 +198,7 @@ def apogee_splitter_with_DSEP():
             (0.2 * samp.calc_model_err_fixed_age_feh_alpha(
                 np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col,
                 mist.MISTIsochrone.radius_col, apogee_logteff_err, 0.0)**2)))
+    clean.data["Gaia MS R err"] = clean.data["Gaia R err"]
                 
 
     return clean
