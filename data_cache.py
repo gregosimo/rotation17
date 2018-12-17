@@ -37,38 +37,59 @@ def clean_apogee_splitter():
     full = full_apogee_splitter()
     split.initialize_clean_APOGEE(full)
     split.initialize_vsini(full)
-    full.split_teff(
+    notbad = full.split_subsample([
+        "~Bad"])
+    # I want to populate the objects which should have vsini limits.
+    giants = notbad.data["LOGG_FIT"] < np.minimum(
+        2 + 2 / 1300 * (notbad.data["TEFF"] - 3500), 4.0)
+    vsini_targets = np.logical_not(notbad.data["VSINI"].mask)
+    vsini_upperlims = np.logical_and(
+        vsini_targets, notbad.data["VSINI"] > 10**(1.982 - 0.301/8))
+    vsini_lowerlims = np.logical_and(
+        vsini_targets, notbad.data["VSINI"] < 10**(0.176 + 0.301/8))
+    vsini_limits = np.logical_or(vsini_upperlims, vsini_lowerlims)
+    assert(all(np.ma.getmask(notbad.data["TEFF"][vsini_limits])))
+    giant_vsini_limits = np.logical_and(giants, vsini_limits)
+    dwarf_vsini_limits = np.logical_and(~giant, vsini_limits)
+    notbad.data["TEFF"][giant_vsini_limits] = (
+        notbad.data["FPARAM"][giant_vsini_limits,0] - (
+            -51.5903 + 61.4774 * notbad.data["FPARAM"][giant_vsini_limits,3] +
+            7.17561 * notbad["FPARAM"][giant_vsini_limits,3]**2))
+    notbad.data["TEFF"][dwarf_vsini_limits] = (
+        notbad.data["FPARAM"][dwarf_vsini_limits,0] - (
+            -36.3822 + 13.1614 * notbad.data["FPARAM"][dwarf_vsini_limits,3] +
+            -26.0953 * notbad["FPARAM"][dwarf_vsini_limits,3]**2))
+    # This calibration is too complicated. See
+    # pe.apogee_metallicity_calibration_classification.
+    notbad_data["M_H"][vsini_limits] = notbad_data["FPARAM"][vsini_limits,3]
+
+    notbad.split_teff(
         "TEFF", [5250], (
             "APOGEE Evolution Cool", "APOGEE Evolution Hot", "No APOGEE Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="APOGEE Evolution Region")
-    full.split_teff(
+    notbad.split_teff(
         "teff", [5250], (
             "KSPC Evolution Cool", "KSPC Evolution Hot", "No KSPC Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="KSPC Evolution Region")
-    full.split_teff(
+    notbad.split_teff(
         "SDSS-Teff", [5250], (
             "Pinsonneault Evolution Cool", "Pinsonneault Evolution Hot", 
             "No Pinsonneault Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="Pinsonneault Evolution Region")
-    full.split_teff(
+    notbad.split_teff(
         "T_eff [K]", [5250], (
             "El-Badry Evolution Cool", "El-Badry Evolution Hot", "No El-Badry Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="El-Badry Evolution Region")
-    full.split_metallicity(
+    notbad.split_metallicity(
         -0.5, ("Low Met", "High Met", "No Met"), col="FE_H",
         null_value=np.ma.masked)
+    notbad.split_alpha(
+        0.2, ("Low Alpha", "High Alpha", "No Alpha"), col="ALPHA_FE",
+        null_value=np.ma.masked)
 
-    clean = full.split_subsample([
+    clean = notbad.split_subsample([
         "~Bad", "~No APOGEE Evolution Teff", "K Detection", "In Gaia", 
-        "~No Met"])
-    # Add Temperature uncertainties from Holtzmann et al (2018).
-    giants = clean.data["LOGG_FIT"] < 2 + 2 / 1500 * (clean.data["TEFF"] - 4500)
-    giant_err = np.exp(
-        4.3609 + 0.000604303*(clean.data["TEFF"]-4500) -0.0659445 *
-        clean.data["M_H"] -0.00196400 * (clean.data["SNREV"]-100))
-    dwarf_err = np.exp(
-        4.58343+ 0.000289796*(clean.data["TEFF"]-4500) -0.2434860 *
-        clean.data["M_H"] -0.00129746 * (clean.data["SNREV"]-100))
+        "~No Met", "~No Alpha"])
     return clean
 
 @au.memoized
@@ -177,17 +198,27 @@ def apogee_splitter_with_DSEP():
     clean.data["MIST R Err (El-Badry)"][elbadry_teff_masked] = np.ma.masked
 
     # Derive R using Gaia magnitudes.
-    bolometric_correction = samp.calc_model_over_feh_fixed_age_alpha(
+    clean.data["MIST BC (sol)"] = samp.calc_model_over_feh_fixed_age_alpha(
         np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col,
         "BC K", 0.0, 1e9)
+    clean.data["MIST BC err"] = samp.calc_model_err_fixed_age_feh_alpha(
+        np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col, "BC K",
+        apogee_logteff_err, 0.0, age=1e9)
     # Add the zero-point offset.
-    log_bol_lum = (-0.4 * (clean.data["M_K"] + bolometric_correction - 4.75))
-    log_bol_lum_ms = (-0.4 * (
-        (clean.data["MIST K (sol)"]) + bolometric_correction - 4.75))
+    clean.data["Gaia L"] = 10**(
+        -0.4 * (clean.data["M_K"] + clean.data["MIST BC (sol)"] - 4.75))
+    clean.data["Gaia L (ms)"] = 10**(
+        -0.4 * (clean.data["MIST K (sol)"] + clean.data["MIST BC (sol)"] - 4.75))
+    clean.data["Gaia L err"] = (
+        0.4 * np.log(10) * clean.data["Gaia L"] *np.sqrt(
+            clean.data["K_ERR"]**2 + (
+                5 * clean.data["parallax_error"] / clean.data["parallax"] /
+                np.log(10))**2 + clean.data["MIST BC err"]**2))
     clean.data["Gaia R"] = 10**(
-        0.5*(log_bol_lum - 4*(np.log10(clean.data["TEFF"]) - np.log10(5777))))
+        0.5*(np.log10(clean.data["Gaia L"]) - 4*(
+            np.log10(clean.data["TEFF"]) - np.log10(5777))))
     clean.data["Gaia MS R"] = 10**(
-        0.5*(log_bol_lum_ms - 4*(
+        0.5*(np.log10(clean.data["Gaia L (ms)"]) - 4*(
             np.log10(clean.data["TEFF"]) - np.log10(5777))))
     clean.data["Gaia R err"] = (
         clean.data["Gaia R"] * np.log(10) * np.sqrt(
