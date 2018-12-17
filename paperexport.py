@@ -317,6 +317,221 @@ def plot_El_Badry_APOGEE():
     ax.set_ylabel("K Excess")
     ax.legend(loc="upper right")
 
+def plot_El_Badry_logg():
+    '''Plot the single and composite targets analyzed by El-Badry.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    singles = aposplit.subsample(["El-Badry Single"])
+    sb1s = aposplit.subsample(["El-Badry SB1"])
+    sb2s = aposplit.subsample(["El-Badry SB2"])
+    hidden_triple = aposplit.subsample(["El-Badry Hidden Triple"])
+    sb3s = aposplit.subsample(["El-Badry SB3"])
+    noelb = aposplit.subsample(["No El-Badry Binarity"])
+
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.logg_teff_plot(
+        singles["TEFF"], singles["LOGG_FIT"], marker=".", color=bc.black,
+        ls="", label="Single", axis=ax)
+    hr.logg_teff_plot(
+        sb1s["TEFF"], sb1s["log g [dex]"], marker="s", color=bc.algae,
+        ls="", label="SB1", axis=ax)
+    hr.logg_teff_plot(
+        sb2s["TEFF"], sb2s["log g [dex]"], marker="*", color=bc.pink,
+        ls="", label="SB2", axis=ax)
+    hr.logg_teff_plot(
+        hidden_triple["TEFF"], hidden_triple["log g [dex]"], marker="d", 
+        color=bc.sky_blue, ls="", label="Hidden Triple", axis=ax)
+    hr.logg_teff_plot(
+        sb3s["TEFF"], sb3s["log g [dex]"], marker="p", color=bc.orange,
+        ls="", label="SB3", axis=ax)
+    hr.logg_teff_plot(
+        noelb["TEFF"], noelb["LOGG_FIT"], marker="x", color="grey",
+        ls="", label="Not Analyzed", axis=ax, alpha=0.3)
+
+    ax.set_xlabel("Teff (K)")
+    ax.set_ylabel("APOGEE logg (cm/s/s)")
+    ax.legend(loc="upper right")
+
+def plot_El_Badry_APOGEE_logg_luminous_subgiants():
+    '''Plot the single and composite targets for Luminous Subgiants.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    lum_single = aposplit.subsample(["El-Badry Single", "Luminous Subgiants"])
+    lum_sb1 = aposplit.subsample(["El-Badry SB1", "Luminous Subgiants"])
+    lum_sb2 = aposplit.subsample(["El-Badry SB2", "Luminous Subgiants"])
+    lum_hidden = aposplit.subsample([
+        "El-Badry Hidden Triple", "Luminous Subgiants"])
+    lum_sb3 = aposplit.subsample(["El-Badry SB3", "Luminous Subgiants"])
+    lum_noelb = aposplit.subsample([
+        "No El-Badry Binarity", "Luminous Subgiants"])
+
+    sub_single = aposplit.subsample(["El-Badry Single", "Subgiants"])
+    sub_sb1 = aposplit.subsample(["El-Badry SB1", "Subgiants"])
+    sub_sb2 = aposplit.subsample(["El-Badry SB2", "Subgiants"])
+    sub_hidden = aposplit.subsample([
+        "El-Badry Hidden Triple", "Subgiants"])
+    sub_sb3 = aposplit.subsample(["El-Badry SB3", "Subgiants"])
+    sub_noelb = aposplit.subsample([
+        "No El-Badry Binarity", "Subgiants"])
+
+    
+    hotdwarfs = aposplit.subsample([
+        "Hot Dwarfs"])
+    cooldwarfs = aposplit.subsample([
+        "Cool Dwarfs"])
+    giants = aposplit.subsample([
+        "Giants"])
+
+    lum_singles = vstack([lum_single, lum_sb1])
+    lum_binaries = vstack([lum_sb2, lum_hidden, lum_sb3])
+    sub_singles = vstack([sub_single, sub_sb1])
+    sub_binaries = vstack([sub_sb2, sub_hidden, sub_sb3])
+    others = vstack([lum_noelb, sub_noelb, hotdwarfs, cooldwarfs, giants])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.logg_teff_plot(
+        lum_singles["TEFF"], lum_singles["LOGG_FIT"], marker=".", 
+        color=bc.sky_blue, ls="", label="El-Badry Single Luminous Subgiant", 
+        axis=ax)
+    hr.logg_teff_plot(
+        lum_binaries["T_eff [K]"], lum_binaries["log g [dex]"], marker="*", 
+        color=bc.sky_blue, ls="", label="El-Badry Binary Luminous Subgiant", 
+        axis=ax, ms=12)
+    hr.logg_teff_plot(
+        lum_binaries["TEFF"], lum_binaries["LOGG_FIT"], marker="o", 
+        color=bc.sky_blue, ls="", label="APOGEE Param",
+        axis=ax, ms=12)
+    if False:
+        hr.logg_teff_plot(
+            sub_singles["TEFF"], sub_singles["LOGG_FIT"], marker=".", 
+            color=bc.algae, ls="", label="El-Badry Single Subgiant", 
+            axis=ax)
+        hr.logg_teff_plot(
+            sub_binaries["T_eff [K]"], sub_binaries["log g [dex]"], marker="*", 
+            color=bc.algae, ls="", label="El-Badry Binary Subgiant", 
+            axis=ax, ms=12)
+        hr.logg_teff_plot(
+            sub_binaries["TEFF"], sub_binaries["LOGG_FIT"], marker="o", 
+            color=bc.algae, ls="", label="",
+            axis=ax, ms=12)
+        for r in sub_binaries:
+            hr.logg_teff_plot(
+                [r["TEFF"], r["T_eff [K]"]], [r["LOGG_FIT"], r["log g [dex]"]],
+                marker="", ls="-", color="k")
+    hr.logg_teff_plot(
+        others["TEFF"], others["LOGG_FIT"], marker="x", color="grey",
+        ls="", label="Other", alpha=0.3, axis=ax)
+
+    for r in lum_binaries:
+        hr.logg_teff_plot(
+            [r["TEFF"], r["T_eff [K]"]], [r["LOGG_FIT"], r["log g [dex]"]],
+            marker="", ls="-", color="k")
+
+
+    ax.set_xlabel("Teff (K)")
+    ax.set_ylabel("APOGEE logg (cm/s/s)")
+    ax.set_xlim(7000, 4800)
+    ax.set_ylim(5.6, 2.8)
+    ax.legend(loc="lower right")
+
+def luminous_subgiant_vsini_distribution():
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants", "Low Alpha"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    n, bins, patches = ax.hist(
+        luminous_subgiants["VSINI"], bins=40, range=(0, 100), normed=False, 
+        cumulative=False, color=bc.sky_blue, histtype="step", label="Full",
+        linewidth=3)
+
+    ax.text(40, 20, "Rapid Rotator Fraction: {0:.1f}%".format(
+        aposplit.subsample_len([
+            "Luminous Subgiants", "Low Alpha", "Vsini det"]) / 
+        aposplit.subsample_len([
+            "Luminous Subgiants", "Low Alpha", "~No Vsini"])*100))
+    ax.plot([10, 10], [0, 45], 'r-')
+    ax.plot([7, 7], [0, 45], 'r--')
+    ax.set_xlabel("APOGEE Vsini")
+    ax.set_ylabel("N")
+    ax.set_title("Luminous Subgiants")
+
+def subgiant_vsini_distribution():
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    subgiants = aposplit.subsample(["Subgiants", "Low Alpha"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    n, bins, patches = ax.hist(
+        subgiants["VSINI"], bins=40, range=(0, 100), normed=False, 
+        cumulative=False, color=bc.sky_blue, histtype="step", label="Full",
+        linewidth=3)
+
+    ax.text(40, 40, "Rapid Rotator Fraction: {0:.1f}%".format(
+        aposplit.subsample_len([
+            "Subgiants", "Low Alpha", "Vsini det"]) / 
+        aposplit.subsample_len([
+            "Subgiants", "Low Alpha", "~No Vsini"])*100))
+    ax.plot([7, 7], [0, 165], 'r--')
+    ax.plot([10, 10], [0, 165], 'r-')
+    ax.set_xlabel("APOGEE Vsini")
+    ax.set_ylabel("N")
+    ax.set_title("Subgiants")
+
+def plot_vsini_against_luminosity():
+    '''Correlate vsini against K-band luminosity.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants", "Low Alpha"])
+    luminous_subgiants_rapid = luminous_subgiants["VSINI"] > 10
+    subgiants = aposplit.subsample(["Subgiants", "Low Alpha"])
+    subgiants_rapid = subgiants["VSINI"] > 10
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    ax.plot(
+        subgiants["M_K"][subgiants_rapid], subgiants["VSINI"][subgiants_rapid], 
+        color=bc.algae, marker=".", ls="")
+    ax.plot(
+        luminous_subgiants["M_K"][luminous_subgiants_rapid], 
+        luminous_subgiants["VSINI"][luminous_subgiants_rapid], color=bc.sky_blue, 
+        marker=".", ls="")
+
+    ax.set_xlabel("M_K")
+    ax.set_ylabel("VSINI")
+
+
+def plot_luminous_subgiant_alpha_poor():
+    '''Plot the alpha poor rapid and slow rotators.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants"])
+    alpha_rich_rapid = np.logical_and(
+        luminous_subgiants["ALPHA_FE"] > 0.2, luminous_subgiants["VSINI"] > 10)
+    alpha_rich_slow = np.logical_and(
+        luminous_subgiants["ALPHA_FE"] > 0.2, luminous_subgiants["VSINI"] <= 10)
+    others = aposplit.subsample(["~Luminous Subgiants"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"], luminous_subgiants["K Excess"], 
+        color=bc.sky_blue, marker=".", ls="")
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"][alpha_rich_rapid], 
+        luminous_subgiants["K Excess"][alpha_rich_rapid], color='r',
+        marker="*", ls="", ms=8)
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"][alpha_rich_slow], 
+        luminous_subgiants["K Excess"][alpha_rich_slow], color='r',
+        marker="o", ls="", ms=8)
+    hr.absmag_teff_plot(
+        others["TEFF"], others["K Excess"], color="grey", marker=".", ls="",
+        ms=8, alpha=0.3)
+
+    ax.set_xlabel("Teff (K)") 
+    ax.set_ylabel("K Excess")
+
+
 def plot_APOGEE_bins():
     '''Plot the different bins of evolutionary state.'''
     aposplit = cache.apogee_splitter_with_DSEP()
@@ -348,6 +563,171 @@ def plot_APOGEE_bins():
     ax.set_ylabel("K Excess")
     ax.set_xlim(6500, 3500)
     ax.set_ylim(1.0, -5.0) 
+    ax.legend(loc="upper right")
+
+def plot_APOGEE_bins_MK():
+    '''Plot the different bins of evolutionary state.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    cool_dwarfs = aposplit.subsample(["Cool Dwarfs"])
+    hot_dwarfs = aposplit.subsample(["Hot Dwarfs"])
+    hot_subgiants = aposplit.subsample(["Subgiants"])
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants"])
+    giants = aposplit.subsample(["Giants"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], marker=".", 
+        color=bc.violet, ls="", label="Cool Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_dwarfs["TEFF"], hot_dwarfs["M_K"], marker=".", 
+        color=bc.orange, ls="", label="Hot Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_subgiants["TEFF"], hot_subgiants["M_K"], marker=".", 
+        color=bc.algae, ls="", label="Hot Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"], luminous_subgiants["M_K"], marker=".", 
+        color=bc.sky_blue, ls="", label="Luminous Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        giants["TEFF"], giants["M_K"], marker=".", 
+        color=bc.red, ls="", label="Giants", axis=ax)
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("M_K")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(1.0, -5.0) 
+    ax.legend(loc="upper right")
+
+def plot_APOGEE_bins_Lbol():
+    '''Plot the different bins of evolutionary state.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    cool_dwarfs = aposplit.subsample(["Cool Dwarfs"])
+    hot_dwarfs = aposplit.subsample(["Hot Dwarfs"])
+    hot_subgiants = aposplit.subsample(["Subgiants"])
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants"])
+    giants = aposplit.subsample(["Giants"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    ax.plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["Gaia L"], marker=".", 
+        color=bc.violet, ls="", label="Cool Dwarfs")
+    ax.plot(
+        hot_dwarfs["TEFF"], hot_dwarfs["Gaia L"], marker=".", 
+        color=bc.orange, ls="", label="Hot Dwarfs")
+    ax.plot(
+        hot_subgiants["TEFF"], hot_subgiants["Gaia L"], marker=".", 
+        color=bc.algae, ls="", label="Hot Subgiants")
+    ax.plot(
+        luminous_subgiants["TEFF"], luminous_subgiants["Gaia L"], marker=".", 
+        color=bc.sky_blue, ls="", label="Luminous Subgiants")
+    ax.plot(
+        giants["TEFF"], giants["Gaia L"], marker=".", 
+        color=bc.red, ls="", label="Giants")
+    ax.set_yscale("log")
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("Lbol")
+    ax.set_xlim(6500, 3500)
+    ax.set_ylim(10**-2, 10**4) 
+    ax.legend(loc="upper left")
+
+def plot_APOGEE_bin_rapid_rotators():
+    '''Plot the rapid rotators on top of bins of evolutionary state.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    cool_dwarfs = aposplit.subsample(["Cool Dwarfs"])
+    hot_dwarfs = aposplit.subsample(["Hot Dwarfs"])
+    hot_subgiants = aposplit.subsample(["Subgiants"])
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants"])
+    giants = aposplit.subsample(["Giants"])
+
+    rapid_rot = aposplit.subsample(["Vsini det"])
+    marginal_rot = aposplit.subsample(["Vsini marginal"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.absmag_teff_plot(
+        cool_dwarfs["TEFF"], cool_dwarfs["M_K"], marker=".", 
+        color=bc.violet, ls="", label="Cool Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_dwarfs["TEFF"], hot_dwarfs["M_K"], marker=".", 
+        color=bc.orange, ls="", label="Hot Dwarfs", axis=ax)
+    hr.absmag_teff_plot(
+        hot_subgiants["TEFF"], hot_subgiants["M_K"], marker=".", 
+        color=bc.algae, ls="", label="Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        luminous_subgiants["TEFF"], luminous_subgiants["M_K"], marker=".", 
+        color=bc.sky_blue, ls="", label="Luminous Subgiants", axis=ax)
+    hr.absmag_teff_plot(
+        giants["TEFF"], giants["M_K"], marker=".", 
+        color=bc.red, ls="", label="Giants", axis=ax)
+
+    hr.absmag_teff_plot(
+        rapid_rot["TEFF"], rapid_rot["M_K"], marker="o", 
+        color='k', ls="", label="VSINI > 7 km/s", axis=ax, ms=3)
+    hr.absmag_teff_plot(
+        marginal_rot["TEFF"], marginal_rot["M_K"], marker="o", 
+        color='k', ls="", label="", axis=ax, ms=3)
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("M_K")
+    ax.set_xlim(6700, 3500)
+    ax.set_ylim(6.5, -7.5) 
+    ax.legend(loc="upper right")
+    ax.set_title("Rapid Rotators in APOGEE")
+
+def plot_APOGEE_bins_vsini_sizes():
+    '''Plot the APOGEE bins where size correlates with vsini.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    categories = [
+        "Cool Dwarfs", "Hot Dwarfs", "Subgiants", "Luminous Subgiants",
+        "Giants"]
+    colors = [bc.violet, bc.orange, bc.algae, bc.sky_blue, bc.red]
+
+    init_size = 1
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    fullsamp = aposplit.subsample([])
+    hr.absmag_teff_plot(
+        fullsamp["TEFF"], fullsamp["M_K"], marker="x", color="grey", ls="", 
+        label="Full", axis=ax, ms=5, alpha=0.15)
+
+    for cat, col in zip(categories, colors):
+        rapidrots = aposplit.subsample([cat, "Vsini det"])
+        marginals = aposplit.subsample([cat, "Vsini marginal"])
+
+        if cat is categories[-1]:
+            label = "7 <= vsini < 10"
+        else:
+            label=""
+        
+        hr.absmag_teff_plot(
+            marginals["TEFF"], marginals["M_K"], marker="o", color=col, ls="", 
+            label=label, axis=ax, ms=init_size)
+
+        vsini_bins = np.array([10, 15, 20, 25, 30])
+        indices = np.digitize(rapidrots["VSINI"], vsini_bins)
+
+        for i in range(1, len(vsini_bins)+1):
+            vsini_indices = indices == i
+            size = init_size + 1*i
+            if cat is categories[-1]:
+                if i == len(vsini_bins):
+                    label = "vsini > {0}".format(vsini_bins[i-1])
+                else:
+                    label = "{0} <= vsini < {1}".format(
+                        vsini_bins[i-1], vsini_bins[i])
+            else:
+                label=""
+            hr.absmag_teff_plot(
+                rapidrots["TEFF"][vsini_indices],
+                rapidrots["M_K"][vsini_indices], marker="o", color=col,
+                ls="", ms=size, axis=ax, label=label)
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("M_K")
+    ax.set_xlim(6700, 3500)
+    ax.set_ylim(6.5, -7.5) 
     ax.legend(loc="upper right")
 
 def rapid_rotator_fractions():
@@ -385,6 +765,43 @@ def photometric_rapid_rotator_fractions():
 
         print(template_str.format(
             cat, rapid_num, total, rapid_num / total * 100))
+
+def period_vsini_matrix():
+    '''Compare the number of periods and vsini in a given subsection.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+    mcq = catin.read_McQuillan_catalog()
+    categories = [
+        "Cool Dwarfs", "Hot Dwarfs", "Subgiants", "Luminous Subgiants"]
+    categories = categories[-1:]
+    vsini_cats = ["Vsini det", "Vsini marginal", "Vsini nondet", "No Vsini"]
+
+    countmatrix=np.zeros(
+        (len(vsini_cats), len(vsini_cats)+1, len(categories)), dtype=np.int)
+
+    for i, c in enumerate(categories):
+        for j, v in enumerate(vsini_cats):
+            countmatrix[j, 3, i] = aposplit.subsample_len([c, v, "No Mcq"])
+            countmatrix[j, 4, i] = aposplit.subsample_len(
+                [c, v, "Unknown Mcq"])
+            mcq_sample = aposplit.subsample([c, v, "Mcq"])
+            full_mcq = au.join_by_id(mcq_sample, mcq, "kepid", "KIC")
+            assert len(full_mcq) == len(mcq_sample)
+
+            max_periods_lower = rot.vsini_to_max_period(10, full_mcq["Gaia R"])
+            max_periods_upper = rot.vsini_to_max_period(7, full_mcq["Gaia R"])
+
+            countmatrix[j, 0, i] = np.count_nonzero(
+                full_mcq["Prot"] < max_periods_lower)
+            countmatrix[j, 1, i] = np.count_nonzero(np.logical_and(
+                full_mcq["Prot"] > max_periods_lower, 
+                full_mcq["Prot"] < max_periods_upper))
+            countmatrix[j, 2, i] = np.count_nonzero(
+                full_mcq["Prot"] > max_periods_upper)
+
+    return countmatrix
+
+
+
 
 def elbadry_binary_fractions():
     '''Write out the El-badry binary fractions in each sector.'''
@@ -3755,6 +4172,143 @@ def subgiant_period_temperature_ages():
         color=agecolors(norm_colors), marker=".")
     hr.invert_x_axis(ax)
 
+def luminous_subgiant_vsini_period_comparison():
+    '''Compare vsini to rotation period using Gaia radii.'''
+    full = cache.apogee_splitter_with_DSEP()
+    fulltable = full.subsample(["Luminous Subgiants", "~DLSB", "~No Vsini"])
+    mcquillan = catin.read_Garcia_periods()
+    mcq_combo = au.join_by_id(fulltable, mcquillan, "kepid", "KIC")
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    rot.plot_vsini_velocity(
+        mcq_combo["VSINI"], mcq_combo["Prot"], 
+        mcq_combo["e_Prot"], mcq_combo["Gaia R"], 
+        mcq_combo["Gaia R err"], ax=ax)
+
+#   ax.set_xlabel("Veq")
+#   ax.set_ylabel("Vsini")
+    ax.set_title("Luminous Subgiant vsini agreement")
+
+def subgiant_vsini_period_comparison():
+    '''Compare vsini to rotation period using Gaia radii.'''
+    full = cache.apogee_splitter_with_DSEP()
+    fulltable = full.subsample(["Subgiants", "~DLSB", "~No Vsini"])
+    mcquillan = catin.read_Garcia_periods()
+    mcq_combo = au.join_by_id(fulltable, mcquillan, "kepid", "KIC")
+
+    f, ax = plt.subplots(1, 1, figsize=(12, 12))
+    rot.plot_vsini_velocity(
+        mcq_combo["VSINI"], mcq_combo["Prot"], 
+        mcq_combo["e_Prot"], mcq_combo["Gaia R"], 
+        mcq_combo["Gaia R err"], ax=ax)
+
+#   ax.set_xlabel("Veq")
+#   ax.set_ylabel("Vsini")
+    ax.set_title("Subgiant vsini agreement")
+
+def map_mcquillan_detections_nondetections():
+    full = cache.apogee_splitter_with_DSEP()
+    mcq_detections = full.subsample(["Mcq"])
+    mcq_nondetections = full.subsample(["No Mcq"])
+    mcq_nonanalyzed = full.subsample(["Unknown Mcq"])
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.absmag_teff_plot(
+        mcq_detections["TEFF"], mcq_detections["K Excess"], marker="o",
+        color="r", ls="", axis=ax, label="Period Detection")
+    hr.absmag_teff_plot(
+        mcq_nondetections["TEFF"], mcq_nondetections["K Excess"], marker="o",
+        color="b", ls="", axis=ax, label="Period Nondetection")
+    hr.absmag_teff_plot(
+        mcq_nonanalyzed["TEFF"], mcq_nonanalyzed["K Excess"], marker="x",
+        color="grey", ls="", axis=ax, alpha=0.3, label="Not analyzed")
+
+    ax.set_xlabel("APOGEE Teff")
+    ax.set_ylabel("K Excess")
+    ax.legend()
+
+def apogee_temperature_calibration_classification():
+    '''Plot the giant and dwarf temperature corrections.'''
+    full = cache.apogee_splitter_with_DSEP()
+    tab = full.subsample(["~Bad"])
+
+    giants = tab["FPARAM"][:,1] < np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+    dwarfs = tab["FPARAM"][:,1] >= np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    ax.plot(
+        tab["FPARAM"][giants,3], 
+        tab["FPARAM"][giants,0] - tab["TEFF"][giants], 'r.')
+    ax.plot(
+        tab["FPARAM"][dwarfs,3], 
+        tab["FPARAM"][dwarfs,0] - tab["TEFF"][dwarfs], 'b.')
+    ax.set_xlabel("[M/H]")
+    ax.set_ylabel("ASPCAP - Calibrated Teff")
+
+def split_apogee_temperature_calibrations():
+    '''Plot the giants and dwarfs according to temperature calibration.'''
+    full = cache.apogee_splitter_with_DSEP()
+    tab = full.subsample(["~Bad"])
+
+    giant_calibration = (np.abs(
+        tab["FPARAM"][:,0] - tab["TEFF"] - (
+            -51.5903 + 61.4774 * tab["FPARAM"][:,3] + 7.17561 * 
+            tab["FPARAM"][:,3]**2)) < 0.5)
+    dwarf_calibration = (np.abs(
+        tab["FPARAM"][:,0] - tab["TEFF"] - (
+            -36.3822 + 13.1614 * tab["FPARAM"][:,3] + -26.0953 * 
+            tab["FPARAM"][:,3]**2)) < 0.5)
+    giants = tab["FPARAM"][:,1] < np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+    dwarfs = tab["FPARAM"][:,1] >= np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+    double_giant = np.logical_and(giant_calibration, giants)
+    double_dwarf = np.logical_and(dwarf_calibration, dwarfs)
+    giant_calibration_dwarfs = np.logical_and(giant_calibration, dwarfs)
+    dwarf_calibration_giants = np.logical_and(dwarf_calibration, giants)
+    other = np.logical_not(np.logical_or(giant_calibration, dwarf_calibration))
+
+    test_teffs = np.linspace(3532, 7500, 200)
+    logg_boundary = np.minimum(2 / 1300 * (test_teffs - 3500) + 2, 4.0)
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    hr.logg_teff_plot(
+        tab["FPARAM"][double_giant,0], tab["FPARAM"][double_giant,1], 'r.')
+    hr.logg_teff_plot(
+        tab["FPARAM"][double_dwarf,0], tab["FPARAM"][double_dwarf,1], 'b.')
+    hr.logg_teff_plot(
+        tab["FPARAM"][dwarf_calibration_giants,0], 
+        tab["FPARAM"][dwarf_calibration_giants,1], 'b.')
+    hr.logg_teff_plot(
+        tab["FPARAM"][giant_calibration_dwarfs,0], 
+        tab["FPARAM"][giant_calibration_dwarfs,1], 'r.')
+    hr.logg_teff_plot(
+        test_teffs, logg_boundary, 'k-', lw=3)
+    ax.set_xlabel("TEFF")
+    ax.set_ylabel("logg")
+
+def apogee_metallicity_calibration_classification():
+    '''Plot the giant and dwarf metallicity corrections.'''
+    full = cache.apogee_splitter_with_DSEP()
+    tab = full.subsample(["~Bad"])
+
+    giants = tab["FPARAM"][:,1] < np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+    dwarfs = tab["FPARAM"][:,1] >= np.minimum(
+        2 + 2 / 1300 * (tab["FPARAM"][:,0] - 3500), 4.0)
+
+    f, ax = plt.subplots(1, 1, figsize=figsize)
+    ax.plot(
+        tab["FPARAM"][giants,3], 
+        tab["FPARAM"][giants,3] - tab["M_H"][giants], 'r.')
+    ax.plot(
+        tab["FPARAM"][dwarfs,3], 
+        tab["FPARAM"][dwarfs,3] - tab["M_H"][dwarfs], 'b.')
+    ax.set_xlabel("[M/H]")
+    ax.set_ylabel("ASPCAP - Calibrated [M/H]")
+
 def DLSB_HR_Diagram(
         cool_dwarfs, dest=build_filepath(FIGURE_PATH, "cool_dlsb", "pdf"),
     teff_col="TEFF", logg_col="LOGG_FIT"):
@@ -3986,6 +4540,65 @@ def write_Don_Pleiades_file():
                      "vsini_APOGEE": "%.2f", "vsini_err_Terndrup": "%.1f",
                      "vsini_err_SH": "%.1f", "vsini_err_S84": "%.1f", 
                      "MK": ".2f"})
+
+def write_Jen_APOGEE_file():
+    '''Write a file for Jen to predict rotational velocities.
+
+    These files should have the TEFF, Lbol, and [M/H]. I also want to include
+    quantities that were used to calculate these final products just in case
+    Jen can get better answers for these targets.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+
+    cool_dwarfs = aposplit.subsample(["Cool Dwarfs"])
+    cool_dwarfs["Regime"] = "Cool Dwarfs"
+    hot_dwarfs = aposplit.subsample(["Hot Dwarfs"])
+    hot_dwarfs["Regime"] = "Hot Dwarfs"
+    hot_subgiants = aposplit.subsample(["Subgiants"])
+    hot_subgiants["Regime"] = "Subgiants"
+    luminous_subgiants = aposplit.subsample(["Luminous Subgiants"])
+    luminous_subgiants["Regime"] = "Luminous Subgiants"
+    giants = aposplit.subsample(["Giants"])
+    giants["Regime"] = "Giants"
+
+    targs = vstack([
+        cool_dwarfs, hot_dwarfs, hot_subgiants, luminous_subgiants, giants])
+
+    newtable = targs[[
+        "Regime", "APOGEE_ID", "TEFF", "TEFF_ERR", "M_K", "MIST BC (sol)", 
+        "Gaia L", "Gaia L err", "M_H", "M_H_ERR", "FE_H"]]
+
+    newtable.rename_column("Gaia L", "L/Lbol")
+    newtable.rename_column("Gaia L err", "L/Lbol err")
+    newtable.rename_column("MIST BC (sol)", "BC K")
+
+    comments = [
+        "File containing APOKASC targets. This file should have necessary", 
+        "information for predicting rotational velocities for all targets.", 
+        "Columns are: ",
+        "Regime: Denotes whether targets is classified as part of the ", 
+        "'Cool Dwarfs', 'Hot Dwarfs', 'Subgiants', 'Luminous Subgiants', or ",
+        "'Giants'.",
+        "APOGEE_ID: The APOGEE ID of the target.",
+        "TEFF: The effective temperature according to APOGEE.",
+        "M_K: The absolute K-band magnitude of the target.",
+        "BC K: The bolometric correction for dwarfs at the target's APOGEE ",
+        "temperature calculated by MIST Isochrones. Gravity corrections to ",
+        "the BC are ignored. Because MIST overpredicts the ",
+        "K-band luminosity with metallicity, I apply a solar-metallicity BC.",
+        "L/Lbol: Bolometric Luminosity calculated from the K-band absolute",
+        "magnitude and the Bolometric Correction.",
+        "M_H: APOGEE Bulk metallicity of the object.",
+        "FE_H: APOGEE iron abundance for the object."]
+
+    newtable.meta["comments"] = comments
+
+    newtable.write(
+        str(paths.HEAD_DIR / "jen_apogee_targets.tab"), 
+        format="ascii.fixed_width", overwrite=True, formats={
+            "TEFF": "%.1f", "M_K": "%.4f", "BC K": "%.4f", "L/Lbol": "%.4f",
+            "M_H": "%.3f", "FE_H": "%.3f"})
+
+    
 if __name__ == "__main__":
 
     desc = """Generate figures and tables.
