@@ -61,20 +61,51 @@
 
 \newcommand{\gvs}{\authorcomment1}
 
-\shorttitle{Rotation Contamination in \Kepler{}}
+\shorttitle{\Kepler{} Rotation Comparison}
 \shortauthors{Simonian et al.}
 \begin{document}
 
-\title{Evaluating Rotation Contamination in \Kepler{} using APOGEE}
-\author{Gregory V. Simonian}
-\affil{Department of Astronomy, The Ohio State University}
-\affil{140 West 18th Avenue, Columbus, OH 43210}
+\title{Comparing Spectroscopic and photometric rotation rates in the
+  \Kepler{} field}
+\author[0000-0002-4230-6732]{Gregory V. A. Simonian}
+\affiliation{Department of Astronomy, The Ohio State University \\
+    140 West 18th Avenue, Columbus, OH 43210}
+
+    \author[0000-0002-7549-7766]{Marc H. Pinsonneault}
+\affiliation{Department of Astronomy, The Ohio State University \\
+    140 West 18th Avenue, Columbus, OH 43210}
+
+    \author[0000-0002-0431-1645]{Donald M. Terndrup}
+\affiliation{Department of Astronomy, The Ohio State University \\
+    140 West 18th Avenue, Columbus, OH 43210}
+
+    \author[0000-0002-4284-8638]{Jennifer L. van Saders}
+    \affiliation{Institute for Astronomy University of Hawai'i \\ 
+    Honolulu, HI 96822}
+    \affiliation{Observatories of the Carnegie Institution for Science \\
+    Pasadena, CA 91101}
+    \affiliation{Department of Astrophysical Sciences, Princeton University \\
+    Princeton, NJ 08544}
+
+\correspondingauthor{Gregory V. A. Simonian}
 \email{simonian@astronomy.ohio-state.edu}
 
 \begin{abstract}
-To be determined.
+  The \Kepler{} satellite enabled measurements of tens of thousands of
+  stellar rotation periods through starspot variability. We use
+  recently released spectroscopic \vsini{} measurements from the APOGEE survey 
+  to compare independent measures of rotation for the brighter \Kepler{} 
+  stars. We use \Gaia{} parallaxes and APOGEE temperatures to calculate radii 
+  in order to reliably compare these two measures of rotation. Among cool 
+  dwarfs, the \vsini{} measurements are overwhelmingly too broad,
+  including substantial mismatches between the rotation periods and
+  \vsini{}. We attribute these mismatches to unresolved spectroscopic
+  binaries with velocity displacements on the order of the APOGEE
+  resolution. Among subgiants, the \vsini{} and rotation periods are
+  concordant. We compare the APOGEE \vsini{} to models of subgiant
+  spindown and find \gvs{something}.
 \end{abstract}
-\keywords{stars: rotation}
+\keywords{stars: rotation, stars: late-type}
 
 \section{Introduction}
 
@@ -1402,6 +1433,43 @@ resource in understanding the rotational evolution of evolved stars. We compare
 the measured \vsini{} to values predicted by the models in \citet{vanSaders13}.
 We find that the data are generally in agreement with the model.
 
+\acknowledgments
+
+G.S, M.P. and D.T acknowledge support from NASA ADP Grant NNX15AF13G and from
+the National Science Foundation via grant AST-1411685 to The Ohio State
+University.
+Funding for the Sloan Digital Sky Survey IV has been provided by the Alfred P.
+Sloan Foundation, the U.S. Department of Energy Office of Science, and the
+Participating Institutions. SDSS-IV acknowledges support and resources from th
+Center for High-Performance Computing at the University of Utah. The SDSS web
+site is www.sdss.org. SDSS-IV is managed by the Astrophysical Research
+Consortium for the Participating Institutions of the SDSS Collaboration
+including the Brazilian Participation Group, the Carnegie Institution for
+Science, Carnegie Mellon University, the Chilean Participation Group, the
+French Participation Group, Harvard-Smithsonian Center for Astrophysics,
+Instituto de Astrof\'isica de Canarias, The Johns Hopkins University, Kavli
+Institute for the Physics and Mathematics of the Universe (IPMU) / University
+of Tokyo, Lawrence Berkeley National Laboratory, Leibniz Institut f\"ur
+Astrophysik Potsdam (AIP), Max-Planck-Institut f\"ur Astronomie (MPIA
+Heidelberg), Max-Planck-Institut f\"ur Astrophysik (MPA Garching),
+Max-Planck-Institut f\"ur Extraterrestrische Physik (MPE), National
+Astronomical Observatories of China, New Mexico State University, New York
+University, University of Notre Dame, Observat\'ario Nacional / MCTI, The Ohio
+State University, Pennsylvania State University, Shanghai Astronomical
+Observatory, United Kingdom Participation Group, Universidad Nacional
+Aut\'onoma de M\'exico, University of Arizona, University of Colorado Boulder,
+University of Oxford, University of Portsmouth, University of Utah, University
+of Virginia, University of Washington, University of Wisconsin, Vanderbilt
+University, and Yale University.  This publication makes use of data products
+from the Two Micron All Sky Survey, which is a joint project of the University
+of Massachusetts and the Infrared Processing and Analysis Center/California
+Institute of Technology, funded by the National Aeronautics and Space
+Administration and the National Science Foundation.
+
+\facility{Kepler, Gaia, CTIO:2MASS, ARC}
+
+\software{MIST \citep{Choi16}, Astropy \citep{astropy}, IPython \citep{PER-GRA:2007}, Scipy
+\citep{jones_scipy_2001}, NumPy \citep{van2011numpy}, Matplotlib \citep{Hunter:2007} }
 
 \bibliographystyle{aasjournal}
 \bibliography{references}
