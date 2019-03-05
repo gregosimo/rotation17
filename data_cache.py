@@ -12,6 +12,7 @@ import mist
 import sed
 import catalog
 import baraffe
+import aspcap_corrections as cors
 
 @au.memoized
 def astero_splitter():
@@ -32,62 +33,73 @@ def full_apogee_splitter():
     targeted_splitted = apogee.split_subsample(["Targeted"])
     return targeted_splitted
 
-def clean_apogee_splitter():
-    '''A persistent DataSplitter that can be used for isochrones. Nohelp.'''
+def categorized_apogee_splitter():
+    '''An APOGEE splitter which has quality cut categories. Nohelp.'''
     full = full_apogee_splitter()
     split.initialize_clean_APOGEE(full)
     split.initialize_vsini(full)
-    notbad = full.split_subsample([
-        "~Bad"])
+    bad_indices = full.indices["Bad"]
     # I want to populate the objects which should have vsini limits.
-    giants = notbad.data["LOGG_FIT"] < np.minimum(
-        2 + 2 / 1300 * (notbad.data["TEFF"] - 3500), 4.0)
-    vsini_targets = np.logical_not(notbad.data["VSINI"].mask)
-    vsini_upperlims = np.logical_and(
-        vsini_targets, notbad.data["VSINI"] > 10**(1.982 - 0.301/8))
+    vsini_targets = np.logical_and(
+        np.logical_not(full.data["VSINI"].mask), bad_indices)
     vsini_lowerlims = np.logical_and(
-        vsini_targets, notbad.data["VSINI"] < 10**(0.176 + 0.301/8))
-    vsini_limits = np.logical_or(vsini_upperlims, vsini_lowerlims)
-    assert(all(np.ma.getmask(notbad.data["TEFF"][vsini_limits])))
-    giant_vsini_limits = np.logical_and(giants, vsini_limits)
-    dwarf_vsini_limits = np.logical_and(~giant, vsini_limits)
-    notbad.data["TEFF"][giant_vsini_limits] = (
-        notbad.data["FPARAM"][giant_vsini_limits,0] - (
-            -51.5903 + 61.4774 * notbad.data["FPARAM"][giant_vsini_limits,3] +
-            7.17561 * notbad["FPARAM"][giant_vsini_limits,3]**2))
-    notbad.data["TEFF"][dwarf_vsini_limits] = (
-        notbad.data["FPARAM"][dwarf_vsini_limits,0] - (
-            -36.3822 + 13.1614 * notbad.data["FPARAM"][dwarf_vsini_limits,3] +
-            -26.0953 * notbad["FPARAM"][dwarf_vsini_limits,3]**2))
+        vsini_targets, full.data["VSINI"] >= 10**(1.982 - 0.301/8))
+    # Empirically, none of the low vsini objects have VSINI_BAD triggered. Only
+    # the high vsini objects. So I won't treat them separately.
+    missing_vsinis = vsini_lowerlims
+    assert(all(np.ma.getmask(full.data["TEFF"][missing_vsinis])))
+    full.data["TEFF"][missing_vsinis] = cors.correct_aspcap_teff(
+        full.data["FPARAM"][missing_vsinis, 0],
+        full.data["FPARAM"][missing_vsinis, 3],
+        full.data["FPARAM"][missing_vsinis, 1])
+    full.data["TEFF_ERR"][missing_vsinis] = (
+        cors.calc_aspcap_teff_uncertainties(
+            full.data["FPARAM"][missing_vsinis,0],
+            full.data["SNREV"][missing_vsinis],
+            full.data["FPARAM"][missing_vsinis,3],
+            full.data["FPARAM"][missing_vsinis,1]))
     # This calibration is too complicated. See
     # pe.apogee_metallicity_calibration_classification.
-    notbad_data["M_H"][vsini_limits] = notbad_data["FPARAM"][vsini_limits,3]
+    full.data["M_H"][missing_vsinis] = full.data["FPARAM"][missing_vsinis,3]
+    full.data["ALPHA_M"][missing_vsinis] = full.data["FPARAM"][missing_vsinis,6]
+    full.data["FE_H"][missing_vsinis] = full.data["FELEM"][missing_vsinis,17]
+    full.data["ALPHA_FE"][missing_vsinis] = (
+        full.data["ALPHA_M"][missing_vsinis] + 
+        full.data["M_H"][missing_vsinis] - full.data["FE_H"][missing_vsinis])
 
-    notbad.split_teff(
-        "TEFF", [5250], (
-            "APOGEE Evolution Cool", "APOGEE Evolution Hot", "No APOGEE Evolution Teff"), 
+    full.split_teff(
+        "TEFF", [5250, 7700], (
+            "APOGEE Evolution Cool", "APOGEE Evolution Hot", "APOGEE Telluric", 
+            "No APOGEE Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="APOGEE Evolution Region")
-    notbad.split_teff(
+    full.split_teff(
         "teff", [5250], (
-            "KSPC Evolution Cool", "KSPC Evolution Hot", "No KSPC Evolution Teff"), 
-        null_value=np.ma.masked, teff_crit="KSPC Evolution Region")
-    notbad.split_teff(
+            "KSPC Evolution Cool", "KSPC Evolution Hot", 
+            "No KSPC Evolution Teff"), null_value=np.ma.masked, 
+        teff_crit="KSPC Evolution Region")
+    full.split_teff(
         "SDSS-Teff", [5250], (
             "Pinsonneault Evolution Cool", "Pinsonneault Evolution Hot", 
             "No Pinsonneault Evolution Teff"), 
         null_value=np.ma.masked, teff_crit="Pinsonneault Evolution Region")
-    notbad.split_teff(
+    full.split_teff(
         "T_eff [K]", [5250], (
-            "El-Badry Evolution Cool", "El-Badry Evolution Hot", "No El-Badry Evolution Teff"), 
-        null_value=np.ma.masked, teff_crit="El-Badry Evolution Region")
-    notbad.split_metallicity(
+            "El-Badry Evolution Cool", "El-Badry Evolution Hot", 
+            "No El-Badry Evolution Teff"), null_value=np.ma.masked, 
+        teff_crit="El-Badry Evolution Region")
+    full.split_metallicity(
         -0.5, ("Low Met", "High Met", "No Met"), col="FE_H",
         null_value=np.ma.masked)
-    notbad.split_alpha(
+    full.split_alpha(
         0.2, ("Low Alpha", "High Alpha", "No Alpha"), col="ALPHA_FE",
         null_value=np.ma.masked)
 
-    clean = notbad.split_subsample([
+    return full
+
+def clean_apogee_splitter():
+    '''A persistent DataSplitter that can be used for isochrones. Nohelp.'''
+    cat = categorized_apogee_splitter()
+    clean = cat.split_subsample([
         "~Bad", "~No APOGEE Evolution Teff", "K Detection", "In Gaia", 
         "~No Met", "~No Alpha"])
     return clean
@@ -95,7 +107,8 @@ def clean_apogee_splitter():
 @au.memoized
 def apogee_splitter_with_DSEP():
     '''A datasplitter with DSEP isochrones included. Help!'''
-    clean = clean_apogee_splitter()
+    rawclean = clean_apogee_splitter()
+    clean = rawclean.split_subsample(["~APOGEE Telluric"])
     clean.data["MIST K"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
         clean.data["TEFF"], clean.data["FE_H"], "Ks", age=1e9, model="MIST v1.2"))
     toohigh_met = clean.data["FE_H"] > 0.5
@@ -251,27 +264,58 @@ def pleiades():
     pleiades_good["MK"] = pleiades_good["K"] - 5 * np.log10(136/10) - 0.01
     pleiades_good["MIST MK"] = samp.calc_model_mag_fixed_age_alpha(
         pleiades_good["TEFF"], 0.0, "Ks", age=1.2e8, model="MIST v1.2")
-    logLbol_MK = (-0.4*(
-        pleiades_good["MK"] + samp.calc_model_over_feh_fixed_age_alpha(
-            np.log10(pleiades_good["TEFF"]), mist.MISTIsochrone.logteff_col,
-            "BC K", 0.0, 1.2e8) - 4.75))
+    pleiades_good["MIST BC K"] = samp.calc_model_over_feh_fixed_age_alpha(
+        np.log10(pleiades_good["TEFF"]), mist.MISTIsochrone.logteff_col,
+        "BC K", 0.0, 1.2e8)
+    pleiades_good["MIST Lbol (K)"] = (-0.4*(
+        pleiades_good["MK"] + pleiades_good["MIST BC K"] - 4.75))
     pleiades_good["K Excess"] = pleiades_good["MK"] - pleiades_good["MIST MK"]
-    pleiades_good["K-band R (MIST)"] = 10**(0.5*(logLbol_MK - 4 * (
-        np.log10(pleiades_good["TEFF"]) - np.log10(5777))))
+    pleiades_good["K-band R (MIST)"] = 10**(0.5*(
+        pleiades_good["MIST Lbol (K)"] - 4 * (
+            np.log10(pleiades_good["TEFF"]) - np.log10(5777))))
     # Add in Baraffe-derived radius
     iso = baraffe.BaraffeIsochrone.isochrone_from_file()
+    baraffe_stauffer_radius = np.zeros(len(pleiades_good))
+    stauffer_MK = np.zeros(len(pleiades_good))
+    stauffer_MV = np.zeros(len(pleiades_good))
+    mist_stauffer_radius = np.zeros(len(pleiades_good))
+    mist_stauffer_bc = np.zeros(len(pleiades_good))
     Kband_radius = np.zeros(len(pleiades_good))
     masses = pleiades_good["Mass"]
     stauffer_mass_exists = ~np.ma.getmaskarray(masses)
-    baraffe_rad = iso.interpolate_isochrone_cols(
-        0.12, masses[stauffer_mass_exists], iso.mass_col, iso.radius_col)
+    # The input to the isochrones was MK. So use this as the starting point.
+    stauffer_MK[stauffer_mass_exists] = iso.interpolate_isochrone_cols(
+        0.12, masses[stauffer_mass_exists], iso.mass_col,
+        baraffe.band_translation["Ks"])
+    stauffer_MV[stauffer_mass_exists] = iso.interpolate_isochrone_cols(
+        0.12, masses[stauffer_mass_exists], iso.mass_col,
+        baraffe.band_translation["V"])
+    baraffe_stauffer_radius[stauffer_mass_exists] = iso.interpolate_isochrone_cols(
+        0.12, stauffer_MK[stauffer_mass_exists], baraffe.band_translation["Ks"], 
+        iso.radius_col, increase=False)
+    mist_stauffer_radius[stauffer_mass_exists] = samp.calc_model_over_feh_fixed_age_alpha(
+        stauffer_MK[stauffer_mass_exists], mist.band_translation["Ks"], 
+        mist.MISTIsochrone.radius_col, 0.0, 1.2e8)
+    mist_stauffer_bc[stauffer_mass_exists] = samp.calc_model_over_feh_fixed_age_alpha(
+        pleiades_good["TEFF"][stauffer_mass_exists], 
+        mist.band_translation["Ks"], mist.MISTIsochrone.logL_col, 0.0, 1.2e8)
+    # Maybe these are no longer needed.
     log_baraffe_lum = iso.interpolate_isochrone_cols(
         0.12, masses[stauffer_mass_exists], iso.mass_col, iso.logL_col)
     Kband_radius[stauffer_mass_exists] = 10**(
         0.5*(log_baraffe_lum - 4*(
             np.log10(pleiades_good["TEFF"][stauffer_mass_exists]) - 
             np.log10(5777))))
-    pleiades_good["K-band R (Baraffe)"] = np.ma.masked_equal(Kband_radius, 0)
+    pleiades_good["Stauffer MK"] = np.ma.masked_equal(
+        stauffer_MK, 0)
+    pleiades_good["Stauffer MV"] = np.ma.masked_equal(
+        stauffer_MV, 0)
+    pleiades_good["K-band R (Baraffe)"] = np.ma.masked_equal(
+        Kband_radius, 0)
+    pleiades_good["Stauffer R (Baraffe)"] = np.ma.masked_equal(
+        baraffe_stauffer_radius, 0)
+    pleiades_good["Stauffer R (MIST)"] = np.ma.masked_equal(
+        mist_stauffer_radius, 0)
     apogee_lograd_err = (
         2*pleiades_good["TEFF_ERR"] / pleiades_good["TEFF"] / np.log(10))
     pleiades_good["K-band R Err (Baraffe)"] = (
@@ -287,6 +331,13 @@ def pleiades():
             "BC V", 0.0, 1.2e8) - 4.75))
     pleiades_good["V-band R"] = 10**(0.5*(logLbol_MV - 4 * (
         np.log10(pleiades_good["TEFF"]) - np.log10(5777))))
+
+    # Add in dereddened K magnitudes.
+    extinctions = pleiades_good["E(B-V)"].filled(0.04)
+    pleiades_good["Dereddened K"] = pleiades_good["K"] - 0.31 * extinctions
+    pleiades_good["Dereddened V"] = (
+        pleiades_good["Vmag_RE"] - 3.1 * extinctions)
+
 
     return pleiades_good
 

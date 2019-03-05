@@ -22,7 +22,7 @@ mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 # that may be annoyingly difficult.
 #
 $(mainfile).pdf: $(maintex)
-	latexmk -pdfdvi $(maintex)
+	latexmk -pdf $(maintex)
 
 $(mainfile).ps: $(maintex)
 	latexmk -ps $(maintex)
