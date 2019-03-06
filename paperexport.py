@@ -667,9 +667,72 @@ def plot_APOGEE_bins_MK():
         giants["TEFF"], giants["M_K"], marker=".", 
         color=bc.red, ls="", label="Giants", axis=ax)
 
+    lowT, highT = 3500, 6600
+    tempsep = 5250
+    dT = 5
+    dM = 0.04
+    # Now plot the boundaries.
+    cool_Ts = np.linspace(lowT, tempsep, 100, endpoint=True)
+    cool_dwarf_boundary = samp.calc_model_mag_fixed_age_feh_alpha(
+        cool_Ts, 0.0, "Ks", age=1e9, model="MIST v1.1")
+    hot_Ts = np.linspace(tempsep, highT, 100, endpoint=True)
+    hot_dwarf_boundary = samp.calc_model_mag_fixed_age_feh_alpha(
+        hot_Ts, 0.0, "Ks", age=1e9, model="MIST v1.1")
+    # Cool dwarfs
+    hr.absmag_teff_plot(
+        cool_Ts-dT, cool_dwarf_boundary+dM-1.2, marker="", ls="-", axis=ax,
+        color=bc.violet, lw=3)
+    hr.absmag_teff_plot(
+        np.ones(2)*tempsep-dT, np.array([cool_dwarf_boundary[-1]+dM-1.2, 7]), 
+        marker="", ls="-", axis=ax, color=bc.violet, lw=3)
+    # Hot dwarfs
+    hr.absmag_teff_plot(
+        hot_Ts+dT, hot_dwarf_boundary+dM-1.2, marker="", ls="-", axis=ax,
+        color=bc.orange, lw=3)
+    hr.absmag_teff_plot(
+        np.ones(2)*tempsep+dT, np.array([hot_dwarf_boundary[0]+dM-1.2, 7]),
+        marker="", ls="-", axis=ax, color=bc.orange, lw=3)
+    # Subgiants
+    hr.absmag_teff_plot(
+        hot_Ts+dT, hot_dwarf_boundary-dM-1.2, marker="", ls="-", axis=ax,
+        color=bc.algae, lw=3)
+    hr.absmag_teff_plot(
+        hot_Ts+dT, hot_dwarf_boundary+dM-2.2, marker="", ls="-", axis=ax,
+        color=bc.algae, lw=3)
+    hr.absmag_teff_plot(
+        np.ones(2)*tempsep+dT, np.ones(2) * hot_dwarf_boundary[0] + 
+        np.array([-1.2-dM, -2.2+dM]), marker="", ls="-", axis=ax, 
+        color=bc.algae, lw=3)
+    # Luminous Subgiants
+    hr.absmag_teff_plot(
+        hot_Ts+dT, hot_dwarf_boundary-dM-2.2, marker="", ls="-", axis=ax,
+        color=bc.sky_blue, lw=3)
+    hr.absmag_teff_plot(
+        hot_Ts+dT, hot_dwarf_boundary+dM-4.75, marker="", ls="-", axis=ax,
+        color=bc.sky_blue, lw=3)
+    hr.absmag_teff_plot(
+        np.ones(2)*tempsep+dT, np.ones(2) * hot_dwarf_boundary[0] + 
+        np.array([-2.2-dM, -4.75+dM]), marker="", ls="-", axis=ax, 
+        color=bc.sky_blue, lw=3)
+    # Giants
+    hr.absmag_teff_plot(
+        cool_Ts-dT, cool_dwarf_boundary-dM-1.2, marker="", ls="-", axis=ax,
+        color=bc.red, lw=3)
+    hr.absmag_teff_plot(
+        np.ones(2)*tempsep-dT, np.ones(2) * hot_dwarf_boundary[0] + 
+        np.array([-1.2-dM, -4.75+dM]), marker="", ls="-", axis=ax, 
+        color=bc.red, lw=3)
+    hr.absmag_teff_plot(
+        hot_Ts-dT, hot_dwarf_boundary-dM-4.75, marker="", ls="-", axis=ax,
+        color=bc.red, lw=3)
+
+
+                        
+
+
     ax.set_xlabel("APOGEE Teff")
     ax.set_ylabel("M_K")
-    ax.set_xlim(6600, 3500)
+    ax.set_xlim(highT, lowT)
     ax.set_ylim(7, -7) 
     ax.legend(loc="upper left")
 
