@@ -294,27 +294,17 @@ was flagged as a DLSB and was not included in the \vsini{} analysis.
 % M_H_BAD. One looks like garbage; the other is a hot star with broad lines.
 
 \begin{figure}[htb]
-    \centering
-    \epsscale{1.1}
-    \plotone{targeting}
-    \caption{\emph{Left:} \Teff-\MK{} diagram for the APOGEE observations of
-        \Kepler{} targets. Asteroseismic targets are shown as black dots. The
-        dwarf sample is shown as brown dots. The light blue dots indicate 
-        eclipsing binary targets and purple dots are \Kepler{} Objects of 
-        Interest. A binary sequence is clearly visible on the lower main
-        sequence. Temperatures are spectroscopic APOGEE temperatures. A 
-        representative error bar for the cool dwarf sample is 
-        shown in the bottom-left corner, although the vertical error bar is too
-        small to be easily visible. \emph{Right:} A density plot of the 
-        full APOGEE sample. To preserve the dynamic range of the dwarf 
-        sequence, the red clump was allowed to saturate. The bin size is 100 K
-        in temperature and 0.02 mag in \Ks{}-band absolute 
-        magnitude. Also shown are 1 Gyr MIST isochrones at \(\feh = 0.5
-    \textrm{ (dashed) }, 0.0 \textrm{ (solid) }, \textrm{ (dotted) }\) as pink
-lines.}\label{fig:targeting}
+  \centering
+  \plotone{regimes}
+  \caption{APOGEE targets subdivided into five regimes: cool dwarfs
+    (purple), hot dwarfs (mustard), subgiants (teal), luminous subgiants
+    (blue), and giants (red). The separation between hot and cool samples is 
+    at \(\Teff = 5250\) K. The separations in luminosity correspond to 
+  \(\Delta \Ks = -1.2, -2.2\) and \(-4.75\)} 
+  \label{fig:regimes}
 \end{figure}
 
-\Cref{fig:targeting} shows all \Kepler{} targets with observed
+\Cref{fig:regimes} shows all \Kepler{} targets with observed
 spectroscopic temperatures in the APOGEE DR14, color-coded by observing
 program. One of the driving efforts for \Kepler{} field observations has been
 the spectroscopic characterization of asteroseismic targets, shown as small
@@ -535,46 +525,12 @@ binarity. In the cool dwarf sample, radii can be inferred through
 \Teff{} and \feh{} without concern for age; this simplification is not possible
 on the upper main sequence.
 
-\subsection{MIST Radius}
-\label{sec:MISTR}
-
-We derive radii for the \Kepler{} cool dwarf sample using models from version 
-1.2 of the MESA Isochrones and Stellar Tracks (MIST) isochrones 
-\citep{Dotter16,Choi16}. The MIST isochrones are based on the Modules for 
-Experiments in Stellar Astrophysics (MESA) evolutionary tracks \citep{Paxton11,Paxton13,Paxton15}. 
-evolutionary models. Bolometric corrections translating evolutionary tracks to
-photometric bands were generated from ATLAS12/SYNTHE stellar atmosphere models
-\citep{Kurucz70,93}. 
-
-When directly calculating radii from MIST isochrones, we interpolate on a
-1 Gyr isochrone given an object's \Teff{} and \feh{}. This yields the model's
-radius.
-
-\subsection{Baraffe Radius}
-\label{sec:BaraffeR}
-
-For targets in the Pleiades, we also calculate radii using the
-\citep{Baraffe15} stellar models. These models have been the base models used
-for previous inferences of stellar properties in the Pleiades
-\citep{Stauffer18}, and are needed to compare the results in this work to
-previous results. The \citep{Baraffe15} models have standard prescriptions for
-the interiors as described in \citep{Chabrier97,Baraffe98}, but with the added
-component of BT-Settl atmospheres \citep{Allard12a,Allard12b,Rajpurohit13}.
-\gvs{Add more of relevant physics}
-
-Unlike the MIST isochrones, the Baraffe isochrones are only available for
-solar-metallicity stars. As such, this makes them very useful for
-solar-metallicity clusters, but a poor base metal to study the field, which is
-a heterogeneous mix of metallicities. We infer radii for Pleiades stars from 
-the \citep{Baraffe15} models by interpolating between \Teff{} and radius on a 
-120 Myr model.   
 \subsection{\Gaia{} Radii}
 \label{sec:GaiaR}
 
-In addition to isochrone-based radii, we calculate isochrone-independent radii
-by making use of the K-band luminosity and temperature through the
-Stefan-Boltzmann law. In order to calculate radii based on \Gaia{} parallaxes, 
-we make use of the relation:
+We calculate isochrone-independent radii by making use of the K-band 
+luminosity and temperature through the Stefan-Boltzmann law. In order to 
+calculate radii based on \Gaia{} parallaxes, we make use of the relation:
 
 \begin{equation}
     \log R = \log L_\sun - 0.4 \left(\Ks +5 \log \left(\frac{\omega}{100
@@ -583,8 +539,10 @@ we make use of the relation:
 \end{equation}
 
 where \Ks is the 2MASS \Ks-band flux, \(\omega\) is the \Gaia{} parallax,
-\(BC\) is the bolometric correction as calculated by MIST, \Teff is the
-effective temperature, \feh is the metallicity, and \(M_bol,\sun=4.74\) is the
+\(BC\) is the bolometric correction as derived for
+\citet{Kurucz70 ,Kurucz93} stellar atmosphere models in the MIST
+isochrones (discussed in detail in \cref{sec:MISTR}), \Teff is the effective 
+temperature, \feh is the metallicity, and \(M_bol,\sun=4.74\) is the
 absolute bolometric magnitude of the Sun. All of these quantities except for
 the bolometric correction are available in the APOGEE/\Gaia/2MASS catalogs. 
 
@@ -617,49 +575,58 @@ variability in the correction is likely to be smaller.
 To gauge the systematic uncertainty in the MIST bolometric correction, we
 compare the MIST solar-metallicity bolometric correction to the
 solar-metallicity bolometric correction reported in \citep{Casagrande10}. We
-select the \(BC_\Ks(V-\Ks)\) relation from their paper because it had the least
-amount of scatter. The RMS between the two bolometric corrections is 0.01 mag
-between the color range for which the \citep{Casagrande10} isochrone is
+select the \(BC_\Ks(V-\Ks)\) relation from their paper because it had the 
+least measured scatter. The RMS between the two bolometric corrections is 0.01 
+mag between the color range for which the \citep{Casagrande10} isochrone is
 calibrated.
 
 Another major systematic uncertainty when calculating radii through the K-band
 luminosity is the effect of binarity. Binary systems are not well-described as
 a single-temperature spherical blackbody; as a result, the radii calculated
-from them will not be physical. As a first-order correction, we project the
-luminosity down to the main sequence using a solar-metallicity MIST isochrone,
-and then use the projected luminosity to calculate the radius of the primary.
+from them will not be physical. 
 
-\subsection{Deprojected \Gaia{} Radii}
-\label{sec:deprojR}
+For the \Kepler{} cool dwarf sample, we derive radii by assuming that
+the single star relation can be characterized by the MESA Isochrones and 
+Stellar Tracks (MIST) isochrones \citep[version 1.2]{Dotter16,Choi16}. The 
+MIST isochrones are based on the Modules for Experiments in Stellar 
+Astrophysics (MESA) evolutionary tracks \citep{Paxton11,Paxton13,Paxton15}.  
+Bolometric corrections translating evolutionary tracks to photometric bands 
+were generated from ATLAS12/SYNTHE stellar atmosphere models \citep{Kurucz70,93}. 
 
-\gvs{It turns out this IS equivalent to reading off the solar-metallicity
-    isochrone. A fancier way of doing this is by actually including the
-    metallicity correction defined in Fig 6 of \citet{Simonian19}. Need to see
-how much that matters.} Both the isochronal radii in Sections~\ref{sec:MISTR}~and~\ref{sec:BaraffeR} 
-and the \Gaia{} radii in Section~\ref{sec:GaiaR} suffer from separate but
-potentially large systematics. Radii from the MIST isochrones suffer from
-systematic uncertainties in the stellar modeling. \citet{Simonian19} showed
-that the measured luminosities of cool \Kepler{} field stars was a 
-substantially weaker function of metallicity than predicted by the MIST stellar
-models. This mismatch in luminosity propagates to systematic uncertainties in
-radii, causing the dependence of radii on metallicity to also be overestimated
-in the cool dwarfs.
+When directly calculating radii from MIST isochrones, we interpolate on a
+1 Gyr solar metallicity isochrone given an object's \Teff{}. We ignore
+the metallicity of the isochrone for the previously discussed reason
+that the isochrones overpredict the dependence of the bolometric
+luminosity on metallicity. \gvs{A fancier way of doing it apart from
+ assuming solar metallicity is including the corrections in
+ \citet{Simonian19}}.
 
-Using \Gaia{} radii directly also has severe systematics near the main sequence
-caused by photometric binaries. The Stefan-Boltzmann Law implicitly assumes
-that all of the flux is being generated from a single sphere at a single
-temperature. Photometric binaries violate this assumption because the combined
-light is coming from two separate sources. In this case, the radius calculated
-through the Stefan-Boltzmann law would not correspond to the physical radius of
-either star, hence would not be appropriate for our study of rotation.
 
-In order to minimize the impact of these two systematics near the main 
-sequence, we also construct a radius derived as a hybrid of these two methods.
-Instead of reading the radius directly off of the MIST Isochrone, we deproject
-the \Ks{}-band luminosity to a \emph{solar-metallicity} MIST isochrone.
+\subsection{Baraffe Radius}
+\label{sec:BaraffeR}
+
+\gvs{I may get rid of this section if doing the P--vsini comparison is
+unnecessary.}
+
+For targets in the Pleiades, we also calculate radii using the
+\citep{Baraffe15} stellar models. These models have been the base models used
+for previous inferences of stellar properties in the Pleiades
+\citep{Stauffer18}, and are needed to compare the results in this work to
+previous results. The \citep{Baraffe15} models have standard prescriptions for
+the interiors as described in \citep{Chabrier97,Baraffe98}, but with the added
+component of BT-Settl atmospheres \citep{Allard12a,Allard12b,Rajpurohit13}.
+\gvs{Add more of relevant physics}
+
+Unlike the MIST isochrones, the Baraffe isochrones are only available for
+solar-metallicity stars. As such, this makes them very useful for
+solar-metallicity clusters, but a poor base metal to study the field, which is
+a heterogeneous mix of metallicities. We infer radii for Pleiades stars from 
+the \citep{Baraffe15} models by interpolating between \Teff{} and radius on a 
+120 Myr model.   
 
 \section{Regimes}
 \label{sec:regimes}
+
 
 The various measurements of stellar radius and rotation will have systematic
 errors and selection effects that vary as a function of position on the HR
@@ -1296,8 +1263,13 @@ measures yield the same answer.
 
 We show the agreement between the equatorial velocity and \vsini{} in
 \cref{fig:subgiant_velocity_comparison}. We see that the measured
-\vsini{} are all consistent with \(\sin i \le 1\). \gvs{I thought I remembered
-them being consistent. Need to double-check outliers.} This is also seen in the
+\vsini{} are almost all consistent with \(\sin i \le 1\). \gvs{When I
+last looked at this plot, I realized I accidentally used Garcia periods
+instead of McQuillan periods. The McQuillan periods have a few outliers.
+I checked the obvious suspects: the spectra look normal, there isn't a
+nearby bright stars in high-resolution J-band images, they lie somewhat,
+but not suspiciously close to the low-luminosity cutoff. It might be worth
+checking the light curve?} This is also seen in the
 difference between the observed \vsini{} distribution and the \vsini{} 
 distribution predicted from the rotation periods and radii. The concordance 
 between the two rotation measures suggests that all subgiants are well-behaved 
@@ -1466,7 +1438,7 @@ of Massachusetts and the Infrared Processing and Analysis Center/California
 Institute of Technology, funded by the National Aeronautics and Space
 Administration and the National Science Foundation.
 
-\facility{Kepler, Gaia, CTIO:2MASS, ARC}
+\facility{Kepler, Gaia, CTIO:2MASS, Sloan}
 
 \software{MIST \citep{Choi16}, Astropy \citep{astropy}, IPython \citep{PER-GRA:2007}, Scipy
 \citep{jones_scipy_2001}, NumPy \citep{van2011numpy}, Matplotlib \citep{Hunter:2007} }
