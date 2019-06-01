@@ -7,7 +7,9 @@ tablelist := $(wildcard $(tabledir)/*)
 mainfile = main
 maintex = $(mainfile).tex
 
-revision = main_mnras.tex
+revision = main_old.tex
+
+bibfile = references.bib
 
 all: $(mainfile).pdf
 
@@ -21,24 +23,24 @@ mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
 # that may be annoyingly difficult.
 #
-$(mainfile).pdf: $(maintex)
+$(mainfile).pdf: $(maintex) $(bibfile) $(tablelist) $(latexfigures)
 	latexmk -pdf $(maintex)
 
-$(mainfile).ps: $(maintex)
+$(mainfile).ps: $(maintex) $(bibfile)
 	latexmk -ps $(maintex)
 
-$(mainfile).bbl: $(maintex)
+$(mainfile).bbl: $(maintex) $(bibfile)
 	bibtex $(mainfile)
 
 referee: diff.pdf
 	
-diff.pdf: $(revision) $(maintex)
+diff.pdf: $(revision) $(maintex) $(bibfile)
 	-rm diff.*
 	latexdiff $(revision) $(maintex) > diff.tex
-	latexmk -pdfdvi -interaction=nonstopmode diff.tex
-	mv diff.tex diff.pdf referee_material
+	latexmk -pdf -interaction=nonstopmode diff.tex
+#mv diff.tex diff.pdf referee_material
 
-diff.ps: $(revision) $(maintex)
+diff.ps: $(revision) $(maintex) $(bibfile)
 	-rm diff.*
 	latexdiff $(revision) $(maintex) > diff.tex
 	latexmk -ps -interaction=nonstopmode diff.tex

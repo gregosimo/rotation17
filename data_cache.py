@@ -88,7 +88,7 @@ def categorized_apogee_splitter():
             "No El-Badry Evolution Teff"), null_value=np.ma.masked, 
         teff_crit="El-Badry Evolution Region")
     full.split_metallicity(
-        -0.5, ("Low Met", "High Met", "No Met"), col="FE_H",
+        [-0.2, 0.2], ("Low Met", "Sol Met", "High Met", "No Met"), col="FE_H",
         null_value=np.ma.masked)
     full.split_alpha(
         0.2, ("Low Alpha", "High Alpha", "No Alpha"), col="ALPHA_FE",
@@ -247,6 +247,121 @@ def apogee_splitter_with_DSEP():
 
     return clean
 
+def mcquillan_splitter():
+    mcq = split.McQuillanSplitter()
+    split.initialize_mcquillan_sample(mcq)
+    return mcq
+
+def clean_mcquillan_splitter():
+    '''A persistent DataSplitter that can be used for isochrones.'''
+    mcq = mcquillan_splitter()
+    clean = mcq.split_subsample([
+        "K Detection", "In Gaia", "Good Isochrone Teff"])
+    return clean
+
+@au.memoized
+def mcquillan_splitter_with_DSEP():
+    clean = clean_mcquillan_splitter()
+    # One of the McQuillan has a Teff of 7300, which is too hot even for the 1 
+    # Gyr isochrone.
+    clean.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
+        clean.data["teff"], 0.08, "Ks", age=1e9, model="MIST v1.2")
+    clean.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
+        clean.data["teff"], 0.0, "Ks", teff_err=100, age=1e9, 
+        model="MIST v1.2")
+    clean.data["K Excess"] = clean.data["M_K"] - clean.data["MIST K"]
+    clean.data["K Excess Error Down"] = np.sqrt(
+        clean.data["M_K_err2"]**2 + clean.data["MIST K Error"]**2)
+    clean.data["K Excess Error Up"] = np.sqrt(
+        clean.data["M_K_err1"]**2 + clean.data["MIST K Error"]**2)
+    clean.split_mag("K Excess", -1.2, splitnames=("Not Dwarfs", "Dwarfs"),
+                    null_value=None)
+
+    average_logteff_err = (
+        clean.data["teff_err1"] - clean.data["teff_err2"]) / 2
+    logteff_err = (
+        average_logteff_err / clean.data["teff"] / np.log(10))
+    # Derive R using Gaia magnitudes.
+    clean.data["MIST BC (sol)"] = samp.calc_model_over_feh_fixed_age_alpha(
+        np.log10(clean.data["teff"]), mist.MISTIsochrone.logteff_col,
+        "BC K", 0.0, 1e9)
+    clean.data["MIST BC err"] = samp.calc_model_err_fixed_age_feh_alpha(
+        np.log10(clean.data["teff"]), mist.MISTIsochrone.logteff_col, "BC K",
+        logteff_err, 0.0, age=1e9)
+    # Add the zero-point offset.
+    clean.data["Gaia L"] = 10**(
+        -0.4 * (clean.data["M_K"] + clean.data["MIST BC (sol)"] - 4.75))
+    clean.data["Gaia L (ms)"] = 10**(
+        -0.4 * (clean.data["MIST K"] + clean.data["MIST BC (sol)"] - 4.75))
+    clean.data["Gaia L err"] = (
+        0.4 * np.log(10) * clean.data["Gaia L"] *np.sqrt(
+            clean.data["kmag_err"]**2 + (
+                5 * clean.data["parallax_error"] / clean.data["parallax"] /
+                np.log(10))**2 + clean.data["MIST BC err"]**2))
+    clean.data["Gaia R"] = 10**(
+        0.5*(np.log10(clean.data["Gaia L"]) - 4*(
+            np.log10(clean.data["teff"]) - np.log10(5777))))
+    clean.data["Gaia R err"] = (
+        clean.data["Gaia R"] * np.log(10) * np.sqrt(
+            (0.2*clean.data["kmag_err"])**2 + 
+            (clean.data["parallax_error"] / clean.data["parallax"] /
+             np.log(10))**2 +
+            (2 * logteff_err)**2 + 
+            (0.2 * samp.calc_model_err_fixed_age_feh_alpha(
+                np.log10(clean.data["teff"]), mist.MISTIsochrone.logteff_col,
+                mist.MISTIsochrone.radius_col, logteff_err, 0.0)**2)))
+                
+    clean.split_evstates(teff_col="teff", kcol="K Excess")
+    clean.split_veq(
+        [10, 200], [
+            "McQuillan Slow Vel", "McQuillan Rapid Vel", "McQuillan Puls"], 
+        pcol="Prot", rcol="Gaia R")
+
+    return clean
+
+def mcquillan_nondetections_splitter_with_DSEP():
+    '''Calculate DSEP mags for the McQuillan Nondetections'''
+    nondet = catin.mcquillan_nondetections_with_stelparms()
+    nondet_splitter = split.KeplerSplitter(data=nondet)
+
+    nondet_splitter.split_teff(
+        "SDSS-Teff", [4000, 5000], (
+            "Too Cool MetCor", "Right MetCor Teff", "Too Hot MetCor", 
+            "No MetCor Teff"), teff_crit="MetCor Teff",
+        null_value=np.ma.masked)
+    nondet_splitter.split_teff(
+        "SDSS-Teff", [4000, 5000], (
+            "Too Cool Statistics", "Right Statistics Teff", 
+            "Too Hot Statistics", "No Statistics Teff"), 
+        teff_crit="Statistics Teff", null_value=np.ma.masked)
+    nondet_splitter.split_teff(
+        "SDSS-Teff", 7000, splitnames=(
+            "Good Isochrone Teff", "Too Hot for Isochrone", 
+            "Bad Isochrone Teff"), teff_crit="Isochrone Temperature",
+        null_value=np.ma.masked)
+    nondet_splitter.split_photometric_quality(
+        "kmag", "kmag_err", splitnames=("K Detection", "Blend", "Bad K"),
+        crit="MK blend")
+    nondet_splitter.split_Gaia()
+    clean_nondets = nondet_splitter.split_subsample([
+        "K Detection", "In Gaia", "Good Isochrone Teff"])
+    clean_nondets.data["MIST K"] = samp.calc_model_mag_fixed_age_alpha(
+        clean_nondets.data["SDSS-Teff"], 0.08, "Ks", age=1e9, model="MIST v1.1")
+    clean_nondets.data["MIST K Error"] = samp.calc_model_mag_err_fixed_age_feh_alpha(
+        clean_nondets.data["SDSS-Teff"], 0.0, "Ks", teff_err=150, age=1e9, 
+        model="MIST v1.1")
+    clean_nondets.data["K Excess"] = (
+        clean_nondets.data["M_K"] - clean_nondets.data["MIST K"])
+    clean_nondets.data["K Excess Error Down"] = np.sqrt(
+        clean_nondets.data["M_K_err2"]**2 + 
+        clean_nondets.data["MIST K Error"]**2)
+    clean_nondets.data["K Excess Error Up"] = np.sqrt(
+        clean_nondets.data["M_K_err1"]**2 + 
+        clean_nondets.data["MIST K Error"]**2)
+    clean_nondets.split_mag("K Excess", -1.2, splitnames=(
+        "Not Dwarfs", "Dwarfs"), null_value=None)
+    return clean_nondets
+
 @au.memoized
 def pleiades():
     '''A Table that holds information about pleiades targets.'''
@@ -337,6 +452,9 @@ def pleiades():
     pleiades_good["Dereddened K"] = pleiades_good["K"] - 0.31 * extinctions
     pleiades_good["Dereddened V"] = (
         pleiades_good["Vmag_RE"] - 3.1 * extinctions)
+
+    # Add El-Badry Classifications.
+    catalog.add_APOGEE_Binary_column(pleiades_good)
 
 
     return pleiades_good
