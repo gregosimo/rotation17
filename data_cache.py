@@ -66,6 +66,9 @@ def categorized_apogee_splitter():
     full.data["ALPHA_FE"][missing_vsinis] = (
         full.data["ALPHA_M"][missing_vsinis] + 
         full.data["M_H"][missing_vsinis] - full.data["FE_H"][missing_vsinis])
+    full.data["MG_FE"][missing_vsinis] = full.data["FELEM"][missing_vsinis, 5]
+    full.indices["Bad"][missing_vsinis] = False
+    full.indices["Warn"][missing_vsinis] = True
 
     full.split_teff(
         "TEFF", [5250, 7700], (
@@ -93,6 +96,9 @@ def categorized_apogee_splitter():
     full.split_alpha(
         0.2, ("Low Alpha", "High Alpha", "No Alpha"), col="ALPHA_FE",
         null_value=np.ma.masked)
+    full.split_alpha(
+        0.2, ("Low Mg", "High Mg", "No Mg"), col="MG_FE",
+        null_value=np.ma.masked, alpha_crit="Mg")
 
     return full
 
@@ -101,7 +107,7 @@ def clean_apogee_splitter():
     cat = categorized_apogee_splitter()
     clean = cat.split_subsample([
         "~Bad", "~No APOGEE Evolution Teff", "K Detection", "In Gaia", 
-        "~No Met", "~No Alpha"])
+        "~No Met", "~No Alpha", "~No Mg"])
     return clean
 
 @au.memoized
@@ -109,15 +115,15 @@ def apogee_splitter_with_DSEP():
     '''A datasplitter with DSEP isochrones included. Help!'''
     rawclean = clean_apogee_splitter()
     clean = rawclean.split_subsample(["~APOGEE Telluric"])
-    clean.data["MIST K"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"], clean.data["FE_H"], "Ks", age=1e9, model="MIST v1.2"))
-    toohigh_met = clean.data["FE_H"] > 0.5
-    clean.data["MIST K"][toohigh_met] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"][toohigh_met], 0.5, "Ks", age=1e9, model="MIST v1.2")
-    # I can add another gridpoint to the MIST isochrones in lieu of this.
-    toolow_met = clean.data["FE_H"] < -2.5
-    clean.data["MIST K"][toolow_met] = samp.calc_model_mag_fixed_age_alpha(
-        clean.data["TEFF"][toolow_met], -2.5, "Ks", age=1e9, model="MIST v1.2")
+#   clean.data["MIST K"] = np.diag(samp.calc_model_mag_fixed_age_alpha(
+#       clean.data["TEFF"], clean.data["FE_H"], "Ks", age=1e9, model="MIST v1.2"))
+#   toohigh_met = clean.data["FE_H"] > 0.5
+#   clean.data["MIST K"][toohigh_met] = samp.calc_model_mag_fixed_age_alpha(
+#       clean.data["TEFF"][toohigh_met], 0.5, "Ks", age=1e9, model="MIST v1.2")
+#   # I can add another gridpoint to the MIST isochrones in lieu of this.
+#   toolow_met = clean.data["FE_H"] < -2.5
+#   clean.data["MIST K"][toolow_met] = samp.calc_model_mag_fixed_age_alpha(
+#       clean.data["TEFF"][toolow_met], -2.5, "Ks", age=1e9, model="MIST v1.2")
     # Instead of "Corrected" K Excess, I'll use a solar metallicity excess for
     # now.
     clean.data["MIST K (sol)"] = samp.calc_model_mag_fixed_age_feh_alpha(
@@ -137,40 +143,40 @@ def apogee_splitter_with_DSEP():
     clean.split_mag(
         "K Excess", -2.4, splitnames=("Giants", "Dwarfs"), null_value=None,
         mag_crit="Giants")
+    # Saved because I made a bad decision in the hot dwarf vsini comparison
+    # figure.
     clean.split_mag(
         "K Excess", [-1.3, -0.3], splitnames=(
-            "Photometric Giants", "Photometric Binaries", "Photometric Singles"), null_value=None, 
+            "Photometric Giants", "Photometric Bins", "Photometric Singles"), null_value=None, 
         mag_crit="Photbins")
     # Split sample into bins in the HR diagram.
-    clean.split_APOGEE_evstates(teff_col="TEFF", kcol="K Excess")
+    clean.split_APOGEE_evstates(teff_col="TEFF")
     # Now do a split based solely on the El-Badry temperatures.
     # Since only a subset of these objects have El-Badry temperatues, I need to
     # be wary of masked  values.
     elbadry_teff_indices = ~clean.data["T_eff [K]"].mask
     clean.data["ElBadry K"] = np.ma.ones(len(clean.data))*-9999.0
-    clean.data["ElBadry K"][elbadry_teff_indices] = np.diag(
-        samp.calc_model_mag_fixed_age_alpha(
-            clean.data["T_eff [K]"][elbadry_teff_indices], 
-            clean.data["[Fe/H] [dex]"][elbadry_teff_indices], "Ks", age=1e9, 
-            model="MIST v1.2"))
+    clean.data["ElBadry K"][elbadry_teff_indices] = \
+        samp.calc_model_mag_fixed_age_feh_alpha(
+            clean.data["T_eff [K]"][elbadry_teff_indices], 0.0, "Ks", age=1e9, 
+            model="MIST v1.2")
     clean.data["ElBadry K"] = np.ma.masked_values(
         clean.data["ElBadry K"], -9999.0)
     clean.data["ElBadry K Excess"] = (
         clean.data["M_K"] - clean.data["ElBadry K"])
     # Now derive 1-Gyr radii for the sample.
-    clean.data["MIST R (APOGEE)"] = np.diag(samp.calc_model_over_feh_fixed_age_alpha(
+    clean.data["MIST R (APOGEE)"] = samp.calc_model_fixed_age_feh_alpha(
         np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col,
-        mist.MISTIsochrone.radius_col, clean.data["FE_H"], 1e9))
+        mist.MISTIsochrone.radius_col, 0.0, 1e9)
     apogee_logteff_err = (
         clean.data["TEFF_ERR"] / clean.data["TEFF"] / np.log(10))
     clean.data["MIST R Err (APOGEE)"] = samp.calc_model_err_fixed_age_feh_alpha(
         np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col,
         mist.MISTIsochrone.radius_col, apogee_logteff_err, 0.0, age=1e9)
     # Derive 1-Gyr radii using photometric temperatures.
-    clean.data["MIST R (KSPC)"] = np.diag(
-        samp.calc_model_over_feh_fixed_age_alpha(
+    clean.data["MIST R (KSPC)"] = samp.calc_model_fixed_age_feh_alpha(
             np.log10(clean.data["teff"]), mist.MISTIsochrone.logteff_col,
-            mist.MISTIsochrone.radius_col, clean.data["FE_H"], 1e9))
+            mist.MISTIsochrone.radius_col, 0.0, 1e9)
     mean_kspc_teff_err = (
         (clean.data["teff_err1"] + (-clean.data["teff_err2"]))/2)
     kspc_logteff_err = mean_kspc_teff_err / clean.data["teff"] / np.log(10)
@@ -181,11 +187,11 @@ def apogee_splitter_with_DSEP():
     clean.data["MIST R (Pinsonneault)"] = np.ma.zeros(len(clean.data))
     clean.data["MIST R Err (Pinsonneault)"] = np.ma.zeros(len(clean.data))
     pinsonneault_teff_masked = clean.data["SDSS-Teff"].mask
-    clean.data["MIST R (Pinsonneault)"][~pinsonneault_teff_masked] = np.diag(
-        samp.calc_model_over_feh_fixed_age_alpha(
+    clean.data["MIST R (Pinsonneault)"][~pinsonneault_teff_masked] = \
+        samp.calc_model_fixed_age_feh_alpha(
             np.log10(clean.data["SDSS-Teff"][~pinsonneault_teff_masked]), 
             mist.MISTIsochrone.logteff_col, mist.MISTIsochrone.radius_col, 
-            clean.data["FE_H"][~pinsonneault_teff_masked], 1e9))
+            0.0, 1e9)
     pinsonneault_logteff_err = (
         clean.data["e_SDSS-Teff"][~pinsonneault_teff_masked] /
         clean.data["SDSS-Teff"][~pinsonneault_teff_masked] / np.log(10))
@@ -197,31 +203,31 @@ def apogee_splitter_with_DSEP():
     # Derive 1 Gyr radii using the El Badry Temperatures
     clean.data["MIST R (El-Badry)"] = np.ma.zeros(len(clean.data))
     clean.data["MIST R Err (El-Badry)"] = np.ma.zeros(len(clean.data))
-    elbadry_teff_masked = clean.data["T_eff [K]"].mask
-    clean.data["MIST R (El-Badry)"][~elbadry_teff_masked] = np.diag(
-        samp.calc_model_over_feh_fixed_age_alpha(
-            np.log10(clean.data["T_eff [K]"][~elbadry_teff_masked]), 
+    clean.data["MIST R (El-Badry)"][elbadry_teff_indices] = \
+        samp.calc_model_fixed_age_feh_alpha(
+            np.log10(clean.data["T_eff [K]"][elbadry_teff_indices]), 
+            mist.MISTIsochrone.logteff_col, mist.MISTIsochrone.radius_col, 0.0, 
+            1e9)
+    clean.data["MIST R Err (El-Badry)"][elbadry_teff_indices] = \
+        samp.calc_model_err_fixed_age_feh_alpha(
+            np.log10(clean.data["T_eff [K]"][elbadry_teff_indices]), 
             mist.MISTIsochrone.logteff_col, mist.MISTIsochrone.radius_col, 
-            clean.data["[Fe/H] [dex]"][~elbadry_teff_masked], 1e9))
-    clean.data["MIST R Err (El-Badry)"][~elbadry_teff_masked]= samp.calc_model_err_fixed_age_feh_alpha(
-        np.log10(clean.data["T_eff [K]"][~elbadry_teff_masked]), mist.MISTIsochrone.logteff_col,
-        mist.MISTIsochrone.radius_col, apogee_logteff_err[~elbadry_teff_masked], 0.0, 
-        age=1e9)
-    clean.data["MIST R (El-Badry)"][elbadry_teff_masked] = np.ma.masked
-    clean.data["MIST R Err (El-Badry)"][elbadry_teff_masked] = np.ma.masked
+            apogee_logteff_err[elbadry_teff_indices], 0.0, age=1e9)
+    clean.data["MIST R (El-Badry)"][~elbadry_teff_indices] = np.ma.masked
+    clean.data["MIST R Err (El-Badry)"][~elbadry_teff_indices] = np.ma.masked
 
     # Derive R using Gaia magnitudes.
-    clean.data["MIST BC (sol)"] = samp.calc_model_over_feh_fixed_age_alpha(
+    clean.data["MIST BC"] = np.diag(samp.calc_model_over_feh_fixed_age_alpha(
         np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col,
-        "BC K", 0.0, 1e9)
+        "BC K", clean.data["FE_H"], 1e9))
     clean.data["MIST BC err"] = samp.calc_model_err_fixed_age_feh_alpha(
         np.log10(clean.data["TEFF"]), mist.MISTIsochrone.logteff_col, "BC K",
         apogee_logteff_err, 0.0, age=1e9)
     # Add the zero-point offset.
     clean.data["Gaia L"] = 10**(
-        -0.4 * (clean.data["M_K"] + clean.data["MIST BC (sol)"] - 4.75))
+        -0.4 * (clean.data["M_K"] + clean.data["MIST BC"] - 4.75))
     clean.data["Gaia L (ms)"] = 10**(
-        -0.4 * (clean.data["MIST K (sol)"] + clean.data["MIST BC (sol)"] - 4.75))
+        -0.4 * (clean.data["MIST K (sol)"] + clean.data["MIST BC"] - 4.75))
     clean.data["Gaia L err"] = (
         0.4 * np.log(10) * clean.data["Gaia L"] *np.sqrt(
             clean.data["K_ERR"]**2 + (
@@ -376,7 +382,11 @@ def pleiades():
     pleiades_good["MIST R Err"] = samp.calc_model_err_fixed_age_feh_alpha(
         np.log10(pleiades_good["TEFF"]), mist.MISTIsochrone.logteff_col,
         mist.MISTIsochrone.radius_col, apogee_logteff_err, 0.0, age=1e9)
-    pleiades_good["MK"] = pleiades_good["K"] - 5 * np.log10(136/10) - 0.01
+    pleiades_good["MK"] = pleiades_good["K"] + 5 * np.log10(
+        (pleiades_good["parallax"]+0.05) / 100) - 0.01
+    pleiades_good["MV"] = (
+        pleiades_good["(V-K)0"] + pleiades_good["K"] - 0.01 + 5 *
+        (np.log10(pleiades_good["parallax"] + 0.05) / 100))
     pleiades_good["MIST MK"] = samp.calc_model_mag_fixed_age_alpha(
         pleiades_good["TEFF"], 0.0, "Ks", age=1.2e8, model="MIST v1.2")
     pleiades_good["MIST BC K"] = samp.calc_model_over_feh_fixed_age_alpha(
@@ -435,9 +445,6 @@ def pleiades():
         2*pleiades_good["TEFF_ERR"] / pleiades_good["TEFF"] / np.log(10))
     pleiades_good["K-band R Err (Baraffe)"] = (
         apogee_lograd_err * pleiades_good["K-band R (Baraffe)"] * np.log(10))
-    pleiades_good["MV"] = (
-        pleiades_good["(V-K)0"] + pleiades_good["K"] - 0.01 - 5 *
-        np.log10(132/10))
     pleiades_good["MIST MV"] = samp.calc_model_mag_fixed_age_alpha(
         pleiades_good["TEFF"], 0.0, "V", age=1.2e8, model="MIST v1.2")
     logLbol_MV = (-0.4*(
@@ -600,10 +607,11 @@ def pleiades_APOGEE_Literature_vsini():
     pleiades_queloz["HII"] = redo_col
 
     sh_pleiades = catin.read_Stauffer_Pleiades()[[
-        "Star", "vsini", "vsini lim", "R"]]
+        "Star", "vsini", "vsini lim", "R", "Notes"]]
     sh_pleiades = sh_pleiades[npstr.startswith(sh_pleiades["Star"], "HII")]
     sh_pleiades.rename_column("vsini", "vsini_SH")
     sh_pleiades.rename_column("vsini lim", "vsini_lim_SH")
+    sh_pleiades.rename_column("Notes", "Notes_SH")
     sh_pleiades["vsini_err_SH"] = sh_pleiades["vsini_SH"] / 2 / (
         1 + sh_pleiades["R"])
     pleiades_sh = au.join_by_id(

@@ -7,7 +7,7 @@ tablelist := $(wildcard $(tabledir)/*)
 mainfile = main
 maintex = $(mainfile).tex
 
-revision = main_old.tex
+revision = main_080219.tex
 
 bibfile = references.bib
 
@@ -18,6 +18,15 @@ mnras: mnras.tar.gz
 mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 	tar -zcf mnras.tar.gz $(maintex) main.bbl references.bib readme.mnras \
 	    $(latexfigures) $(tablelist)
+
+aas: $(maintex) $(mainfile).pdf references.bib $(latexfigures) $(tablelist) 
+	mkdir aas
+	cp $(maintex) aas/$(maintex)
+	cp $(maintex).pdf aas/
+	cp $(latexfigures) aas/
+	cp $(tablelist) aas/
+	cp references.bib aas/
+
 
 # Is there an automated way to add dependencies for tables and figures in here? 
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
@@ -56,3 +65,4 @@ arxiv.tar.gz: $(maintex) $(mainfile).bbl $(latexfigures) $(tablelist)
 clean:
 	-rm diff.*
 	latexmk -C $(maintex)
+	-rm -r aas
