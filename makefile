@@ -7,7 +7,7 @@ tablelist := $(wildcard $(tabledir)/*)
 mainfile = main
 maintex = $(mainfile).tex
 
-revision = main_080219.tex
+prevmain = main_first.tex
 
 bibfile = references.bib
 
@@ -18,15 +18,6 @@ mnras: mnras.tar.gz
 mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 	tar -zcf mnras.tar.gz $(maintex) main.bbl references.bib readme.mnras \
 	    $(latexfigures) $(tablelist)
-
-aas: $(maintex) $(mainfile).pdf references.bib $(latexfigures) $(tablelist) 
-	mkdir aas
-	cp $(maintex) aas/$(maintex)
-	cp $(maintex).pdf aas/
-	cp $(latexfigures) aas/
-	cp $(tablelist) aas/
-	cp references.bib aas/
-
 
 # Is there an automated way to add dependencies for tables and figures in here? 
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
@@ -43,15 +34,15 @@ $(mainfile).bbl: $(maintex) $(bibfile)
 
 referee: diff.pdf
 	
-diff.pdf: $(revision) $(maintex) $(bibfile)
+diff.pdf: $(prevmain) $(maintex) $(bibfile)
 	-rm diff.*
-	latexdiff $(revision) $(maintex) > diff.tex
+	latexdiff $(prevmain) $(maintex) > diff.tex
 	latexmk -pdf -interaction=nonstopmode diff.tex
 #mv diff.tex diff.pdf referee_material
 
-diff.ps: $(revision) $(maintex) $(bibfile)
+diff.ps: $(prevmain) $(maintex) $(bibfile)
 	-rm diff.*
-	latexdiff $(revision) $(maintex) > diff.tex
+	latexdiff $(prevmain) $(maintex) > diff.tex
 	latexmk -ps -interaction=nonstopmode diff.tex
 	mv diff.tex diff.pdf referee_material
 
@@ -65,4 +56,3 @@ arxiv.tar.gz: $(maintex) $(mainfile).bbl $(latexfigures) $(tablelist)
 clean:
 	-rm diff.*
 	latexmk -C $(maintex)
-	-rm -r aas

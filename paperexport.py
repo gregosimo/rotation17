@@ -26,7 +26,16 @@ from astroquery.gaia import Gaia
 import emcee
 import corner
 
-sys.path.append(os.path.join(os.environ["THESIS"], "scripts"))
+# Until I figure out how to use Matplotlib styles. Use this instead.
+mpl.rcParams["axes.titlesize"] = 24
+mpl.rcParams["axes.labelsize"] = 26
+mpl.rcParams["lines.linewidth"] = 5
+mpl.rcParams["lines.markersize"] = 10
+mpl.rcParams["xtick.labelsize"] = 16
+mpl.rcParams["ytick.labelsize"] = 16
+mpl.rcParams["legend.fontsize"] = 14
+
+sys.path.append(os.path.join(os.environ["RESEARCH"], "Binaries", "scripts"))
 import observations as obs
 import path_config as paths
 import read_catalog as catin
@@ -49,7 +58,7 @@ import extinction
 import jenboundary as jen
 import binarycalcs as bincalc
 
-PAPER_PATH = paths.HOME_DIR / "papers" / "rotation17"
+PAPER_PATH = paths.HOME_DIR / "Documents" / "Papers" / "rotation17"
 TABLE_PATH = PAPER_PATH / "tables"
 FIGURE_PATH = PAPER_PATH / "fig"
 PLOT_SUFFIX = "pdf"
@@ -62,6 +71,7 @@ vsinistr = r"$v \sin i$"
 kmsstr = r"km s$^{-1}$"
 Teffstr = r"$T_{\mathrm{eff}}$"
 MKstr = r"$M_{Ks}$"
+fehstr = r"$[Fe/H]$"
 
 def build_filepath(toplevel, filename, suffix=PLOT_SUFFIX):
     '''Generate a full path to save a filename.'''
@@ -234,17 +244,25 @@ def DLSB_Examples():
         np.arange(len(modelspec)))
     assert(aspcaphdu[1].header["CTYPE1"] == "LOG-LINEAR")
 
-    ax1.plot(datawavelengths, dataspec, color='k', marker='', ls="-")
+    ax1.plot(datawavelengths, dataspec, color='k', marker='', ls="--")
     ax1.plot(modelwavelengths, modelspec, color='r', marker='', ls="-")
     ax1.annotate(
         "Companion\nFeature", xy=(15295.3, 0.89), xytext=(15295.1, 0.63), 
-        arrowprops=dict(facecolor="red"), color="red",
+        arrowprops=dict(facecolor="black"), color="black",
         horizontalalignment="center")
-    ax2.plot(datawavelengths, dataspec, color='k', marker='', ls="-")
+    ax1.annotate(
+        "Primary\nFeature", xy=(15298.5, 0.72), xytext=(15297.3, 0.63), 
+        arrowprops=dict(facecolor="blue"), color="blue",
+        horizontalalignment="center")
+    ax2.plot(datawavelengths, dataspec, color='k', marker='', ls="--")
     ax2.plot(modelwavelengths, modelspec, color='r', marker='', ls="-")
     ax2.annotate(
         "Companion\nFeature", xy=(16719.3, 0.82), xytext=(16719.1, 0.63), 
-        arrowprops=dict(facecolor="red"), color="red",
+        arrowprops=dict(facecolor="black"), color="black",
+        horizontalalignment="center")
+    ax2.annotate(
+        "Primary\nFeature", xy=(16722.5, 0.72), xytext=(16721.3, 0.63), 
+        arrowprops=dict(facecolor="blue"), color="blue",
         horizontalalignment="center")
 
     ax1.set_xlim(15291, 15302)
@@ -276,16 +294,28 @@ def DLSB_Examples():
     ax3.plot(wavelengths, spec1, color="k", marker="", ls="-")
     ax4.plot(wavelengths, spec2, color="k", marker="", ls="-")
     ax4.annotate(
-        "Second\nComponent", xy=(15743.3, 174.9), xytext=(15744.5, 118.0), 
-        arrowprops=dict(facecolor="red"), color="red",
+        "Companion\nFeatures", xy=(15743.3, 174.9), xytext=(15744.5, 118.0), 
+        arrowprops=dict(facecolor="black"), color="black",
         horizontalalignment="center")
     ax4.annotate(
-        "Second\nComponent", xy=(15751.1, 179.3), xytext=(15744.5, 118.0), 
-        arrowprops=dict(facecolor="red"), color="red",
+        "Companion\nFeatures", xy=(15751.1, 179.3), xytext=(15744.5, 118.0), 
+        arrowprops=dict(facecolor="black"), color="black",
         horizontalalignment="center")
     ax4.annotate(
-        "Second\nComponent", xy=(15767.8, 170.1), xytext=(15765.5, 118.0), 
-        arrowprops=dict(facecolor="red"), color="red",
+        "Companion\nFeatures", xy=(15767.8, 170.1), xytext=(15765.5, 118.0), 
+        arrowprops=dict(facecolor="black"), color="black",
+        horizontalalignment="center")
+    ax4.annotate(
+        "Primary\nFeatures", xy=(15746.0, 159.0), xytext=(15755.4, 118.0), 
+        arrowprops=dict(facecolor="blue"), color="blue",
+        horizontalalignment="center")
+    ax4.annotate(
+        "Primary\nFeatures", xy=(15753.2, 148.0), xytext=(15755.4, 118.0), 
+        arrowprops=dict(facecolor="blue"), color="blue",
+        horizontalalignment="center")
+    ax4.annotate(
+        "Primary\nFeatures", xy=(15769.5, 142.5), xytext=(15755.4, 118.0), 
+        arrowprops=dict(facecolor="blue"), color="blue",
         horizontalalignment="center")
 
     ax3.set_xlim(15735, 15775)
@@ -403,23 +433,44 @@ def targeting_figure():
         xerr=teff_error, elinewidth=3)
 
     # Now add isochrones
-    lowT, highT = 3500, 6600
-    full_T = np.linspace(lowT, highT, 200)
-    sol_ks = samp.calc_model_mag_fixed_age_feh_alpha(
-        full_T, 0.0, "Ks", age=1e9, model="MIST v1.2")
-    neg_ks = samp.calc_model_mag_fixed_age_feh_alpha(
-        full_T, -0.5, "Ks", age=1e9, model="MIST v1.2")
-    pos_ks = samp.calc_model_mag_fixed_age_feh_alpha(
-        full_T, 0.5, "Ks", age=1e9, model="MIST v1.2")
+    lowmetiso = mist.MISTIsochrone.isochrone_from_file(-0.5)
+    lowmet_table = lowmetiso.iso_table(1e9)
     hr.absmag_teff_plot(
-        full_T, pos_ks, ls=":", marker="", color=bc.pink, lw=3,
-        label="", zorder=5)
+        10**lowmet_table[lowmetiso.logteff_col], 
+        lowmet_table[mist.band_translation["Ks"]], color=bc.pink,
+        marker="", ls="--", label="", axis=ax1, lw=5, zorder=5)
+
+    solmetiso = mist.MISTIsochrone.isochrone_from_file(0.0)
+    solmet_table = solmetiso.iso_table(1e9)
     hr.absmag_teff_plot(
-        full_T, sol_ks, ls="-", marker="", color=bc.pink, lw=3,
-        label="MIST (1 Gyr)", zorder=5)
+        10**solmet_table[solmetiso.logteff_col], 
+        solmet_table[mist.band_translation["Ks"]], color=bc.pink,
+        marker="", ls="-", label="MIST (1 Gyr)", axis=ax1, lw=5, zorder=5)
+
+    highmetiso = mist.MISTIsochrone.isochrone_from_file(0.5)
+    highmet_table = highmetiso.iso_table(1e9)
     hr.absmag_teff_plot(
-        full_T, neg_ks, ls="--", marker="", color=bc.pink, lw=3,
-        label="", zorder=5)
+        10**highmet_table[highmetiso.logteff_col], 
+        highmet_table[mist.band_translation["Ks"]], color=bc.pink,
+        marker="", ls=":", label="", axis=ax1, lw=5, zorder=5)
+
+#    lowT, highT = 3500, 6600
+#    full_T = np.linspace(lowT, highT, 200)
+#    sol_ks = samp.calc_model_mag_fixed_age_feh_alpha(
+#        full_T, 0.0, "Ks", age=1e9, model="MIST v1.2")
+#    neg_ks = samp.calc_model_mag_fixed_age_feh_alpha(
+#        full_T, -0.5, "Ks", age=1e9, model="MIST v1.2")
+#    pos_ks = samp.calc_model_mag_fixed_age_feh_alpha(
+#        full_T, 0.5, "Ks", age=1e9, model="MIST v1.2")
+#    hr.absmag_teff_plot(
+#        full_T, pos_ks, ls=":", marker="", color=bc.pink, lw=5,
+#        label="", zorder=5)
+#    hr.absmag_teff_plot(
+#        full_T, sol_ks, ls="-", marker="", color=bc.pink, lw=5,
+#        label="MIST (1 Gyr)", zorder=5)
+#    hr.absmag_teff_plot(
+#        full_T, neg_ks, ls="--", marker="", color=bc.pink, lw=5,
+#        label="", zorder=5)
 
     ax1.set_xlim(6600, 3500)
     ax1.set_ylim(7.2, -2)
@@ -1147,13 +1198,13 @@ def background_sample():
     ax.set_xlabel(Teffstr)
     ax.set_ylabel(MKstr)
 
-@write_plot("f4")
+#@write_plot("f4")
 def plot_APOGEE_bins_vsini_sizes():
     '''Plot the APOGEE bins where size correlates with vsini.'''
     aposplit = cache.apogee_splitter_with_DSEP()
 
     init_size = 1
-    f, ax = plt.subplots(1, 1, figsize=figsize)
+    f, ax = plt.subplots(1, 1, figsize=(figsize[0], figsize[1]+2))
     fullsamp = aposplit.subsample(["~Vsini det", "~DLSB", "~Giants"])
     hr.absmag_teff_plot(
         fullsamp["TEFF"], fullsamp["M_K"], marker="x", color="grey", ls="", 
@@ -1194,24 +1245,35 @@ def plot_APOGEE_bins_vsini_sizes():
 
     hr.absmag_teff_plot(
         jen_fast_teff, jen_fast_M_K, color=bc.brown, marker="", ls="-",
-        label="Fast launch", axis=ax, lw=4)
+        label="Fast launch", axis=ax, lw=5)
     hr.absmag_teff_plot(
         jen_slow_teff, jen_slow_M_K, color=bc.brown, marker="", ls="--",
-        label="Slow launch", axis=ax, lw=4)
+        label="Slow launch", axis=ax, lw=5)
 
+    add_boundaries(ax)
+
+
+    ax.set_xlabel("{0} (K)".format(Teffstr))
+    ax.set_ylabel(MKstr)
+    ax.set_xlim(6700, 3500)
+    ax.set_ylim(6.5, -2) 
+    ax.legend(loc="lower left", fontsize=16)
+
+def add_boundaries(ax, alpha=1.0):
+    '''Add the boundaries for interesting subgroups.'''
     subgiant_rect = patches.Rectangle(
-        (4800, 0.0), 1890, 1.5, linewidth=3, edgecolor=bc.light_pink,
-        facecolor="None")
+        (4800, 0.0), 1890, 1.5, linewidth=5, edgecolor=bc.light_pink,
+        facecolor="None", alpha=alpha)
     ax.add_patch(subgiant_rect)
 
     blue_straggler_rect = patches.Rectangle(
-        (5250, -2.1), 1600, 1.65, linewidth=3, edgecolor=bc.purple,
-        facecolor="None", ls="--") 
+        (5250, -2.1), 1600, 1.65, linewidth=5, edgecolor=bc.purple,
+        facecolor="None", ls="--", alpha=alpha) 
     ax.add_patch(blue_straggler_rect)
 
     red_straggler_rect = patches.Rectangle(
-        (4150, -0.45), 425, 2.45, linewidth=3, edgecolor=bc.violet, 
-        facecolor="None", ls="--") 
+        (4150, -0.45), 425, 2.45, linewidth=5, edgecolor=bc.violet, 
+        facecolor="None", ls="--", alpha=alpha) 
     ax.add_patch(red_straggler_rect)
 
     Path = mpath.Path
@@ -1227,20 +1289,13 @@ def plot_APOGEE_bins_vsini_sizes():
     codes[-1] = Path.CLOSEPOLY
     subsubgiant_path = mpath.Path(verts, codes)
     subsubgiant_patch = patches.PathPatch(
-        subsubgiant_path, edgecolor=bc.violet, facecolor="None", linewidth=3,
-        ls="--")
+        subsubgiant_path, edgecolor=bc.violet, facecolor="None", linewidth=5,
+        ls="--", alpha=alpha)
     ax.add_patch(subsubgiant_patch)
 
     # Split slow subgiants from slow dwarfs.
-    plt.plot([5250, 5500, 5500], [2, 2, 1.0], color=bc.algae, ls=":", lw=3,
-             label="")
-
-
-    ax.set_xlabel("{0} (K)".format(Teffstr))
-    ax.set_ylabel(MKstr)
-    ax.set_xlim(6700, 3500)
-    ax.set_ylim(6.5, -2) 
-    ax.legend(loc="lower left", fontsize=18)
+    plt.plot([5250, 5500, 5500], [2, 2, 1.0], color=bc.algae, ls=":", lw=5,
+             label="", alpha=alpha)
 
 @write_plot("f11a")
 def subgiant_zoomin():
@@ -1915,10 +1970,11 @@ def asteroseismic_vsini():
     apokasc = astero.subsample([
         "Asteroseismic Dwarfs", "~Bad", "~No vsini", "~DLSB"])
     dlsbs = astero.subsample(["Asteroseismic Dwarfs", "~Bad", "~No vsini", "DLSB"])
-    full_apo = astero.subsample(["~Bad"])
+    apo_dwarfs = astero.subsample(["~Bad", "Asteroseismic Dwarfs"])
     garcia = catin.read_Garcia_periods()
     astero_garcia = au.join_by_id(apokasc, garcia, "KEPLER_INT", "KIC")
     dlsb_garcia = au.join_by_id(dlsbs, garcia, "KEPLER_INT", "KIC")
+    dwarf_garcia = au.join_by_id(apo_dwarfs, garcia, "KEPLER_INT", "KIC")
 
     f, ax = plt.subplots(1, 1, figsize=figsize)
     astero_radius_err = (
@@ -1938,12 +1994,48 @@ def asteroseismic_vsini():
 #   ax.set_ylabel("Vsini")
     ax.legend(loc="upper left")
 
-    print("Asteroseismic sample with Garcia periods: {0:d}".format(
-        len(astero_garcia) + len(dlsb_garcia)))
-    vels = rot.period_to_velocities(
-        astero_garcia["Prot"], astero_garcia["RADIUS_DW"])
-    print("Detectable Asteroseismic Sample: {0:d}".format(np.count_nonzero(
-        np.logical_or(vels > 10, astero_garcia["VSINI"] > 10))))
+    # I want to make sure upper limits are actually detected as lower limits.
+    dwarf_velocities = rot.period_to_velocities(
+        dwarf_garcia["Prot"], dwarf_garcia["RADIUS_DW"])
+    sini_cutoff = 0.5
+
+    print(
+        "Asteroseismic sample with Garcia periods: {0:d}".format(
+            len(dwarf_garcia)))
+    print("Number with nontrivial rotation: {0:d}".format(
+        np.count_nonzero(np.logical_or(
+            dwarf_velocities > 10, dwarf_garcia["VSINI"].filled(0.0) > 10))))
+    phot_rapid_rotators = np.count_nonzero(dwarf_velocities > 10)
+    phot_rapid_frac = phot_rapid_rotators / len(dwarf_velocities)*100
+    print(
+        "Fraction of photometric rapid rotators: " + 
+        "{0:d}/{1:d}={2:.1f}+{3:.1f}-{4:.1f}\%".format(
+            phot_rapid_rotators, len(dwarf_velocities), phot_rapid_frac, 
+            au.binomial_upper(phot_rapid_rotators, len(dwarf_velocities))*100 - 
+            phot_rapid_frac, phot_rapid_frac -
+            au.binomial_lower(phot_rapid_rotators, len(dwarf_velocities))*100))
+    pred_rapid_rotators = rot.calc_spec_rapid_num(
+        np.log10(dwarf_velocities), sini_cutoff=sini_cutoff)
+    pred_rapid_frac = pred_rapid_rotators / len(dwarf_velocities)*100
+    print(
+        "Predicted fraction of spectroscopic rapid rotators: " + 
+        "{0:.2f}/{1:d}={2:.1f}+{3:.1f}-{4:.1f}\%".format(
+            pred_rapid_rotators, len(dwarf_velocities), pred_rapid_frac, 
+            au.binomial_upper(pred_rapid_rotators, len(dwarf_velocities))*100 - 
+            pred_rapid_frac, pred_rapid_frac -
+            au.binomial_lower(pred_rapid_rotators, len(dwarf_velocities))*100))
+    # Filling so that the evolved stars without vsini calculated by APOGEE are
+    # counted as slow rotators.
+    spec_rapid_rotators = np.count_nonzero(
+        dwarf_garcia["VSINI"].filled(0.0) > 10)
+    spec_rapid_frac = spec_rapid_rotators / len(dwarf_velocities)*100
+    print(
+        "Fraction of spectroscopic rapid rotators: " + 
+        "{0:d}/{1:d}={2:.1f}+{3:.1f}-{4:.1f}\%".format(
+            spec_rapid_rotators, len(dwarf_velocities), spec_rapid_frac, 
+            au.binomial_upper(spec_rapid_rotators, len(dwarf_velocities))*100 - 
+            spec_rapid_frac, spec_rapid_frac -
+            au.binomial_lower(spec_rapid_rotators, len(dwarf_velocities))*100))
 
 
 def asteroseismic_vsini_with_Gaia():
@@ -2135,16 +2227,23 @@ def asteroseismic_velocity_comparison():
     '''Plot the agreement between predicted and actual vsini.'''
     astero = cache.astero_splitter()
     apokasc = astero.subsample([
-        "Asteroseismic Dwarfs", "~Bad", "~No vsini", "~DLSB"])
-    full_apo = astero.subsample(["~Bad"])
+        "Asteroseismic Dwarfs", "~Bad"])
     garcia = catin.read_Garcia_periods()
     astero_garcia = au.join_by_id(apokasc, garcia, "KEPLER_INT", "KIC")
+    # of the No vsini targets, only 2M19261575+4935339 (KIC 11558593) has a v_eq 
+    # which should turn up. It has a veq of 146 km/s. When I checked Rafa's new 
+    # calculations, this star now has a much longer period, but still has a
+    # peak at 1 day. 1 day is also the edge of their search grid. Light curve
+    # indicates two periods.
+
+    # So in this case, I think it would be fair to treat the No vsini targets
+    # as slow rotators.
 
 
     # I want to make sure upper limits are actually detected as lower limits.
     astero_velocities = rot.period_to_velocities(
         astero_garcia["Prot"], astero_garcia["RADIUS_DW"])
-    sini_cutoff = 0.5
+    sini_cutoff = 0.0
 
     f, ax = plt.subplots(1, 1, figsize=figsize)
     rot.plot_vsini_dist(
@@ -2156,8 +2255,11 @@ def asteroseismic_velocity_comparison():
         np.count_nonzero(astero_velocities > 10), len(astero_velocities)))
     print("Predicted spectroscopic rapid rotators: {0:.1f}/{1:d}".format(
         numspec, len(astero_velocities)))
+    # Filling so that the evolved stars without vsini calculated by APOGEE are
+    # counted as slow rotators.
     print("Actual spectroscopic rapid rotators: {0:d}/{1:d}".format(
-        np.count_nonzero(astero_garcia["VSINI"] > 10), len(astero_garcia)))
+        np.count_nonzero(astero_garcia["VSINI"].filled(0.0) > 10), 
+        len(astero_garcia)))
 
 #   rot.compare_vsini_distribution_full(
 #       astero_garcia["Prot"], 
@@ -2998,6 +3100,137 @@ def write_Pleiades_count_overlap():
     counttable.write(
         str(TABLE_PATH / "counttable.tex"), format="ascii.aastex", 
         latexdict=latexdict, overwrite=True, fill_values=[("0", "", "R")])
+
+def write_Pleiades_Supplemental_Table():
+    '''Write the cross-matched Pleiades table.'''
+    full_pleiades = cache.pleiades_APOGEE_Literature_vsini()
+    pleiades_group = full_pleiades.group_by("APOGEE_ID")
+    apogee_avg = pleiades_group[[
+        "APOGEE_ID", "VSINI"]].groups.aggregate(np.mean)
+    unique_pleiades = unique(full_pleiades, keys="APOGEE_ID")
+    unique_pleiades.remove_column("VSINI")
+    pleiades = pleiades_group[[
+        "APOGEE_ID", "VSINI", "HII", "vsini_QuelozE", 
+        "vsini_err_QuelozE", "vsini_QuelozC", "vsini_lim_QuelozC", 
+        "vsini_err_QuelozC", "vsini_Terndrup", "vsini_err_Terndrup",
+        "vsini_lim_Terndrup", "vsini_Soderblom", "vsini_lim_Soderblom",
+        "vsini_SH", "vsini_err_SH", "vsini_lim_SH", "vsini_S84",
+        "vsini_err_S84", "vsini_lim_S84", "vsini_Jackson", "vsini_err_Jackson",
+    "vsini_lim_Jackson"]].groups.aggregate(np.mean)
+    pleiades = au.join_by_id(
+        unique_pleiades, apogee_avg, "APOGEE_ID", "APOGEE_ID")
+    pleiades = pleiades[
+        au.multi_logical_or(
+            ~pleiades["vsini_QuelozE"].mask, 
+            ~pleiades["vsini_QuelozC"].mask, 
+            ~pleiades["vsini_SH"].mask, 
+            ~pleiades["vsini_Jackson"].mask)]
+
+    # Do some preprocessing.
+    # Add a space between HII and the number.
+    pleiades["HII label"] = npstr.replace(pleiades["HII"], "HII", "HII ")
+    pleiades["HII label"].mask = pleiades["HII"].mask
+    # Remove the uncertainties for limits when publishing table.
+    pleiades["vsini_err_SH"].mask = au.multi_logical_or(
+        pleiades["vsini_err_SH"].mask, pleiades["vsini_lim_SH"] != "d")
+    # Replace l, u, and d with >, <, and " ". Unfortunately, npstr ignores
+    # masks, so the mask has to be preserved.
+    sh_mask = pleiades["vsini_lim_SH"].mask.copy()
+    pleiades["vsini_lim_SH"] = npstr.replace(npstr.replace(npstr.replace(
+        pleiades["vsini_lim_SH"], "l", ">"), "u", "<"), "d", ""),
+    pleiades["vsini_lim_SH"].mask = sh_mask
+    jackson_mask = pleiades["vsini_lim_Jackson"].mask.copy()
+    pleiades["vsini_lim_Jackson"] = npstr.replace(npstr.replace(npstr.replace(
+        pleiades["vsini_lim_Jackson"], "l", ">"), "u", "<"), "d", ""),
+    pleiades["vsini_lim_Jackson"].mask = jackson_mask
+    # For some reason, the lim for QuelozC is a byte array instead of a string
+    # array, so it needs to be typecast.
+    quelozc_mask = pleiades["vsini_lim_QuelozC"].mask.copy()
+    string_quelozc = npstr.replace(npstr.replace(npstr.replace(np.asarray(
+        pleiades["vsini_lim_QuelozC"], np.str), "l", ">"), "u", "<"), "d", "")
+    del(pleiades["vsini_lim_QuelozC"])
+    pleiades["vsini_lim_QuelozC"] = string_quelozc
+    pleiades["vsini_lim_QuelozC"].mask = quelozc_mask
+    # Remove nans from the Queloz columns.
+    pleiades["vsini_QuelozE"] = np.ma.masked_invalid(pleiades["vsini_QuelozE"])
+    pleiades["vsini_err_QuelozE"] = np.ma.masked_invalid(
+        pleiades["vsini_err_QuelozE"])
+    pleiades["vsini_QuelozC"] = np.ma.masked_invalid(pleiades["vsini_QuelozC"])
+    pleiades["vsini_err_QuelozC"] = np.ma.masked_invalid(
+        pleiades["vsini_err_QuelozC"])
+    pleiades["vsini_lim_QuelozC"].mask = pleiades["vsini_QuelozC"].mask.copy()
+
+    include_names = (
+        "APOGEE_ID", "HII label", "vsini_lim_SH", "vsini_SH", "vsini_err_SH", 
+        "vsini_QuelozE", "vsini_err_QuelozE", "vsini_lim_QuelozC", 
+        "vsini_QuelozC", "vsini_err_QuelozC", "vsini_lim_Jackson",
+        "vsini_Jackson", "vsini_err_Jackson")
+
+    tabletitle = r"Pleiades Overlap Sample\label{tab:pleiadessample}"
+    alignment = " l l c c c c c c c c c c c c"
+    footercomment = (
+        r"\tablecomments{Columns: (1) The 2MASS designation for the target. "
+        r"(2) Other designations which are used in the original \vsini{} "
+        r"papers. (3), (4), and (5) represent the limit designation, "
+        r"\vsini{} and uncertainty reported in \citet{Stauffer87} "
+        r"(6) and (7) represent the \vsini{} and uncertainty reported in "
+        r"\citet{Queloz98} with the ELODIE instrument. (8), (9), and (10) "
+        r"represent the limit designation, \vsini{}, and uncertainty reported "
+        r"in \citet{Queloz98} with the CORAVEL instrument. Finally, (11), "
+        r"(12), and (13) represent the limit designation, \vsini{} and "
+        r"uncertainty reported in \citet{Jackson18}. "
+        r"\Cref{tab:pleiadessample} is published in its entirely in the "
+        r"machine-readable format. A portion is shown here for guidance "
+        r"regarding its form and content.}")
+
+    latexdict = {
+        "col_align": alignment, "caption": tabletitle, 
+        "tablefoot": footercomment}
+
+    latex_names=(
+        "APOGEE ID", "Other ID", 
+        r"\citet{Stauffer87} " + vsinistr + " Limit", 
+        r"\citet{Stauffer87} " + vsinistr, 
+        r"\citet{Stauffer87} " + vsinistr + " Error", 
+        r"\citet{Queloz98} ELODIE " + vsinistr, 
+        r"\citet{Queloz98} ELODIE " + vsinistr + " Error", 
+        r"\citet{Queloz98} CORAVEL " + vsinistr + " Limit", 
+        r"\citet{Queloz98} CORAVEL " + vsinistr, 
+        r"\citet{Queloz98} CORAVEL " + vsinistr + " Error", 
+        r"\citet{Jackson18} " + vsinistr + " Limit", 
+        r"\citet{Jackson18} " + vsinistr , 
+        r"\citet{Jackson18} " + vsinistr + " Error")
+
+
+    pleiades[include_names][0:5].write(
+        str(TABLE_PATH / "total_pleiades.tex"), format="ascii.aastex", 
+        latexdict=latexdict, overwrite=True, fill_values=[(ascii.masked, "")],
+        names=latex_names)
+
+    basic_names = (
+        "APOGEE_ID", "OTHER_ID", "SH87_LIM", "SH87_VSINI", "SH87_ERR",
+        "Q98E_VSINI", "Q98E_ERR", "Q98C_LIM", "Q98C_VSINI", "Q98C_ERR",
+        "J18_LIM", "J18_VSINI", "J18_ERR")
+
+    pleiades.meta["comments"] = [
+        "APOGEE_ID: 2MASS ID for the target",
+     "OTHER_ID: Additional ID used in the original work",
+     "SH87_LIM: Stauffer & Hartmann (1987) flag whether vsini is a limit",
+     "SH87_VSINI: Vsini as measured by Stauffer & Hartmann (1987)",
+     "SH87_ERR: Vsini uncertainty reported by Stauffer & Hartmann (1987)",
+     "Q98E_VSINI: Vsini as measured by Queloz et al (1998) with ELODIE",
+     "Q98E_ERR: ELODIE Vsini uncertainty reported by Queloz et al (1998)",
+     "Q98C_LIM: Queloz et al (1998) flag whether CORAVEL vsini is a limit",
+     "Q98C_VSINI: Vsini as measured by Queloz et al (1998) with CORAVEL",
+     "Q98C_ERR: CORAVEL Vsini uncertainty reported by Queloz et al (1998)",
+     "J18_LIM: Jackson et al (2018) flag whether vsini is a limit",
+     "J18_VSINI: Vsini as measured by Jackson et al (2018)",
+     "J18_ERR: Vsini uncertainty reported by Jackson et al (2018)"]
+
+    pleiades[include_names].write(
+        str(TABLE_PATH / "total_pleiades.dat"), format="ascii.fixed_width",
+        overwrite=True, fill_values=[(ascii.masked, "")], names=basic_names,
+        comment="# ", formats={"SH87_ERR": "%.1f"})
 
 def Pleiades_literature_vsini_agreement():
     '''Plot the vsini in the literature vs the ASPCAP vsini.'''
@@ -5375,7 +5608,7 @@ def Pleiades_vsini_outliers():
             sh_downerr[sh_dets_apogee],
             sh_uperr[sh_dets_apogee]], 
         marker="*", color=bc.light_pink, 
-        ls="", label="Stauffer & Hartman (1987)")
+        ls="", label="Stauffer & Hartmann (1987)")
     ax1.errorbar(
         pleiades["vsini_SH"][sh_outliers], 
         pleiades["VSINI"][sh_outliers], 
@@ -8195,6 +8428,155 @@ def jen_subgiant_boundary_mets():
     axes[0].set_ylabel(MKstr)
     axes[0].legend(loc="lower left")
     plt.tight_layout()
+    
+def metallicity_samples_postdoc():
+    '''Plot the objects against Jen's boundary.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+    # Low Metallicity
+    lowmet_singles = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "Low Met", "Photometric Singles"])
+    lowmet_binaries = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "Low Met", "Photometric Bins"])
+    # High Metallicity
+    highmet_singles = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "High Met", "Photometric Singles"])
+    highmet_binaries = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "High Met", "Photometric Bins"])
+
+    f, axes = plt.subplots(1, 2, figsize=(18,9))
+
+    hr.absmag_teff_plot(
+        lowmet_singles["TEFF"], lowmet_singles["M_K"], ls="", marker=".",
+        color="k", axis=axes[0], label="Single Stars")
+    hr.absmag_teff_plot(
+        highmet_singles["TEFF"], highmet_singles["M_K"], ls="", marker=".",
+        color="k", axis=axes[1])
+    hr.absmag_teff_plot(
+        lowmet_binaries["TEFF"], lowmet_binaries["M_K"], ls="", marker="o",
+        color="r", axis=axes[0], label="Photometric Binaries")
+    hr.absmag_teff_plot(
+        highmet_binaries["TEFF"], highmet_binaries["M_K"], ls="", marker="o",
+        color="r", axis=axes[1])
+
+    hr.absmag_teff_plot(
+        [4100], [3.0], yerr=np.median(lowmet_singles["M_K_err1"]),
+        xerr=np.median(lowmet_singles["TEFF_ERR"]), axis=axes[0], color="k") 
+    hr.absmag_teff_plot(
+        [4100], [3.0], yerr=np.median(highmet_singles["M_K_err1"]),
+        xerr=np.median(highmet_singles["TEFF_ERR"]), axis=axes[1], color="k") 
+
+    print(np.count_nonzero(highmet_singles[highmet_singles["TEFF"] < 5000]))
+    print(np.count_nonzero(highmet_binaries[highmet_binaries["TEFF"] < 5000]))
+    print(np.count_nonzero(lowmet_singles[lowmet_singles["TEFF"] < 5000]))
+    print(np.count_nonzero(lowmet_binaries[lowmet_binaries["TEFF"] < 5000]))
+
+    # Plot the isochrones
+    lowmet_sortargs = np.argsort(lowmet_singles["TEFF"])
+    highmet_sortargs = np.argsort(highmet_singles["TEFF"])
+    hr.absmag_teff_plot(
+        lowmet_singles["TEFF"][lowmet_sortargs], 
+        lowmet_singles["MIST K (sol)"][lowmet_sortargs], ls="-", 
+        marker="", color=bc.pink, lw=5, zorder=5, label="MIST (1 Gyr)", 
+        axis=axes[0])
+    hr.absmag_teff_plot(
+        highmet_singles["TEFF"][highmet_sortargs], 
+        highmet_singles["MIST K (sol)"][highmet_sortargs], ls="-", 
+        marker="", color=bc.pink, lw=5, zorder=5, label="", 
+        axis=axes[1])
+
+    axes[0].set_xlabel("{0} (K)".format(Teffstr))
+    axes[1].set_xlabel("{0} (K)".format(Teffstr))
+    axes[0].set_ylabel(MKstr)
+    axes[1].set_ylabel("")
+    axes[0].set_title("$[Fe/H] < -0.2$".format(fehstr))
+    axes[1].set_title("$[Fe/H] > +0.2$".format(fehstr))
+    axes[0].set_ylim(5.3, 2.5)
+    axes[0].set_xlim(5000, 3900)
+    axes[1].set_ylim(5.3, 2.5)
+    axes[1].set_xlim(5000, 3900)
+    axes[0].set_ylabel(MKstr)
+    axes[0].legend(loc="lower left")
+    plt.tight_layout()
+    
+def metallicity_samples():
+    '''Plot the objects against Jen's boundary.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+    # Low Metallicity
+    lowmet_singles = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "Low Met", "Photometric Singles"])
+    lowmet_binaries = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "Low Met", "Photometric Bins"])
+    # High Metallicity
+    highmet_singles = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "High Met", "Photometric Singles"])
+    highmet_binaries = aposplit.subsample(
+        ["Dwarfs", "APOGEE Evolution Cool", "High Met", "Photometric Bins"])
+
+    
+
+@write_plot("subgiants")
+def jen_subgiants():
+    '''Plot the subgiants and boundary in radius space.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+    # First do the cool dwarf vsini detections.
+    cool_lowers = aposplit.subsample(
+        ["Cool Dwarfs", "Vsini lower", "Low Alpha"])
+    cool_dets = aposplit.subsample(
+        ["Cool Dwarfs", "Vsini det", "Low Alpha"])
+    # Now hot dwarf vsini detections.
+    hot_lowers = aposplit.subsample(
+        ["Hot Dwarfs", "Vsini lower", "Low Alpha"])
+    hot_dets = aposplit.subsample(
+        ["Hot Dwarfs", "Vsini det", "Low Alpha"])
+    # Now the subgiant vsini detections.
+    sub_lowers = aposplit.subsample(
+        ["Subgiants", "Vsini lower", "Low Alpha"])
+
+
+    
+
+@write_plot("subgiants")
+def jen_subgiants():
+    '''Plot the subgiants and boundary in radius space.'''
+    aposplit = cache.apogee_splitter_with_DSEP()
+    # First do the cool dwarf vsini detections.
+    cool_lowers = aposplit.subsample(
+        ["Cool Dwarfs", "Vsini lower", "Low Alpha"])
+    cool_dets = aposplit.subsample(
+        ["Cool Dwarfs", "Vsini det", "Low Alpha"])
+    # Now hot dwarf vsini detections.
+    hot_lowers = aposplit.subsample(
+        ["Hot Dwarfs", "Vsini lower", "Low Alpha"])
+    hot_dets = aposplit.subsample(
+        ["Hot Dwarfs", "Vsini det", "Low Alpha"])
+    # Now the subgiant vsini detections.
+    sub_lowers = aposplit.subsample(
+        ["Subgiants", "Vsini lower", "Low Alpha"])
+    sub_dets = aposplit.subsample(
+        ["Subgiants", "Vsini det", "Low Alpha"])
+    # Now the luminous subgiant vsini detections.
+    lum_sub_lowers = aposplit.subsample(
+        ["Luminous Subgiants", "Vsini lower", "Low Alpha"])
+    lum_sub_dets = aposplit.subsample(
+        ["Luminous Subgiants", "Vsini det", "Low Alpha"])
+    # Now the nonrotators
+    marginal = aposplit.subsample(
+        ["~Giants", "Vsini marginal", "Low Alpha"])
+    nondets = aposplit.subsample(
+        ["~Giants", "Vsini nondet", "Low Alpha"])
+    novsini = aposplit.subsample(
+        ["~Giants", "No Vsini", "Low Alpha"])
+    # Now separate the high alphas
+    alphalowers = aposplit.subsample([
+        "~Giants", "Vsini lower", "High Alpha"])
+    alphadets = aposplit.subsample([
+        "~Giants", "Vsini det", "High Alpha"])
+    alphamarginal = aposplit.subsample([
+        "~Giants", "Vsini marginal", "High Alpha"])
+    alphanondets = aposplit.subsample([
+        "~Giants", "Vsini nondet", "High Alpha"])
+    alphanovsini = aposplit.subsample([
+        "~Giants", "No Vsini", "High Alpha"])
 
 @write_plot("subgiants")
 def jen_subgiants():
@@ -8881,11 +9263,13 @@ def subgiant_rapid_fraction_heatmap():
     jen_slow_M_K = jen_slow[jen.format_Jen_column(0.0, 10, "M_K")]
 
     hr.absmag_teff_plot(
-        jen_fast_teff, jen_fast_M_K, color=bc.brown, marker="", ls="-",
-        label="Fast launch", axis=ax, lw=4)
+        jen_fast_teff, jen_fast_M_K, color=bc.brown, marker="", ls="-", axis=ax, 
+        lw=5, alpha=0.5)
     hr.absmag_teff_plot(
-        jen_slow_teff, jen_slow_M_K, color=bc.brown, marker="", ls="--",
-        label="Slow launch", axis=ax, lw=4)
+        jen_slow_teff, jen_slow_M_K, color=bc.brown, marker="", ls="--", 
+        axis=ax, lw=5, alpha=0.5)
+
+    add_boundaries(ax, alpha=0.5)
 
     samplemasses = np.array([1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
     periods = np.array([1, 3, 10])
@@ -8914,7 +9298,7 @@ def subgiant_rapid_fraction_heatmap():
         label = "{0:d} day merged".format(p)
         hr.absmag_teff_plot(
             teff_array[:,i], k_array[:,i], color=bc.black, ls=s, axis=ax, 
-            marker=".", label=label, lw=2)
+            marker="", label=label, lw=5)
     
 
     ax.set_ylabel(MKstr)
@@ -9263,11 +9647,12 @@ def mcquillan_rapid_rotation_heatmap():
 
     hr.absmag_teff_plot(
         jen_fast_teff, jen_fast_M_K, color=bc.brown, marker="", ls="-",
-        label="Fast launch", axis=ax, lw=4)
+        axis=ax, lw=4, alpha=0.5)
     hr.absmag_teff_plot(
         jen_slow_teff, jen_slow_M_K, color=bc.brown, marker="", ls="--",
-        label="Slow launch", axis=ax, lw=4)
+        axis=ax, lw=4, alpha=0.5)
 
+    add_boundaries(ax, alpha=0.5)
     
     ax.set_ylabel(MKstr)
     ax.set_xlabel("{0} (K)".format(Teffstr))
@@ -9540,6 +9925,7 @@ def plot_vsini_cut_in_period_space():
 
     min_P = min(cool_dwarfs["MaxPers"])
     max_P = max(hotstars["MaxPers"])
+    print(max_P)
 
     f, ax1 = plt.subplots(1, 1, figsize=figsize)
 
@@ -9818,6 +10204,48 @@ def mcquillan_overlap():
     combined_num = mcq_apokasc + mcq_cool - overlap
     print("Mcquillan overlap: {0:d}".format(combined_num))
 
+def write_overlap_samples():
+    '''Write a table describing the overlap of the APOGEE sample with other
+    datasets.'''
+
+    apo = cache.apogee_splitter_with_DSEP()
+
+    samples = [
+        r"\citet{McQuillan14} Detections", r"\citet{McQuillan14} Nondetections", 
+        r"\citet{Serenelli17}", r"\citet{Garcia14}", r"\citet{ElBadry18b}", 
+        r"\citet{Berger18a}"]
+
+    sizes = [34030, 99000, 426, 310, 20142, 177911]
+
+    overlap = []
+
+    overlap.append(apo.subsample_len(["Mcq", "~Giants"]))
+    overlap.append(apo.subsample_len(["No Mcq", "~Giants"]))
+    overlap.append(apo.subsample_len(["Asteroseismic", "~Giants"]))
+    overlap.append(apo.subsample_len(["Garcia", "~Giants"]))
+    overlap.append(apo.subsample_len(["~No El-Badry Binarity", "~Giants"]))
+    overlap.append(apo.subsample_len(["~No KSPC Evolution Teff", "~Giants"]))
+
+    title = r"Validation Sample Overlap\label{tab:validation}"
+    alignment = "l c c"
+    footercomment = (
+        r"\tablecomments{", 
+        r"Overlap between validation samples and our main APOGEE sample",
+        r"described in Section~\ref{sec:sample}.}")
+
+    latexdict = {
+        "col_align": alignment, "caption": title, "tabletype": "deluxetable*",
+        "tablefoot": footercomment}
+
+    overlap_table= Table([samples, sizes, overlap], names=(
+        "Sample", "Total Size", "Overlap with APOGEE"))
+
+    overlapfile = TABLE_PATH / "overlap.tex"
+    overlap_table.write(
+        str(overlapfile), format="ascii.aastex", 
+            latexdict=latexdict, overwrite=True)
+
+
 def write_targeting_count():
     '''Write a table for stars of each Kepler targeting program.'''
     apo = cache.apogee_splitter_with_DSEP()
@@ -9831,32 +10259,25 @@ def write_targeting_count():
         r"\APOGEEKOI", r"\APOGEEKOICONTROL", r"\APOGEESEISMO",
         r"\APOGEERVMONITOR", r"\APOGEEHOST"]
 
-    counts = []
+    fullcounts = []
+    cutcounts = []
     for cat in categories:
-        count = apo.subsample_len([cat, "~Giants"])
-        counts.append(count)
+        fullcount = apo.subsample_len([cat])
+        cutcount = apo.subsample_len([cat, "~Giants", "~Bad"])
+        fullcounts.append(fullcount)
+        cutcounts.append(cutcount)
     # Add the total sample.
-    counts.append(apo.subsample_len(["~Giants"]))
+    fullcounts.append(apo.subsample_len([]))
+    cutcounts.append(apo.subsample_len(["~Giants", "~Bad"]))
     latex_categories.append("Total")
 
     title = r"APOGEE Targeting Flags\label{tab:targeting}"
-    alignment = "l c"
+    alignment = "l c c"
     footercomment = (
-        r"\tablecomments{",
-        r"\APOGEECOOLDWARF{} targets are bright and were selected to have ",
-        r"\citet{Pinsonneault12} \(\Teff < 5500\) K and \(\logg > 4.0\) ",
-        r"\citep{Brown11}. \APOKASC{} targets extended this sample to hotter ",
-        r"temperatures and lower surface gravities based on \citet{Huber14} ",
-        r"\Teff{} and \logg{}, and were split into \APOKASCDWARF{} and ",
-        r"\APOKASCGIANT{} based on evolutionary state. \APOGEESEISMO{} stars ",
-        r"were targeted to follow up stars showing asteroseismic "
-        r"oscillations in \Kepler{}. Most of this sample is giants, but 426",
-        r"targets were dwarfs targeted for asteroseismic studies, which are "
-        r"included here, as well as a number of targets at the base of the RGB.",
-        r"\APOGEEKOI{}, \APOGEEKOICONTROL{}, "
-        r"\APOGEERVMONITOR{}, and \APOGEEHOST{} were selected to follow up ",
-        r"\Kepler{} planet host stars. Some stars were targeted in multiple ",
-        r"programs, so the total sample will be less than the sum ",
+        r"\tablecomments{", 
+        r"Number of stars in each APOGEE targeting program as of DR14, and "
+        r"those that pass the Dwarf/subgiant cut. Some stars were targeted in ",
+        r"multiple programs, so the total sample will be less than the sum ",
         r"of all targeting flags.}")
 
     latexdict = {
@@ -9864,8 +10285,8 @@ def write_targeting_count():
         "tablefoot": footercomment}
 
     targettab = Table(
-        [latex_categories, counts], names=(
-            "Targeting Flag", "Number of Dwarfs/Subgiants"))
+        [latex_categories, fullcounts, cutcounts], names=(
+            "Targeting Flag", "Total", "Dwarfs/Subgiants"))
     targetfile = TABLE_PATH / "targets.tex"
     targettab.write(
         str(targetfile), format="ascii.aastex", 
@@ -11164,7 +11585,20 @@ def write_Jen_vsini_lower_limit_file():
             "L/Lbol": "%.4f", "L/Lbol err": "%.5f", "M_H": "%.3f", 
             "M_H_ERR": "%.4f", "FE_H": "%.3f"})
 
-    
+def write_figs():
+    '''Run to write all figures.'''
+    figlist = [
+        targeting_figure, DLSB_Examples, plot_vsini_cut_in_period_space, 
+        plot_APOGEE_bins_vsini_sizes, subgiant_rapid_fraction_heatmap, 
+        mcquillan_rapid_rotation_heatmap, asteroseismic_vsini, 
+        Pleiades_vsini_outliers, cool_vsini_veq_agreement,
+        elBadry_radius_bias_cooldwarf, plot_contamination_probability_function,
+        subgiant_zoomin, binned_rapid_fraction, high_alpha_HR_diagram,
+        jen_subgiant_boundary_mets, huber_class_comparison]
+
+    for fig in figlist:
+        fig()   
+
 if __name__ == "__main__":
 
     desc = """Generate figures and tables.
@@ -11178,12 +11612,14 @@ looking for tidally-synchronized binaries in the Kepler field."""
     
     args = parser.parse_args()
 
-    figlist = {
-        "targeting": targeting_figure
-    }
+    figlist = [
+        targeting_figure, DLSB_Examples, plot_vsini_cut_in_period_space, 
+        plot_APOGEE_bins_vsini_sizes, subgiant_rapid_fraction_heatmap, 
+        mcquillan_rapid_rotation_heatmap, asteroseismic_vsini, 
+        Pleiades_vsini_outliers, cool_vsini_veq_agreement,
+        elBadry_radius_bias_cooldwarf, plot_contamination_probability_function,
+        subgiant_zoomin, binned_rapid_fraction, high_alpha_HR_diagram,
+        jen_subgiant_boundary_mets, huber_class_comparison]
 
-    genfigs = args.figs
-    if not genfigs:
-        print(figlist.keys())
-    for figname in genfigs:
-        figlist[figname]()
+    for fig in figlist:
+        fig()
