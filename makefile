@@ -2,7 +2,7 @@ figdir = fig
 latexfigures := $(wildcard $(figdir)/*)
 
 tabledir = tables
-tablelist := $(wildcard $(tabledir)/*)
+tablelist := $(notdir $(wildcard $(tabledir)/*))
 
 mainfile = main
 maintex = $(mainfile).tex
@@ -17,7 +17,7 @@ mnras: mnras.tar.gz
 	
 mnras.tar.gz: $(mainfile).pdf $(latexfigures) $(tablelist)
 	tar -zcf mnras.tar.gz $(maintex) main.bbl references.bib readme.mnras \
-	    $(latexfigures) $(tablelist)
+	    $(latexfigures) $(tablelist) aastex62.cls
 
 # Is there an automated way to add dependencies for tables and figures in here? 
 # Ideally it should be read from the LaTeX file. Potentially stripped out, but
@@ -50,7 +50,7 @@ arxiv: arxiv.tar.gz
 
 arxiv.tar.gz: $(maintex) $(mainfile).bbl $(latexfigures) $(tablelist)
 	tar -czf arxiv.tar.gz $(maintex) $(mainfile).bbl $(latexfigures) \
-		$(tablelist) mnras.cls
+		$(tablelist) aastex62.cls booktabs.sty
 
 .PHONY : clean
 clean:
