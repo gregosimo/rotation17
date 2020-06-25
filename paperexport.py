@@ -3214,7 +3214,7 @@ def write_Pleiades_Supplemental_Table():
 
     pleiades.meta["comments"] = [
         "APOGEE_ID: 2MASS ID for the target",
-     "OTHER_ID: Additional ID used in the original work",
+     "OTHER_ID: Additional ID used to cross-reference with literature",
      "SH87_LIM: Stauffer & Hartmann (1987) flag whether vsini is a limit",
      "SH87_VSINI: Vsini as measured by Stauffer & Hartmann (1987)",
      "SH87_ERR: Vsini uncertainty reported by Stauffer & Hartmann (1987)",
@@ -3227,6 +3227,7 @@ def write_Pleiades_Supplemental_Table():
      "J18_VSINI: Vsini as measured by Jackson et al (2018)",
      "J18_ERR: Vsini uncertainty reported by Jackson et al (2018)"]
 
+    return pleiades[include_names]
     pleiades[include_names].write(
         str(TABLE_PATH / "total_pleiades.dat"), format="ascii.fixed_width",
         overwrite=True, fill_values=[(ascii.masked, "")], names=basic_names,
